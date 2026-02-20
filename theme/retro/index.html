@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RETRO.SYS // FULL DESKTOP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'win-gray': '#C0C0C0',
+                        'win-blue': '#000080',
+                        'win-teal': '#008080',
+                        'win-dark': '#808080',
+                        'win-light': '#FFFFFF',
+                    },
+                    fontFamily: {
+                        'pixel': ['"Press Start 2P"', 'cursive'],
+                        'mono': ['"VT323"', 'monospace'],
+                    },
+                    boxShadow: {
+                        'win-out': 'inset 1px 1px #dfdfdf, inset -1px -1px #000000, inset 2px 2px #ffffff, inset -2px -2px #808080',
+                        'win-in': 'inset 1px 1px #000000, inset -1px -1px #dfdfdf, inset 2px 2px #808080, inset -2px -2px #ffffff',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #008080;
+            background-image: 
+                linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000),
+                linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000);
+            background-size: 4px 4px;
+            background-position: 0 0, 2px 2px;
+            background-color: #008080; /* Fallback */
+            image-rendering: pixelated;
+        }
+        
+        /* CRT Scanline Effect */
+        .scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.1) 50%,
+                rgba(0,0,0,0.1)
+            );
+            background-size: 100% 4px;
+            position: fixed;
+            top: 0; right: 0; bottom: 0; left: 0;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .win-btn:active {
+            box-shadow: inset 1px 1px #000000, inset -1px -1px #dfdfdf, inset 2px 2px #808080, inset -2px -2px #ffffff;
+            padding-top: 2px;
+            padding-left: 2px;
+        }
+
+        .cursor-retro {
+            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' style='fill:white;stroke:black;stroke-width:1px;'><path d='M0,0 L0,20 L4,16 L8,24 L10,24 L6,16 L14,16 Z' /></svg>"), auto;
+        }
+
+        /* Scrollbar Retro */
+        ::-webkit-scrollbar {
+            width: 16px;
+            background: #dfdfdf;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+            box-shadow: inset 1px 1px #dfdfdf, inset -1px -1px #000000, inset 2px 2px #ffffff, inset -2px -2px #808080;
+        }
+        ::-webkit-scrollbar-button {
+            background: #c0c0c0;
+            height: 16px;
+            box-shadow: inset 1px 1px #dfdfdf, inset -1px -1px #000000, inset 2px 2px #ffffff, inset -2px -2px #808080;
+        }
+    </style>
+</head>
+<body class="font-mono text-black h-screen overflow-hidden flex flex-col cursor-retro">
+
+    <!-- CRT Overlay -->
+    <div class="scanlines"></div>
+
+    <!-- DESKTOP AREA (Scrollable) -->
+    <main class="flex-1 p-4 overflow-y-auto relative scroll-smooth" id="desktop">
+        
+        <!-- Desktop Icons (Fixed Position relative to scroll container) -->
+        <div class="fixed top-4 left-4 flex flex-col gap-6 z-0 md:flex hidden">
+            <div class="flex flex-col items-center gap-1 group cursor-pointer w-20">
+                <div class="w-12 h-12 flex items-center justify-center text-3xl text-white drop-shadow-md">
+                    <i class="fa-solid fa-computer"></i>
+                </div>
+                <span class="text-white bg-win-blue/0 group-hover:bg-win-blue px-1 text-sm text-center font-bold">My PC</span>
+            </div>
+            <a href="#about" class="flex flex-col items-center gap-1 group cursor-pointer w-20">
+                <div class="w-12 h-12 flex items-center justify-center text-3xl text-white drop-shadow-md">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+                <span class="text-white bg-win-blue/0 group-hover:bg-win-blue px-1 text-sm text-center font-bold">ReadMe.txt</span>
+            </a>
+            <a href="#projects" class="flex flex-col items-center gap-1 group cursor-pointer w-20">
+                <div class="w-12 h-12 flex items-center justify-center text-3xl text-yellow-400 drop-shadow-md">
+                    <i class="fa-solid fa-folder-closed"></i>
+                </div>
+                <span class="text-white bg-win-blue/0 group-hover:bg-win-blue px-1 text-sm text-center font-bold">Projects</span>
+            </a>
+            <a href="#contact" class="flex flex-col items-center gap-1 group cursor-pointer w-20">
+                <div class="w-12 h-12 flex items-center justify-center text-3xl text-white drop-shadow-md">
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+                <span class="text-white bg-win-blue/0 group-hover:bg-win-blue px-1 text-sm text-center font-bold">Mail</span>
+            </a>
+        </div>
+
+        <!-- WINAMP WIDGET (Fixed Top Right) -->
+        <div class="fixed top-4 right-4 z-50 w-64 hidden lg:block">
+            <div class="bg-[#292929] border-2 border-gray-400 p-1 shadow-win-out">
+                <!-- Title Bar -->
+                <div class="bg-[#000080] h-4 mb-1 flex justify-between items-center px-1 cursor-move">
+                    <span class="text-[10px] text-white font-pixel">WINAMP</span>
+                    <div class="flex gap-[2px]">
+                        <div class="w-2 h-2 bg-gray-300"></div>
+                        <div class="w-2 h-2 bg-gray-300"></div>
+                    </div>
+                </div>
+                <!-- Display -->
+                <div class="bg-black border-2 border-gray-500 mb-2 p-1">
+                    <div class="text-green-400 font-pixel text-[10px] whitespace-nowrap overflow-hidden">
+                        01. RETRO WAVE - SYNTH HERO.MP3
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span class="text-green-400 font-pixel text-[10px]">128kbps</span>
+                        <span class="text-green-400 font-pixel text-[10px]">44khz</span>
+                    </div>
+                </div>
+                <!-- Controls -->
+                <div class="flex justify-between items-center px-2 pb-1">
+                    <button class="text-gray-300 hover:text-white"><i class="fa-solid fa-backward-step"></i></button>
+                    <button class="text-gray-300 hover:text-white"><i class="fa-solid fa-play"></i></button>
+                    <button class="text-gray-300 hover:text-white"><i class="fa-solid fa-pause"></i></button>
+                    <button class="text-gray-300 hover:text-white"><i class="fa-solid fa-stop"></i></button>
+                    <button class="text-gray-300 hover:text-white"><i class="fa-solid fa-forward-step"></i></button>
+                    <button class="text-gray-300 hover:text-white"><i class="fa-solid fa-eject"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-12 pb-20 md:pl-24 max-w-5xl mx-auto">
+            
+            <!-- SECTION 1: WELCOME (Hero) -->
+            <div id="home" class="bg-win-gray shadow-win-out p-1 relative z-10 w-full animate-fade-in-up">
+                <div class="bg-win-blue text-white px-2 py-1 flex justify-between items-center mb-1">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-brands fa-windows"></i>
+                        <span class="font-bold tracking-wider">Welcome.exe</span>
+                    </div>
+                    <div class="flex gap-1">
+                        <button class="w-5 h-5 bg-win-gray shadow-win-out flex items-center justify-center text-xs font-bold active:shadow-win-in border-none">X</button>
+                    </div>
+                </div>
+                
+                <!-- Menu Bar -->
+                <div class="flex gap-4 px-2 mb-2 text-sm border-b border-white shadow-[0_1px_0_#808080]">
+                    <span class="underline">F</span>ile
+                    <span class="underline">H</span>elp
+                </div>
+
+                <div class="bg-white border-2 border-win-dark shadow-win-in p-6">
+                    <div class="flex flex-col md:flex-row gap-6 items-center">
+                        <div class="border-2 border-win-dark shadow-win-in p-1 bg-win-gray">
+                            <img src="https://placehold.co/200x200/000080/FFFFFF/png?text=ADMIN" alt="Profile" class="border border-win-dark">
+                        </div>
+                        <div class="text-center md:text-left">
+                            <h1 class="font-pixel text-2xl md:text-4xl mb-4 text-win-blue">SYSTEM READY_</h1>
+                            <p class="text-xl leading-relaxed mb-4 font-bold">
+                                Selamat Datang di Portfolio v1.0. <br>
+                                Full-Stack Developer & Retro Enthusiast.
+                            </p>
+                            <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                                <a href="#projects" class="bg-win-gray shadow-win-out px-4 py-2 text-lg font-bold win-btn active:translate-y-px border-none flex items-center gap-2 text-black no-underline">
+                                    <i class="fa-solid fa-rocket"></i> START_TOUR
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Status Bar -->
+                <div class="mt-1 border-t border-gray-400 pt-1 flex justify-between text-xs px-2 text-gray-600">
+                    <span>User: Guest</span>
+                    <span>Memory: 64MB OK</span>
+                </div>
+            </div>
+
+            <!-- SECTION 2: ABOUT ME (Notepad Style) -->
+            <div id="about" class="bg-win-gray shadow-win-out p-1 relative z-10 w-full md:w-3/4 self-end">
+                <div class="bg-gradient-to-r from-blue-800 to-blue-600 text-white px-2 py-1 flex justify-between items-center mb-1">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span class="font-bold tracking-wider">about_me.txt - Notepad</span>
+                    </div>
+                    <button class="w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black">X</button>
+                </div>
+                
+                <div class="flex gap-4 px-2 mb-1 text-sm">
+                    <span class="underline">F</span>ile <span class="underline">E</span>dit <span class="underline">S</span>earch <span class="underline">H</span>elp
+                </div>
+
+                <div class="bg-white border-2 border-win-dark shadow-win-in p-4 h-64 overflow-y-auto font-mono text-lg">
+                    <p>Halo! Nama saya [Nama Anda].</p>
+                    <br>
+                    <p>Saya adalah pengembang web yang memiliki passion pada desain antarmuka yang unik dan pengalaman pengguna yang memorable. Saya percaya bahwa web tidak harus membosankan.</p>
+                    <br>
+                    <p>Masa kecil saya dihabiskan dengan komputer beige, floppy disk, dan suara modem dial-up. Estetika ini selalu memiliki tempat khusus di hati saya.</p>
+                    <br>
+                    <p>Saat ini saya fokus membangun aplikasi modern menggunakan teknologi terkini seperti React dan Tailwind, tapi dengan jiwa "jadul".</p>
+                    <p class="animate-pulse">_</p>
+                </div>
+            </div>
+
+            <!-- SECTION 3: SKILLS (System Properties Style) -->
+            <div id="skills" class="bg-win-gray shadow-win-out p-1 relative z-10 w-full md:w-2/3 mx-auto">
+                <div class="bg-win-blue text-white px-2 py-1 flex justify-between items-center mb-1">
+                    <span class="font-bold tracking-wider">System Properties</span>
+                    <button class="w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black">X</button>
+                </div>
+                
+                <!-- Tabs -->
+                <div class="flex px-2 pt-2 gap-1 relative top-[2px] z-10">
+                    <div class="bg-win-gray px-3 py-1 border-t-2 border-l-2 border-white border-r-2 border-r-black text-sm relative -bottom-[2px] pb-2 z-20 font-bold">General</div>
+                    <div class="bg-win-gray px-3 py-1 border-t-2 border-l-2 border-white border-r-2 border-r-black text-sm border-b border-b-black text-gray-600">Hardware</div>
+                    <div class="bg-win-gray px-3 py-1 border-t-2 border-l-2 border-white border-r-2 border-r-black text-sm border-b border-b-black text-gray-600">Advanced</div>
+                </div>
+
+                <div class="bg-win-gray border-2 border-white border-b-black border-r-black p-4 m-2 mt-0 shadow-win-out">
+                    <div class="flex gap-6 items-start">
+                        <div class="text-center">
+                            <i class="fa-brands fa-windows text-4xl text-win-teal mb-2"></i>
+                            <div class="text-xs">DevOS 98</div>
+                        </div>
+                        <div class="flex-grow space-y-4">
+                            <fieldset class="border-2 border-white border-b-gray-500 border-r-gray-500 p-2">
+                                <legend class="px-1 text-sm">System:</legend>
+                                <ul class="text-sm space-y-2">
+                                    <li class="flex items-center gap-2">
+                                        <span class="w-24">Frontend:</span> 
+                                        <div class="h-4 bg-white border border-gray-600 w-full relative">
+                                            <div class="absolute top-0 left-0 h-full bg-win-blue w-[90%]"></div>
+                                        </div>
+                                        <span>90%</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <span class="w-24">Backend:</span> 
+                                        <div class="h-4 bg-white border border-gray-600 w-full relative">
+                                            <div class="absolute top-0 left-0 h-full bg-win-blue w-[75%]"></div>
+                                        </div>
+                                        <span>75%</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <span class="w-24">Design:</span> 
+                                        <div class="h-4 bg-white border border-gray-600 w-full relative">
+                                            <div class="absolute top-0 left-0 h-full bg-win-blue w-[85%]"></div>
+                                        </div>
+                                        <span>85%</span>
+                                    </li>
+                                </ul>
+                            </fieldset>
+                            <div class="text-sm">
+                                Installed Components:<br>
+                                React.js, TailwindCSS, Node.js, SQL, Git
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4">
+                        <button class="w-20 py-1 bg-win-gray shadow-win-out active:shadow-win-in border-none font-bold text-sm">OK</button>
+                        <button class="w-20 py-1 bg-win-gray shadow-win-out active:shadow-win-in border-none font-bold text-sm">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: PROJECTS (File Explorer Style) -->
+            <div id="projects" class="bg-win-gray shadow-win-out p-1 relative z-10 w-full">
+                <div class="bg-win-dark text-white px-2 py-1 flex justify-between items-center mb-1">
+                    <span class="font-bold tracking-wider">C:\Users\Admin\Projects</span>
+                    <div class="flex gap-1">
+                         <button class="w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black">_</button>
+                         <button class="w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black">□</button>
+                         <button class="w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black">X</button>
+                    </div>
+                </div>
+                
+                <!-- Address Bar -->
+                <div class="flex gap-2 items-center px-2 py-1 border-b border-gray-400 mb-2">
+                    <span class="text-sm">Address:</span>
+                    <div class="bg-white border shadow-win-in flex-grow px-1 text-sm">C:\Projects\Web_Development</div>
+                </div>
+
+                <div class="bg-white border-2 border-win-dark shadow-win-in p-4 h-[500px] overflow-y-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Project Item 1 -->
+                        <div class="flex flex-col items-center gap-2 group cursor-pointer hover:bg-blue-100 p-2 border border-transparent hover:border-blue-300 hover:border-dashed">
+                            <div class="w-full h-32 bg-gray-200 border-2 border-win-out flex items-center justify-center relative overflow-hidden">
+                                <i class="fa-solid fa-gamepad text-6xl text-purple-600"></i>
+                                <div class="absolute bottom-0 w-full bg-win-blue text-white text-xs text-center py-1">GAME_V1.EXE</div>
+                            </div>
+                            <div class="text-center">
+                                <h3 class="font-bold text-sm">Retro Platformer</h3>
+                                <p class="text-xs text-gray-500">Javascript Game</p>
+                            </div>
+                        </div>
+
+                        <!-- Project Item 2 -->
+                        <div class="flex flex-col items-center gap-2 group cursor-pointer hover:bg-blue-100 p-2 border border-transparent hover:border-blue-300 hover:border-dashed">
+                             <div class="w-full h-32 bg-gray-200 border-2 border-win-out flex items-center justify-center relative overflow-hidden">
+                                <i class="fa-solid fa-cart-shopping text-6xl text-green-600"></i>
+                                <div class="absolute bottom-0 w-full bg-win-blue text-white text-xs text-center py-1">SHOP.HTML</div>
+                            </div>
+                            <div class="text-center">
+                                <h3 class="font-bold text-sm">E-Commerce</h3>
+                                <p class="text-xs text-gray-500">React + Firebase</p>
+                            </div>
+                        </div>
+
+                         <!-- Project Item 3 -->
+                        <div class="flex flex-col items-center gap-2 group cursor-pointer hover:bg-blue-100 p-2 border border-transparent hover:border-blue-300 hover:border-dashed">
+                             <div class="w-full h-32 bg-gray-200 border-2 border-win-out flex items-center justify-center relative overflow-hidden">
+                                <i class="fa-solid fa-palette text-6xl text-pink-600"></i>
+                                <div class="absolute bottom-0 w-full bg-win-blue text-white text-xs text-center py-1">ART.BMP</div>
+                            </div>
+                            <div class="text-center">
+                                <h3 class="font-bold text-sm">Design System</h3>
+                                <p class="text-xs text-gray-500">Figma / CSS</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-win-gray border-t border-white px-2 py-1 text-xs">
+                    3 object(s)
+                </div>
+            </div>
+
+            <!-- SECTION 5: CONTACT (Outlook Express Style) -->
+            <div id="contact" class="bg-win-gray shadow-win-out p-1 relative z-10 w-full md:w-3/4">
+                <div class="bg-gradient-to-r from-cyan-800 to-blue-800 text-white px-2 py-1 flex justify-between items-center mb-1">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                        <span class="font-bold tracking-wider">New Message - Outlook Express</span>
+                    </div>
+                    <button class="w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black">X</button>
+                </div>
+
+                <!-- Toolbar -->
+                <div class="flex gap-2 p-2 border-b border-gray-400 mb-2">
+                    <button class="flex flex-col items-center px-2 py-1 hover:bg-gray-300 border border-transparent hover:border-white hover:shadow-win-out active:shadow-win-in active:translate-y-px">
+                        <i class="fa-solid fa-paper-plane text-xl mb-1"></i>
+                        <span class="text-xs">Send</span>
+                    </button>
+                    <button class="flex flex-col items-center px-2 py-1 hover:bg-gray-300 border border-transparent hover:border-white hover:shadow-win-out active:shadow-win-in active:translate-y-px">
+                        <i class="fa-solid fa-paperclip text-xl mb-1"></i>
+                        <span class="text-xs">Attach</span>
+                    </button>
+                </div>
+                
+                <div class="bg-win-gray p-2 space-y-2">
+                    <div class="flex items-center gap-2">
+                        <label class="w-16 text-right text-sm">To:</label>
+                        <input type="text" value="admin@retro-sys.com" readonly class="flex-grow border shadow-win-in px-2 py-1 text-sm bg-gray-200">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="w-16 text-right text-sm">From:</label>
+                        <input type="text" placeholder="your@email.com" class="flex-grow border shadow-win-in px-2 py-1 text-sm focus:outline-none focus:bg-white bg-white">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="w-16 text-right text-sm">Subject:</label>
+                        <input type="text" placeholder="Project Inquiry..." class="flex-grow border shadow-win-in px-2 py-1 text-sm focus:outline-none focus:bg-white bg-white">
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full h-40 border shadow-win-in p-2 text-sm font-mono focus:outline-none resize-none" placeholder="Type your message here..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- End Container -->
+
+    </main>
+
+    <!-- TASKBAR -->
+    <footer class="h-10 bg-win-gray border-t-2 border-white flex items-center px-1 shadow-win-out z-50 fixed bottom-0 left-0 w-full">
+        <div class="relative group">
+            <button class="flex items-center gap-1 bg-win-gray shadow-win-out px-2 py-1 active:shadow-win-in font-bold mr-2 win-btn hover:bg-gray-300">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Windows_logo_and_wordmark_-_1995-2001.svg/1200px-Windows_logo_and_wordmark_-_1995-2001.svg.png" class="h-5 w-auto" alt="win-logo">
+                <span class="mt-1">Start</span>
+            </button>
+            <!-- Start Menu Popup (Simple CSS Hover) -->
+            <div class="absolute bottom-10 left-0 bg-win-gray shadow-win-out border-2 border-win-light w-48 hidden group-hover:block pl-6 py-1">
+                <div class="absolute left-0 bottom-0 w-6 h-full bg-win-blue flex items-end">
+                    <span class="text-white -rotate-90 text-lg font-bold mb-4 whitespace-nowrap">WINDOWS 95</span>
+                </div>
+                <div class="hover:bg-win-blue hover:text-white px-2 py-1 cursor-pointer flex items-center gap-2 text-sm"><i class="fa-solid fa-folder-tree"></i> Programs</div>
+                <div class="hover:bg-win-blue hover:text-white px-2 py-1 cursor-pointer flex items-center gap-2 text-sm"><i class="fa-solid fa-file"></i> Documents</div>
+                <div class="hover:bg-win-blue hover:text-white px-2 py-1 cursor-pointer flex items-center gap-2 text-sm"><i class="fa-solid fa-gear"></i> Settings</div>
+                <div class="border-t border-gray-500 my-1"></div>
+                <div class="hover:bg-win-blue hover:text-white px-2 py-1 cursor-pointer flex items-center gap-2 text-sm"><i class="fa-solid fa-power-off"></i> Shut Down...</div>
+            </div>
+        </div>
+        
+        <div class="w-[2px] h-6 bg-gray-400 mx-1 border-r border-white"></div>
+        
+        <!-- Active Window Tabs -->
+        <div class="hidden md:flex gap-1">
+            <div class="bg-gray-300 shadow-win-in px-3 py-1 flex items-center gap-2 w-32 text-xs font-bold cursor-default truncate">
+                <i class="fa-brands fa-windows"></i> Welcome...
+            </div>
+            <div class="bg-win-gray shadow-win-out px-3 py-1 flex items-center gap-2 w-32 text-xs cursor-pointer truncate active:shadow-win-in">
+                <i class="fa-solid fa-file-lines"></i> about_me...
+            </div>
+             <div class="bg-win-gray shadow-win-out px-3 py-1 flex items-center gap-2 w-32 text-xs cursor-pointer truncate active:shadow-win-in">
+                <i class="fa-solid fa-envelope"></i> Outlook...
+            </div>
+        </div>
+
+        <div class="flex-grow"></div>
+
+        <!-- System Tray -->
+        <div class="bg-win-gray shadow-win-in px-3 py-1 flex items-center gap-3 text-sm border-2 border-win-dark border-b-white border-r-white">
+            <i class="fa-solid fa-volume-high text-xs cursor-pointer"></i>
+            <span id="clock" class="font-pixel text-xs">12:00 PM</span>
+        </div>
+    </footer>
+
+    <script>
+        // Update Clock
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            const strTime = hours + ':' + minutes + ' ' + ampm;
+            document.getElementById('clock').innerText = strTime;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+            <!-- Back to Hub Bubble -->
+    <a href="../../index.html" class="fixed bottom-6 right-6 w-14 h-14 bg-white text-[#d4af37] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 hover:-translate-y-1 transition-all z-[9999] border-2 border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.4)] group">
+        <i class="fa-solid fa-house text-xl group-hover:text-yellow-600 transition-colors"></i>
+    </a>
+</body>
+</html>
+
+

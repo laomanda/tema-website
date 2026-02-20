@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statis - Theme Gallery</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['"Inter"', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-black': '#0a0a0a',
+                        'brand-dark': '#111111',
+                        'brand-gray': '#1f1f1f',
+                        'brand-gold': '#d4af37', // Gold accent
+                        'brand-gold-light': '#f3e5ab',
+                    },
+                    animation: {
+                        'gradient-x': 'gradient-x 15s ease infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        'gradient-x': {
+                            '0%, 100%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'left center'
+                            },
+                            '50%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'right center'
+                            },
+                        },
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Ambient Background */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            filter: blur(60px);
+        }
+
+        /* Glassmorphism Card */
+        .theme-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .theme-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+        }
+
+        .theme-card:hover .theme-preview {
+            transform: scale(1.05);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f1f1f;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+
+        /* Realistic Theme Specific Previews (CSS Mini Layouts) */
+        /* Modern: Dark Dashboard Style */
+        .preview-modern { background: #111; position: relative; }
+        .preview-modern::before { content: ''; position: absolute; top: 10px; left: 10px; right: 10px; height: 30px; background: rgba(255,255,255,0.05); border-radius: 6px; }
+        .preview-modern::after { content: ''; position: absolute; top: 50px; left: 10px; width: 40px; height: 100px; background: rgba(59, 130, 246, 0.4); border-radius: 6px; }
+        
+        /* Minimalist: White, Clean, Architecture */
+        .preview-minimalist { background: #ffffff; position: relative; border: 1px solid #eee;}
+        .preview-minimalist::before { content: ''; position: absolute; top: 20px; left: 20px; width: 30px; height: 4px; background: #000; }
+        .preview-minimalist::after { content: ''; position: absolute; bottom: 20px; right: 20px; width: 80px; height: 80px; background: #f0f0f0; }
+
+        /* Monochrome: High Contrast B&W */
+        .preview-monochrome { background: #000; position: relative; }
+        .preview-monochrome::before { content: ''; position: absolute; top: 0; left: 30%; width: 40%; height: 100%; background: #fff; }
+        .preview-monochrome::after { content: ''; position: absolute; top: 40%; left: 10%; width: 80%; height: 2px; background: #888; }
+
+        /* Neo-Brutalism: Bold borders, yellow/black */
+        .preview-neobrutalism { background: #ffd500; position: relative; border: 4px solid #000; }
+        .preview-neobrutalism::before { content: ''; position: absolute; top: 10px; left: 10px; width: 50px; height: 50px; background: #ff4757; border: 3px solid #000; border-radius: 50%; box-shadow: 4px 4px 0 #000; }
+        .preview-neobrutalism::after { content: ''; position: absolute; bottom: 10px; right: 10px; width: 80px; height: 30px; background: #00e5ff; border: 3px solid #000; box-shadow: 4px 4px 0 #000; }
+
+        /* Cyberpunk: Neon, Glitch */
+        .preview-cyberpunk { background: #050505; position: relative; border-left: 4px solid #fcee0a; overflow: hidden; }
+        .preview-cyberpunk::before { content: 'SYSTEM ERROR'; position: absolute; top: 30%; left: 5px; color: #ff003c; font-family: monospace; font-size: 10px; letter-spacing: 2px; text-shadow: 2px 0 #00f0ff; }
+        .preview-cyberpunk::after { content: ''; position: absolute; bottom: 10px; right: 10px; width: 40px; height: 40px; border: 2px solid #00f0ff; border-radius: 50%; border-top-color: transparent; animation: spin 2s linear infinite; }
+
+        /* Anime: Pink/Purple Gradient, Speed lines */
+        .preview-anime { background: linear-gradient(135deg, #ff0080, #7928ca); position: relative; }
+        .preview-anime::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 12px); }
+        .preview-anime::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; backdrop-filter: blur(4px); border: 2px solid rgba(255,255,255,0.5); }
+
+        /* Kartun: Dot pattern, bright colors */
+        .preview-kartun { background: #00e5ff; position: relative; border: 4px solid #000; background-image: radial-gradient(#000 15%, transparent 16%); background-size: 10px 10px; }
+        .preview-kartun::before { content: ''; position: absolute; bottom: -10px; right: 20px; width: 60px; height: 80px; background: #ff4757; border: 4px solid #000; border-radius: 30px 30px 0 0; }
+        
+        /* Makanan: Warm colors, soft shapes */
+        .preview-makanan { background: #fff5e6; position: relative; }
+        .preview-makanan::before { content: ''; position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: #ff6b81; border-radius: 50%; }
+        .preview-makanan::after { content: ''; position: absolute; bottom: 20px; left: 20px; width: 60px; height: 10px; background: #ffa502; border-radius: 10px; }
+
+        /* Immersive: Dark 3D Space */
+        .preview-immersive { background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%); position: relative; perspective: 100px; }
+        .preview-immersive::before { content: ''; position: absolute; inset: 20px; background: linear-gradient(to top, rgba(0, 255, 255, 0.2), transparent); transform: rotateX(60deg); border: 1px solid rgba(0,255,255,0.3); }
+
+        /* Retro: Vaporwave Sun and Grid */
+        .preview-retro { background: linear-gradient(to bottom, #110022 0%, #3a005c 50%, #ff00cc 100%); position: relative; overflow: hidden; }
+        .preview-retro::before { content: ''; position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); width: 80px; height: 80px; background: linear-gradient(to bottom, #ffeb3b, #ff0055); border-radius: 50%; box-shadow: 0 0 20px #ff0055; }
+        .preview-retro::after { content: ''; position: absolute; bottom: 0; left: -50%; width: 200%; height: 30%; background: repeating-linear-gradient(0deg, #00f0ff, #00f0ff 1px, transparent 1px, transparent 10px); transform: perspective(200px) rotateX(60deg); }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-gold selection:text-white">
+
+    <div class="ambient-bg"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-4 border-b border-white/5 bg-brand-black/50 backdrop-blur-lg">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="#" class="text-xl font-bold tracking-tighter flex items-center gap-2 group">
+                <div class="w-8 h-8 rounded bg-gradient-to-br from-brand-gold to-yellow-600 text-black flex items-center justify-center font-black group-hover:rotate-12 transition-transform">S</div>
+                <span>Statis.<span class="text-brand-gold-light font-normal">themes</span></span>
+            </a>
+            <div class="flex gap-4">
+                <a href="https://github.com" target="_blank" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white hover:text-black transition-colors">
+                    <i class="fa-brands fa-github text-lg"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-40 pb-20 px-6 min-h-screen flex flex-col justify-center items-center text-center">
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 leading-tight max-w-5xl mx-auto">
+            Build Faster With <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-brand-gold to-yellow-600 animate-gradient-x">
+                Beautiful Blocks.
+            </span>
+        </h1>
+        
+        <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-light">
+            A curated collection of highly aesthetic, purely static HTML/Tailwind themes. No complex setups, just copy, paste, and ship.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+            <a href="#collection" class="px-8 py-4 rounded-xl bg-gradient-to-r from-brand-gold to-yellow-600 text-black font-bold hover:brightness-110 transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)] flex items-center justify-center gap-2">
+                Explore Themes <i class="fa-solid fa-arrow-down text-sm"></i>
+            </a>
+            <a href="docs.html" class="px-8 py-4 rounded-xl bg-white/5 border border-brand-gold/30 text-brand-gold-light font-semibold hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-code"></i> View Documentation
+            </a>
+        </div>
+    </section>
+
+    <!-- Theme Gallery -->
+    <section id="collection" class="py-24 px-6 relative z-10 border-t border-white/5 bg-brand-dark">
+        <div class="max-w-7xl mx-auto">
+            
+            <div class="flex items-end justify-between mb-16">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight mb-2">The Collection</h2>
+                    <p class="text-gray-500">Select a theme to view the live demo.</p>
+                </div>
+                <div class="hidden md:flex gap-2" id="filter-buttons">
+                    <button onclick="filterThemes('all')" class="filter-btn active px-3 py-1 text-xs font-semibold bg-white/10 rounded-full border border-white/5 transition-colors">All</button>
+                    <button onclick="filterThemes('clean')" class="filter-btn px-3 py-1 text-xs font-semibold text-gray-400 hover:text-white rounded-full transition-colors">Clean</button>
+                    <button onclick="filterThemes('creative')" class="filter-btn px-3 py-1 text-xs font-semibold text-gray-400 hover:text-white rounded-full transition-colors">Creative</button>
+                </div>
+            </div>
+
+            <!-- Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="theme-grid">
+                
+                <!-- Cards will be injected by JS -->
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 border-t border-white/5 text-center text-sm text-gray-500 bg-brand-black">
+        <p>&copy; 2024 Statis. All rights reserved. Crafted with precision.</p>
+    </footer>
+
+    <script>
+        const themes = [
+            { id: 'modern', name: 'Modern', desc: 'Sleek gradients, glassmorphism, and analytics dashboard style.', icon: 'fa-chart-pie', cssClass: 'preview-modern', category: 'clean' },
+            { id: 'minimalist', name: 'Minimalist', desc: 'Ultra-clean, whitespace-heavy layout for architecture & design.', icon: 'fa-pen-nib', cssClass: 'preview-minimalist', category: 'clean' },
+            { id: 'monochrome', name: 'Monochrome', desc: 'High-contrast, black and white aesthetic for striking portfolios.', icon: 'fa-chess-board', cssClass: 'preview-monochrome', category: 'clean' },
+            { id: 'neo-brutalism', name: 'Neo-Brutalism', desc: 'Bold outlines, flat colors, and playful geometry.', icon: 'fa-shapes', cssClass: 'preview-neobrutalism', category: 'creative' },
+            { id: 'cyberpunk', name: 'Cyberpunk', desc: 'Neon lights, glitch effects, and futuristic UI.', icon: 'fa-microchip', cssClass: 'preview-cyberpunk', category: 'creative' },
+            { id: 'anime', name: 'Anime', desc: 'Vibrant pop-culture aesthetics with manga elements.', icon: 'fa-bolt', cssClass: 'preview-anime', category: 'creative' },
+            { id: 'kartun', name: 'Kartun', desc: 'Fun, colorful superhero comic book style.', icon: 'fa-mask', cssClass: 'preview-kartun', category: 'creative' },
+            { id: 'makanan', name: 'Makanan', desc: 'Warm palettes and appetizing layouts for culinary.', icon: 'fa-utensils', cssClass: 'preview-makanan', category: 'clean' },
+            { id: 'immersive', name: 'Immersive', desc: 'Deep, dark 3D-like experiences and WebGL aesthetics.', icon: 'fa-vr-cardboard', cssClass: 'preview-immersive', category: 'creative' },
+            { id: 'retro', name: 'Retro 80s', desc: 'Synthwave sunsets, neon grids, and nostalgic vibes.', icon: 'fa-gamepad', cssClass: 'preview-retro', category: 'creative' },
+        ];
+
+        const grid = document.getElementById('theme-grid');
+
+        function renderThemes(filter = 'all') {
+            grid.innerHTML = ''; // Clear current
+            
+            const filteredThemes = filter === 'all' ? themes : themes.filter(t => t.category === filter);
+
+            filteredThemes.forEach((theme, index) => {
+                const card = document.createElement('a');
+                card.href = `theme/${theme.id}/index.html`;
+                card.className = 'theme-card block rounded-2xl overflow-hidden group';
+                // Entrance animation
+                gsap.fromTo(card, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, delay: index * 0.05, ease: "power2.out" });
+
+                card.innerHTML = `
+                    <div class="h-48 w-full relative overflow-hidden ${theme.cssClass}">
+                        <!-- Hover Overlay with Icon -->
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 backdrop-blur-sm transition-all duration-300 z-10">
+                            <i class="fa-solid ${theme.icon} text-4xl text-white drop-shadow-2xl transform scale-50 group-hover:scale-100 transition-transform duration-300 delay-100"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold tracking-tight">${theme.name}</h3>
+                            <i class="fa-solid fa-arrow-right -rotate-45 text-gray-500 group-hover:text-white group-hover:rotate-0 transition-all duration-300"></i>
+                        </div>
+                        <p class="text-sm text-gray-400 line-clamp-2">${theme.desc}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Filter Logic
+        function filterThemes(category) {
+            // Update Buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.innerText.toLowerCase() === category) {
+                    btn.className = "filter-btn active px-3 py-1 text-xs font-semibold bg-white/10 rounded-full border border-white/5 transition-colors";
+                } else {
+                    btn.className = "filter-btn px-3 py-1 text-xs font-semibold text-gray-400 hover:text-white rounded-full transition-colors";
+                }
+            });
+
+            // Re-render
+            renderThemes(category);
+            ScrollTrigger.refresh();
+        }
+
+        // Initial render
+        renderThemes('all');
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.to("h1", { opacity: 1, y: 0, duration: 1, delay: 0.2, ease: "power3.out", startAt: { opacity: 0, y: 30 } });
+        gsap.to("p.text-xl", { opacity: 1, y: 0, duration: 1, delay: 0.4, ease: "power3.out", startAt: { opacity: 0, y: 20 } });
+        gsap.to(".flex-col.sm\\:flex-row", { opacity: 1, y: 0, duration: 1, delay: 0.6, ease: "power3.out", startAt: { opacity: 0, y: 20 } });
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEO-TOKYO // CYBERNETICS</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Three.js for 3D Elements -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Fonts: Orbitron (Headings), Share Tech Mono (Body/Code) -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'cyber': ['"Orbitron"', 'sans-serif'],
+                        'mono': ['"Share Tech Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'cp-yellow': '#fcee0a', // Cyberpunk Yellow
+                        'cp-blue': '#00f0ff',   // Cyan
+                        'cp-red': '#ff003c',    // Magenta/Red
+                        'cp-black': '#050505',
+                        'cp-dark': '#0a0a0a',
+                        'cp-gray': '#1a1a1a',
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1a1a1a 1px, transparent 1px), linear-gradient(to bottom, #1a1a1a 1px, transparent 1px)",
+                    },
+                    boxShadow: {
+                        'neon-blue': '0 0 10px #00f0ff, 0 0 20px #00f0ff',
+                        'neon-yellow': '0 0 10px #fcee0a, 0 0 20px #fcee0a',
+                        'neon-red': '0 0 10px #ff003c, 0 0 20px #ff003c',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* Scanline Overlay */
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.6;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000;
+            border-left: 1px solid #333;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fcee0a;
+            border: 2px solid #000;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff003c;
+        }
+
+        /* Cyberpunk Clip Path (Angled Corners) */
+        .clip-corner {
+            clip-path: polygon(
+                20px 0, 100% 0, 
+                100% calc(100% - 20px), calc(100% - 20px) 100%, 
+                0 100%, 0 20px
+            );
+        }
+        .clip-corner-sm {
+            clip-path: polygon(
+                10px 0, 100% 0, 
+                100% calc(100% - 10px), calc(100% - 10px) 100%, 
+                0 100%, 0 10px
+            );
+        }
+
+        /* Glitch Animation Keyframes */
+        @keyframes glitch-skew {
+            0% { transform: skew(0deg); }
+            10% { transform: skew(-2deg); }
+            20% { transform: skew(2deg); }
+            30% { transform: skew(-1deg); }
+            40% { transform: skew(1deg); }
+            50% { transform: skew(0deg); }
+            100% { transform: skew(0deg); }
+        }
+
+        .glitch-hover:hover {
+            animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+            color: #fcee0a;
+            text-shadow: 2px 0 #ff003c, -2px 0 #00f0ff;
+        }
+
+        /* Static Glitch Effect for Titles */
+        .glitch-static {
+            position: relative;
+        }
+        .glitch-static::before,
+        .glitch-static::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #050505;
+        }
+        .glitch-static::before {
+            left: 2px;
+            text-shadow: -1px 0 #00f0ff;
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+        .glitch-static::after {
+            left: -2px;
+            text-shadow: -1px 0 #ff003c;
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 30px, 0); }
+            20% { clip: rect(80px, 9999px, 100px, 0); }
+            40% { clip: rect(10px, 9999px, 50px, 0); }
+            60% { clip: rect(60px, 9999px, 80px, 0); }
+            80% { clip: rect(20px, 9999px, 40px, 0); }
+            100% { clip: rect(90px, 9999px, 110px, 0); }
+        }
+
+        /* Marquee Animation */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+    </style>
+</head>
+<body class="font-mono bg-grid-pattern bg-[length:40px_40px]">
+
+    <!-- Scanline Overlay -->
+    <div class="scanlines"></div>
+
+    <!-- 3D Background Canvas -->
+    <canvas id="webgl-canvas" class="fixed top-0 left-0 w-full h-full z-[-1] opacity-40 pointer-events-none"></canvas>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full z-50 p-4 border-b border-gray-800 bg-cp-black/90 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="#" class="text-2xl font-cyber font-bold italic tracking-tighter text-cp-yellow glitch-hover" data-text="NEO.IO">
+                NEO<span class="text-cp-blue">.IO</span>
+            </a>
+            
+            <div class="hidden md:flex gap-1">
+                <a href="#about" class="px-6 py-2 border-l border-gray-800 hover:bg-cp-blue hover:text-black transition-colors font-bold uppercase text-sm tracking-widest">System</a>
+                <a href="#augmentations" class="px-6 py-2 border-l border-gray-800 hover:bg-cp-red hover:text-black transition-colors font-bold uppercase text-sm tracking-widest">Augments</a>
+                <a href="#netrunners" class="px-6 py-2 border-l border-gray-800 hover:bg-cp-yellow hover:text-black transition-colors font-bold uppercase text-sm tracking-widest">Netrunners</a>
+                <a href="#uplink" class="px-6 py-2 border-l border-r border-gray-800 hover:bg-white hover:text-black transition-colors font-bold uppercase text-sm tracking-widest">Uplink</a>
+            </div>
+
+            <button class="md:hidden text-cp-yellow text-2xl"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- 1. HERO SECTION -->
+    <section class="min-h-screen flex items-center justify-center relative pt-20 overflow-hidden" id="hero">
+        <div class="absolute inset-0 z-0">
+             <!-- Decorative Grids -->
+             <div class="absolute top-1/4 left-10 w-24 h-24 border-t-2 border-l-2 border-cp-blue opacity-50"></div>
+             <div class="absolute bottom-1/4 right-10 w-24 h-24 border-b-2 border-r-2 border-cp-red opacity-50"></div>
+        </div>
+
+        <div class="text-center z-10 px-4 max-w-5xl">
+            <div class="inline-block px-4 py-1 border border-cp-yellow text-cp-yellow text-xs mb-6 tracking-[0.3em] font-bold bg-cp-yellow/10 clip-corner-sm">
+                SYSTEM STATUS: ONLINE
+            </div>
+            
+            <h1 class="text-6xl md:text-8xl lg:text-9xl font-cyber font-black leading-none mb-4 text-white glitch-static" data-text="WAKE UP">
+                WAKE UP
+            </h1>
+            <h1 class="text-6xl md:text-8xl lg:text-9xl font-cyber font-black leading-none mb-12 text-transparent bg-clip-text bg-gradient-to-r from-cp-blue via-white to-cp-red opacity-90">
+                SAMURAI
+            </h1>
+
+            <p class="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto bg-black/50 p-4 border-l-4 border-cp-yellow">
+                Kota masa depan menanti. Tingkatkan realitas Anda dengan teknologi cybernetic tercanggih di pasaran gelap.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                <a href="#augmentations" class="clip-corner px-8 py-4 bg-cp-yellow text-black font-cyber font-bold text-lg hover:bg-white hover:shadow-neon-yellow transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-microchip"></i> INSTALL UPGRADE
+                </a>
+                <a href="#uplink" class="clip-corner px-8 py-4 bg-transparent border-2 border-cp-red text-cp-red font-cyber font-bold text-lg hover:bg-cp-red hover:text-black hover:shadow-neon-red transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-terminal"></i> HACK SYSTEM
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee Divider -->
+    <div class="bg-cp-yellow text-black font-cyber font-bold py-3 border-y-4 border-black overflow-hidden relative z-20">
+        <div class="marquee-container">
+            <div class="marquee-content text-xl">
+                HIGH TECH LOW LIFE /// DATA BREACH DETECTED /// NEURAL LINK ESTABLISHED /// CYBERNETICS INSTALLED /// WELCOME TO NIGHT CITY /// 
+                HIGH TECH LOW LIFE /// DATA BREACH DETECTED /// NEURAL LINK ESTABLISHED /// CYBERNETICS INSTALLED /// WELCOME TO NIGHT CITY ///
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. THE SYSTEM (About) -->
+    <section id="about" class="py-24 relative border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                <!-- Image/Visual -->
+                <div class="relative group">
+                    <div class="absolute inset-0 bg-cp-blue transform translate-x-2 translate-y-2 clip-corner transition-transform group-hover:translate-x-4 group-hover:translate-y-4"></div>
+                    <div class="relative clip-corner bg-gray-900 border border-gray-700 overflow-hidden h-[400px] flex items-center justify-center">
+                        <!-- CSS Holomap -->
+                        <div class="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,240,255,0.05)_10px,rgba(0,240,255,0.05)_11px)]"></div>
+                        <div class="w-64 h-64 border-2 border-cp-blue/50 rounded-full relative animate-pulse flex items-center justify-center">
+                            <div class="absolute inset-x-0 top-1/2 h-px bg-cp-blue/50"></div>
+                            <div class="absolute inset-y-0 left-1/2 w-px bg-cp-blue/50"></div>
+                            <div class="w-48 h-48 border border-dashed border-cp-yellow/50 rounded-full animate-spin [animation-duration:10s]"></div>
+                            <div class="absolute top-10 right-10 text-xs text-cp-yellow font-mono">SECTOR_4</div>
+                            <div class="absolute bottom-10 left-10 text-xs text-cp-red font-mono">UNAUTHORIZED</div>
+                        </div>
+                        <div class="absolute bottom-4 right-4 text-4xl text-gray-800 font-black select-none">CITY_MAP</div>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div>
+                    <h2 class="text-cp-blue text-sm font-bold tracking-[0.5em] mb-2 uppercase flex items-center gap-2">
+                        <span class="w-4 h-4 bg-cp-blue block"></span> System_Log.txt
+                    </h2>
+                    <h3 class="text-4xl md:text-5xl font-cyber font-bold mb-6 text-white leading-tight">
+                        ARSITEK DAGING <br> & <span class="text-cp-red bg-white/10 px-2">DIGITAL</span>
+                    </h3>
+                    <p class="text-gray-400 text-lg mb-6 leading-relaxed">
+                        Di era di mana batas antara manusia dan mesin semakin kabur, kami menyediakan infrastruktur untuk evolusi Anda. Neo.IO bukan sekadar agensi; kami adalah operator di balik tirai realitas.
+                    </p>
+                    <ul class="space-y-4 font-mono text-sm text-cp-yellow">
+                        <li class="flex items-center gap-3">
+                            <i class="fa-solid fa-angle-right"></i> PROTOKOL KEAMANAN LEVEL 5
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fa-solid fa-angle-right"></i> INTEGRASI NEURAL JARINGAN
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fa-solid fa-angle-right"></i> MODIFIKASI TUBUH SIBERNETIK
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. AUGMENTATIONS (Services) -->
+    <section id="augmentations" class="py-24 bg-cp-gray/20 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-end mb-16 border-b border-gray-700 pb-4">
+                <div>
+                    <h2 class="text-4xl md:text-6xl font-cyber font-bold text-white mb-2">AUGMENTATIONS</h2>
+                    <p class="text-gray-500 font-mono">PILIH MODUL UPGRADE ANDA</p>
+                </div>
+                <div class="hidden md:block text-right">
+                    <div class="text-cp-red font-bold text-2xl animate-pulse">REC ●</div>
+                    <div class="text-xs text-gray-500">ENCRYPTION: ENABLED</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="clip-corner bg-black border border-gray-800 p-8 hover:border-cp-yellow transition-colors group relative">
+                    <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition-opacity">
+                        <i class="fa-solid fa-eye text-4xl text-cp-yellow"></i>
+                    </div>
+                    <h3 class="text-2xl font-cyber font-bold text-white mb-4 group-hover:text-cp-yellow">OPTICAL<br>IMPLANTS</h3>
+                    <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+                        Tingkatkan penglihatan Anda dengan overlay data real-time, zoom 100x, dan night vision termal.
+                    </p>
+                    <a href="#" class="inline-block text-cp-yellow font-bold text-sm tracking-widest hover:text-white border-b border-cp-yellow pb-1">ACCESS DATA >></a>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="clip-corner bg-black border border-gray-800 p-8 hover:border-cp-blue transition-colors group relative">
+                     <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition-opacity">
+                        <i class="fa-solid fa-brain text-4xl text-cp-blue"></i>
+                    </div>
+                    <h3 class="text-2xl font-cyber font-bold text-white mb-4 group-hover:text-cp-blue">NEURAL<br>LINKING</h3>
+                    <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+                        Terhubung langsung ke Net. Download skill baru dalam hitungan detik. Hati-hati dengan virus.
+                    </p>
+                    <a href="#" class="inline-block text-cp-blue font-bold text-sm tracking-widest hover:text-white border-b border-cp-blue pb-1">ACCESS DATA >></a>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="clip-corner bg-black border border-gray-800 p-8 hover:border-cp-red transition-colors group relative">
+                     <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition-opacity">
+                        <i class="fa-solid fa-hand-fist text-4xl text-cp-red"></i>
+                    </div>
+                    <h3 class="text-2xl font-cyber font-bold text-white mb-4 group-hover:text-cp-red">COMBAT<br>SYSTEMS</h3>
+                    <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+                        Refleks yang ditingkatkan, kulit titanium, dan senjata tersembunyi. Jadilah predator puncak.
+                    </p>
+                    <a href="#" class="inline-block text-cp-red font-bold text-sm tracking-widest hover:text-white border-b border-cp-red pb-1">ACCESS DATA >></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. VISUAL DATABASE (Gallery) -->
+    <section class="py-24 border-y border-gray-800 bg-black overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 mb-12">
+            <h2 class="text-3xl font-cyber text-center"><span class="text-cp-blue">///</span> VISUAL_DATABASE <span class="text-cp-blue">///</span></h2>
+        </div>
+
+        <!-- Horizontal Scrolling Content -->
+        <div class="flex gap-4 overflow-x-auto pb-8 px-6 hide-scroll snap-x">
+            <!-- Item 1 -->
+            <div class="min-w-[300px] md:min-w-[400px] snap-center clip-corner-sm bg-gray-900 border-2 border-gray-800 relative group overflow-hidden">
+                <div class="w-full h-64 bg-black flex flex-col items-center justify-center relative">
+                    <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(252,238,10,0.1)_50%)] bg-[size:100%_4px] opacity-20"></div>
+                     <i class="fa-solid fa-lock text-6xl text-cp-yellow mb-4 animate-bounce"></i>
+                     <span class="font-mono text-cp-yellow text-sm tracking-widest blink">ENCRYPTED</span>
+                </div>
+                <div class="p-4 border-t border-gray-800 bg-black/80 absolute bottom-0 w-full">
+                    <h4 class="text-cp-yellow font-bold">SECTOR 07</h4>
+                    <p class="text-xs text-gray-400">Night Market District</p>
+                </div>
+            </div>
+
+             <!-- Item 2 -->
+             <div class="min-w-[300px] md:min-w-[400px] snap-center clip-corner-sm bg-gray-900 border-2 border-gray-800 relative group overflow-hidden">
+                <div class="w-full h-64 bg-black flex flex-col items-center justify-center relative">
+                    <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,240,255,0.1)_50%)] bg-[size:100%_4px] opacity-20"></div>
+                    <div class="text-cp-blue font-mono text-center text-xs opacity-70">
+                        01001000 01100101<br>01111000 00100000<br>01000011 01101111
+                    </div>
+                    <div class="absolute inset-0 bg-cp-blue/5 animate-pulse"></div>
+                </div>
+                <div class="p-4 border-t border-gray-800 bg-black/80 absolute bottom-0 w-full">
+                    <h4 class="text-cp-blue font-bold">NEON ALLEY</h4>
+                    <p class="text-xs text-gray-400">Underground Network</p>
+                </div>
+            </div>
+
+             <!-- Item 3 -->
+             <div class="min-w-[300px] md:min-w-[400px] snap-center clip-corner-sm bg-gray-900 border-2 border-gray-800 relative group overflow-hidden">
+                <div class="w-full h-64 bg-black flex flex-col items-center justify-center relative">
+                    <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(255,0,60,0.1)_50%)] bg-[size:100%_4px] opacity-20"></div>
+                    <i class="fa-solid fa-triangle-exclamation text-6xl text-cp-red mb-4 animate-pulse"></i>
+                    <span class="font-mono text-cp-red text-sm tracking-widest">DANGER</span>
+                </div>
+                <div class="p-4 border-t border-gray-800 bg-black/80 absolute bottom-0 w-full">
+                    <h4 class="text-cp-red font-bold">DATA CORE</h4>
+                    <p class="text-xs text-gray-400">Server Farm Mainframe</p>
+                </div>
+            </div>
+
+             <!-- Item 4 -->
+             <div class="min-w-[300px] md:min-w-[400px] snap-center clip-corner-sm bg-gray-900 border-2 border-gray-800 relative group overflow-hidden">
+                <div class="w-full h-64 bg-black flex flex-col items-center justify-center relative">
+                     <div class="absolute inset-0 bg-[linear-gradient(45deg,transparent_40%,rgba(255,255,255,0.1)_40%,rgba(255,255,255,0.1)_60%,transparent_60%)] bg-[size:200%_200%] animate-[shimmer_2s_infinite]"></div>
+                     <span class="font-mono text-white text-4xl font-bold tracking-[0.5em] opacity-50">NULL</span>
+                </div>
+                <div class="p-4 border-t border-gray-800 bg-black/80 absolute bottom-0 w-full">
+                    <h4 class="text-white font-bold">THE VOID</h4>
+                    <p class="text-xs text-gray-400">Unknown Coordinates</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. NETRUNNERS (Team) -->
+    <section id="netrunners" class="py-24 relative">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-4xl font-cyber text-center mb-16 text-white">ELITE <span class="text-cp-yellow bg-black px-2">NETRUNNERS</span></h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Member 1 -->
+                <div class="bg-black border border-cp-blue/30 p-4 clip-corner-sm hover:border-cp-blue transition-all group">
+                    <div class="w-full h-48 bg-gray-900 mb-4 overflow-hidden flex items-center justify-center relative">
+                        <i class="fa-solid fa-user-secret text-8xl text-cp-blue opacity-80 group-hover:opacity-100 transition-opacity"></i>
+                        <div class="absolute inset-0 bg-scanlines opacity-20"></div>
+                    </div>
+                    <h3 class="text-white font-bold text-xl font-cyber">KAIRO</h3>
+                    <p class="text-cp-blue text-xs font-mono mb-4">LEAD HACKER</p>
+                    <div class="w-full bg-gray-800 h-1">
+                        <div class="bg-cp-blue h-full w-[90%]"></div>
+                    </div>
+                    <p class="text-[10px] text-right mt-1 text-gray-500">INT: 98%</p>
+                </div>
+
+                <!-- Member 2 -->
+                <div class="bg-black border border-cp-red/30 p-4 clip-corner-sm hover:border-cp-red transition-all group">
+                    <div class="w-full h-48 bg-gray-900 mb-4 overflow-hidden flex items-center justify-center relative">
+                        <i class="fa-solid fa-user-ninja text-8xl text-cp-red opacity-80 group-hover:opacity-100 transition-opacity"></i>
+                        <div class="absolute inset-0 bg-scanlines opacity-20"></div>
+                    </div>
+                    <h3 class="text-white font-bold text-xl font-cyber">NOVA</h3>
+                    <p class="text-cp-red text-xs font-mono mb-4">SECURITY OPS</p>
+                    <div class="w-full bg-gray-800 h-1">
+                        <div class="bg-cp-red h-full w-[85%]"></div>
+                    </div>
+                    <p class="text-[10px] text-right mt-1 text-gray-500">STR: 85%</p>
+                </div>
+
+                <!-- Member 3 -->
+                <div class="bg-black border border-cp-yellow/30 p-4 clip-corner-sm hover:border-cp-yellow transition-all group">
+                    <div class="w-full h-48 bg-gray-900 mb-4 overflow-hidden flex items-center justify-center relative">
+                        <i class="fa-solid fa-robot text-8xl text-cp-yellow opacity-80 group-hover:opacity-100 transition-opacity"></i>
+                        <div class="absolute inset-0 bg-scanlines opacity-20"></div>
+                    </div>
+                    <h3 class="text-white font-bold text-xl font-cyber">CIPHER</h3>
+                    <p class="text-cp-yellow text-xs font-mono mb-4">DATA BROKER</p>
+                    <div class="w-full bg-gray-800 h-1">
+                        <div class="bg-cp-yellow h-full w-[95%]"></div>
+                    </div>
+                    <p class="text-[10px] text-right mt-1 text-gray-500">CHR: 95%</p>
+                </div>
+
+                 <!-- Member 4 -->
+                 <div class="bg-black border border-white/30 p-4 clip-corner-sm hover:border-white transition-all group">
+                    <div class="w-full h-48 bg-gray-900 mb-4 overflow-hidden flex items-center justify-center relative">
+                        <i class="fa-solid fa-ghost text-8xl text-white opacity-80 group-hover:opacity-100 transition-opacity animate-pulse"></i>
+                        <div class="absolute inset-0 bg-scanlines opacity-20"></div>
+                    </div>
+                    <h3 class="text-white font-bold text-xl font-cyber">ECHO</h3>
+                    <p class="text-white text-xs font-mono mb-4">GHOST</p>
+                    <div class="w-full bg-gray-800 h-1">
+                        <div class="bg-white h-full w-[60%]"></div>
+                    </div>
+                    <p class="text-[10px] text-right mt-1 text-gray-500">STL: 100%</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. CREDITS (Pricing) -->
+    <section class="py-24 bg-cp-gray/10 border-t border-gray-800">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-cyber mb-4">CREDIT PACKAGES</h2>
+                <p class="text-gray-500 font-mono">SECURE TRANSACTION /// ANONYMOUS</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Plan 1 -->
+                <div class="border border-gray-700 p-8 clip-corner hover:border-cp-blue transition-colors text-center bg-black/50">
+                    <h3 class="text-cp-blue font-bold text-xl mb-4">STREET KID</h3>
+                    <div class="text-4xl font-mono font-bold text-white mb-6">€$ 500</div>
+                    <ul class="text-sm text-gray-400 space-y-4 mb-8 text-left font-mono">
+                        <li>[x] Basic Optic Jammer</li>
+                        <li>[x] 24h Support</li>
+                        <li>[ ] Neural Bypass</li>
+                    </ul>
+                    <button class="w-full py-2 border border-cp-blue text-cp-blue hover:bg-cp-blue hover:text-black transition-colors font-bold uppercase clip-corner-sm">PURCHASE</button>
+                </div>
+
+                <!-- Plan 2 -->
+                <div class="border-2 border-cp-yellow p-8 clip-corner transform md:-translate-y-4 bg-black relative">
+                    <div class="absolute top-0 right-0 bg-cp-yellow text-black text-xs font-bold px-2 py-1">BEST VALUE</div>
+                    <h3 class="text-cp-yellow font-bold text-xl mb-4">MERCENARY</h3>
+                    <div class="text-4xl font-mono font-bold text-white mb-6">€$ 2000</div>
+                    <ul class="text-sm text-gray-400 space-y-4 mb-8 text-left font-mono">
+                        <li>[x] Military Grade Tech</li>
+                        <li>[x] Priority Access</li>
+                        <li>[x] Neural Bypass Level 1</li>
+                    </ul>
+                    <button class="w-full py-2 bg-cp-yellow text-black hover:bg-white transition-colors font-bold uppercase clip-corner-sm">PURCHASE</button>
+                </div>
+
+                <!-- Plan 3 -->
+                <div class="border border-gray-700 p-8 clip-corner hover:border-cp-red transition-colors text-center bg-black/50">
+                    <h3 class="text-cp-red font-bold text-xl mb-4">CORPO</h3>
+                    <div class="text-4xl font-mono font-bold text-white mb-6">€$ 9999</div>
+                    <ul class="text-sm text-gray-400 space-y-4 mb-8 text-left font-mono">
+                        <li>[x] Experimental Tech</li>
+                        <li>[x] Dedicated Team</li>
+                        <li>[x] Total Immunity</li>
+                    </ul>
+                    <button class="w-full py-2 border border-cp-red text-cp-red hover:bg-cp-red hover:text-black transition-colors font-bold uppercase clip-corner-sm">PURCHASE</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. UPLINK (Contact) -->
+    <section id="uplink" class="min-h-screen flex items-center justify-center relative py-24">
+         <!-- Background Code Rain Effect (Static CSS implementation for simplicity) -->
+         <div class="absolute inset-0 bg-black overflow-hidden z-[-1]">
+             <div class="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-cp-green to-transparent opacity-20"></div>
+             <div class="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-cp-green to-transparent opacity-20"></div>
+         </div>
+
+        <div class="max-w-4xl w-full mx-auto px-6 relative z-10">
+            <div class="clip-corner bg-gray-900/80 border-2 border-cp-yellow p-8 md:p-12 backdrop-blur-md">
+                <div class="flex justify-between items-start mb-8 border-b border-gray-700 pb-4">
+                    <h2 class="text-3xl md:text-5xl font-cyber text-white">ESTABLISH UPLINK</h2>
+                    <div class="text-right font-mono text-xs text-cp-yellow animate-pulse">
+                        CONNECTION: SECURE<br>
+                        PING: 2ms
+                    </div>
+                </div>
+
+                <form class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="relative group">
+                            <label class="text-xs text-cp-blue font-bold mb-1 block uppercase">Codename</label>
+                            <input type="text" class="w-full bg-black border border-gray-600 p-3 text-white focus:outline-none focus:border-cp-blue focus:shadow-neon-blue transition-all font-mono clip-corner-sm" placeholder="e.g. Ghost">
+                        </div>
+                        <div class="relative group">
+                            <label class="text-xs text-cp-blue font-bold mb-1 block uppercase">Frequency (Email)</label>
+                            <input type="email" class="w-full bg-black border border-gray-600 p-3 text-white focus:outline-none focus:border-cp-blue focus:shadow-neon-blue transition-all font-mono clip-corner-sm" placeholder="ghost@net.io">
+                        </div>
+                    </div>
+                    <div class="relative group">
+                        <label class="text-xs text-cp-blue font-bold mb-1 block uppercase">Encrypted Message</label>
+                        <textarea rows="4" class="w-full bg-black border border-gray-600 p-3 text-white focus:outline-none focus:border-cp-blue focus:shadow-neon-blue transition-all font-mono clip-corner-sm resize-none" placeholder="Enter data packet..."></textarea>
+                    </div>
+
+                    <button type="button" class="w-full py-4 bg-cp-yellow text-black font-cyber font-bold text-xl uppercase tracking-widest hover:bg-white hover:shadow-neon-yellow transition-all clip-corner">
+                        TRANSMIT DATA
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black border-t border-gray-800 py-12 font-mono text-xs">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-gray-500">
+                <p>NEO.IO SYSTEMS © 2077</p>
+                <p>NO UNAUTHORIZED ACCESS.</p>
+            </div>
+            <div class="flex gap-6 text-xl">
+                <a href="#" class="text-gray-500 hover:text-cp-blue transition-colors"><i class="fa-brands fa-discord"></i></a>
+                <a href="#" class="text-gray-500 hover:text-cp-red transition-colors"><i class="fa-brands fa-github"></i></a>
+                <a href="#" class="text-gray-500 hover:text-cp-yellow transition-colors"><i class="fa-brands fa-twitter"></i></a>
+            </div>
+            <div class="text-right text-gray-600">
+                <p>STATUS: <span class="text-green-500">OPTIMAL</span></p>
+                <p>LOCATION: NIGHT CITY</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Three.js Digital Rain / Particles ---
+        const initThreeJS = () => {
+            const canvas = document.querySelector('#webgl-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            // Particles - Neon Rain
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 1500;
+            
+            const posArray = new Float32Array(particlesCount * 3);
+            const colorsArray = new Float32Array(particlesCount * 3); // For multicolor
+            
+            for(let i = 0; i < particlesCount * 3; i+=3) {
+                posArray[i] = (Math.random() - 0.5) * 20; // x
+                posArray[i+1] = (Math.random() - 0.5) * 20; // y
+                posArray[i+2] = (Math.random() - 0.5) * 20; // z
+
+                // Randomly assign Neon Yellow or Cyan
+                if (Math.random() > 0.5) {
+                    colorsArray[i] = 1; colorsArray[i+1] = 0.93; colorsArray[i+2] = 0.04; // Yellow
+                } else {
+                    colorsArray[i] = 0; colorsArray[i+1] = 0.94; colorsArray[i+2] = 1; // Cyan
+                }
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+            
+            const material = new THREE.PointsMaterial({
+                size: 0.03,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+            });
+            
+            const particlesMesh = new THREE.Points(particlesGeometry, material);
+            scene.add(particlesMesh);
+            
+            camera.position.z = 5;
+
+            // Animation
+            const animate = () => {
+                requestAnimationFrame(animate);
+                
+                // Falling effect
+                particlesMesh.rotation.y += 0.002;
+                const positions = particlesGeometry.attributes.position.array;
+                
+                for(let i = 1; i < particlesCount * 3; i+=3) {
+                    positions[i] -= 0.02; // Move down
+                    if (positions[i] < -10) {
+                        positions[i] = 10; // Reset to top
+                    }
+                }
+                particlesGeometry.attributes.position.needsUpdate = true;
+
+                renderer.render(scene, camera);
+            };
+            
+            animate();
+
+            // Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        initThreeJS();
+
+        // --- GSAP Animations ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Glitch reveal for sections
+        gsap.utils.toArray('section').forEach(section => {
+            gsap.from(section.children, {
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                },
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.2,
+                ease: "power2.out"
+            });
+        });
+
+        // Hover Effect for Glitch Text
+        const glitchTexts = document.querySelectorAll('.glitch-hover');
+        glitchTexts.forEach(text => {
+            text.addEventListener('mouseover', () => {
+                gsap.to(text, { skewX: 10, duration: 0.1, yoyo: true, repeat: 5 });
+            });
+        });
+
+    </script>
+            <!-- Back to Hub Bubble -->
+    <a href="../../index.html" class="fixed bottom-6 right-6 w-14 h-14 bg-white text-[#d4af37] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 hover:-translate-y-1 transition-all z-[9999] border-2 border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.4)] group">
+        <i class="fa-solid fa-house text-xl group-hover:text-yellow-600 transition-colors"></i>
+    </a>
+</body>
+</html>
+
+

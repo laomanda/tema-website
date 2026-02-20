@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS - SaaS Analytics Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter for UI, Space Grotesk for Headings -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['"Inter"', 'sans-serif'],
+                        'heading': ['"Space Grotesk"', 'sans-serif'],
+                    },
+                    colors: {
+                        'nexus-dark': '#0f172a', /* Slate 900 */
+                        'nexus-card': '#1e293b', /* Slate 800 */
+                        'nexus-accent': '#3b82f6', /* Blue 500 */
+                        'nexus-purple': '#8b5cf6', /* Violet 500 */
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f172a; /* nexus-dark */
+            color: #f8fafc; /* slate-50 */
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.6); /* slate-800 with opacity */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .glass-sidebar {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Ambient Glow */
+        .glow-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 40%);
+        }
+
+        /* CSS Chart Utilities */
+        .bar-chart-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            height: 100%;
+        }
+        .bar-fill {
+            width: 100%;
+            background: linear-gradient(to top, #3b82f6, #60a5fa);
+            border-radius: 4px 4px 0 0;
+            transition: height 1s ease-out;
+            position: relative;
+        }
+        .bar-fill:hover {
+            background: linear-gradient(to top, #8b5cf6, #a78bfa);
+        }
+        
+        .area-chart {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(59, 130, 246, 0.5), transparent);
+            clip-path: polygon(0% 100%, 0% 80%, 15% 60%, 30% 70%, 50% 40%, 70% 50%, 85% 20%, 100% 30%, 100% 100%);
+        }
+        
+        .area-chart-line {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border-top: 2px solid #3b82f6; /* Visual hack for spline */
+            position: absolute;
+            top: 0; left: 0;
+            clip-path: polygon(0% 100%, 0% 80%, 15% 60%, 30% 70%, 50% 40%, 70% 50%, 85% 20%, 100% 30%, 100% 100%);
+            /* In a pure CSS setup without SVG, perfectly tracking the top edge of a polygon area with a line is very complex. 
+               We rely on the colored area block for the visual mass instead. */
+        }
+
+        /* Conic Gradient for Donut Chart */
+        .donut-chart {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(#3b82f6 0% 65%, #8b5cf6 65% 85%, #334155 85% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .donut-inner {
+            width: 90px;
+            height: 90px;
+            background: #1e293b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+    </style>
+</head>
+<body class="selection:bg-nexus-accent selection:text-white">
+
+    <div class="glow-bg"></div>
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- SIDEBAR -->
+        <aside class="hidden lg:flex flex-col w-64 glass-sidebar h-full relative z-20 shrink-0">
+            <!-- Logo area -->
+            <div class="h-20 flex items-center px-6 border-b border-white/5">
+                <div class="flex items-center gap-3 w-full">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-nexus-accent to-nexus-purple flex items-center justify-center font-heading font-bold text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                        N
+                    </div>
+                    <span class="font-heading font-bold text-xl tracking-wide">NEXUS</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="flex-1 overflow-y-auto py-6 px-4 space-y-1" id="sidebar-menu">
+                <p class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Main Menu</p>
+                <a href="#dashboard" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium mb-1 transition-colors bg-nexus-accent/10 border border-nexus-accent/20 text-nexus-accent">
+                    <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
+                </a>
+                <a href="#analytics" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg border border-transparent text-slate-400 hover:text-white hover:bg-white/5 font-medium transition-colors">
+                    <i class="fa-solid fa-chart-line w-5 text-center"></i> Analytics
+                </a>
+                <a href="#campaigns" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg border border-transparent text-slate-400 hover:text-white hover:bg-white/5 font-medium transition-colors">
+                    <i class="fa-solid fa-bullhorn w-5 text-center"></i> Campaigns
+                </a>
+                <a href="#users" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg border border-transparent text-slate-400 hover:text-white hover:bg-white/5 font-medium transition-colors">
+                    <i class="fa-solid fa-users w-5 text-center"></i> Audience
+                </a>
+                
+                <p class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mt-8 mb-2">Settings</p>
+                <a href="#preferences" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg border border-transparent text-slate-400 hover:text-white hover:bg-white/5 font-medium transition-colors">
+                    <i class="fa-solid fa-gear w-5 text-center"></i> Preferences
+                </a>
+                <a href="#security" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg border border-transparent text-slate-400 hover:text-white hover:bg-white/5 font-medium transition-colors">
+                    <i class="fa-solid fa-shield-halved w-5 text-center"></i> Security
+                </a>
+            </div>
+
+            <!-- User Profile Snippet -->
+            <div class="p-4 border-t border-white/5">
+                <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl cursor-pointer hover:bg-white/10 transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 flex items-center justify-center text-slate-900 font-bold">
+                        JD
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-sm font-semibold text-white whitespace-nowrap overflow-hidden text-ellipsis">John Doe</p>
+                        <p class="text-xs text-slate-400">Pro Plan</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN LAYOUT -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+            
+            <!-- Mobile Header -->
+            <header class="lg:hidden h-16 flex items-center justify-between px-4 glass-panel z-30 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded bg-nexus-accent flex items-center justify-center font-heading font-bold">N</div>
+                    <span class="font-heading font-bold text-lg">NEXUS</span>
+                </div>
+                <button class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </header>
+
+            <!-- Top Navbar (Desktop) -->
+            <header class="hidden lg:flex h-20 items-center justify-between px-8 z-10">
+                <div>
+                    <h1 class="text-2xl font-heading font-bold">Overview</h1>
+                    <p class="text-sm text-slate-500">Welcome back, John. Here's what's happening today.</p>
+                </div>
+                
+                <div class="flex items-center gap-6">
+                    <!-- Search -->
+                    <div class="relative">
+                        <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                        <input type="text" placeholder="Search data..." class="bg-nexus-dark border border-white/10 text-white text-sm rounded-full focus:ring-nexus-accent focus:border-nexus-accent block w-64 pl-10 p-2.5 transition-all outline-none">
+                    </div>
+                    
+                    <!-- Notifications -->
+                    <button class="relative text-slate-400 hover:text-white transition-colors">
+                        <i class="fa-regular fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-nexus-accent opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-nexus-accent"></span>
+                        </span>
+                    </button>
+                    
+                    <button class="px-5 py-2.5 text-sm font-semibold bg-white text-nexus-dark rounded-full hover:scale-105 transition-transform">
+                        Upgrade
+                    </button>
+                </div>
+            </header>
+
+            <!-- Scrollable Content Area -->
+            <div class="flex-1 overflow-y-auto p-4 lg:p-8" id="main-scroll">
+                <div class="max-w-7xl mx-auto space-y-6 pb-24">
+                    
+                    <!-- 1. STATS ROW Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Stat Card 1 -->
+                        <div class="glass-panel p-6 rounded-2xl animate-widget" style="opacity: 0;">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-slate-400 mb-1">Total Revenue</p>
+                                    <h3 class="text-2xl font-bold font-heading">$84,235.00</h3>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-nexus-accent/10 flex items-center justify-center text-nexus-accent">
+                                    <i class="fa-solid fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm">
+                                <span class="text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-md font-medium"><i class="fa-solid fa-arrow-up mr-1 text-xs"></i> 12.5%</span>
+                                <span class="text-slate-500">vs last month</span>
+                            </div>
+                        </div>
+
+                        <!-- Stat Card 2 -->
+                        <div class="glass-panel p-6 rounded-2xl animate-widget" style="opacity: 0; animation-delay: 0.1s;">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-slate-400 mb-1">Active Sessions</p>
+                                    <h3 class="text-2xl font-bold font-heading">3,542</h3>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-nexus-purple/10 flex items-center justify-center text-nexus-purple">
+                                    <i class="fa-solid fa-users"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm">
+                                <span class="text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-md font-medium"><i class="fa-solid fa-arrow-up mr-1 text-xs"></i> 8.2%</span>
+                                <span class="text-slate-500">vs last month</span>
+                            </div>
+                        </div>
+
+                        <!-- Stat Card 3 -->
+                        <div class="glass-panel p-6 rounded-2xl animate-widget" style="opacity: 0; animation-delay: 0.2s;">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-slate-400 mb-1">Conversion Rate</p>
+                                    <h3 class="text-2xl font-bold font-heading">4.6%</h3>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-500">
+                                    <i class="fa-solid fa-bolt"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm">
+                                <span class="text-red-400 bg-red-400/10 px-2 py-0.5 rounded-md font-medium"><i class="fa-solid fa-arrow-down mr-1 text-xs"></i> 1.2%</span>
+                                <span class="text-slate-500">vs last month</span>
+                            </div>
+                        </div>
+
+                        <!-- Stat Card 4 -->
+                        <div class="glass-panel p-6 rounded-2xl animate-widget" style="opacity: 0; animation-delay: 0.3s;">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-slate-400 mb-1">Server Traffic</p>
+                                    <h3 class="text-2xl font-bold font-heading">154.5 GB</h3>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                                    <i class="fa-solid fa-server"></i>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-700/50 rounded-full h-1.5 mt-4">
+                                <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 65%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. MAIN CHARTS ROW -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <!-- Large Area Chart -->
+                        <div class="lg:col-span-2 glass-panel p-6 rounded-2xl flex flex-col min-h-[400px] animate-widget" style="opacity: 0;">
+                            <div class="flex justify-between items-center mb-8">
+                                <div>
+                                    <h3 class="font-bold text-lg">Acquisition Overview</h3>
+                                    <p class="text-sm text-slate-400">Monthly traffic volume by channel.</p>
+                                </div>
+                                <select class="bg-nexus-dark border border-white/10 text-white text-sm rounded-lg focus:ring-nexus-accent font-medium block p-2 outline-none">
+                                    <option>Last 30 Days</option>
+                                    <option>This Year</option>
+                                </select>
+                            </div>
+                            
+                            <!-- CSS Area Chart Container -->
+                            <div class="relative flex-1 w-full border-b border-l border-white/10 pb-4 pl-4 pt-10">
+                                <!-- Y-Axis Labels -->
+                                <div class="absolute left-[-25px] top-0 bottom-4 flex flex-col justify-between text-xs text-slate-500 pb-2">
+                                    <span>10k</span>
+                                    <span>5k</span>
+                                    <span>0</span>
+                                </div>
+                                <!-- Grid Lines -->
+                                <div class="absolute inset-0 pt-10 pb-4 pl-4 pointer-events-none flex flex-col justify-between">
+                                    <div class="w-full border-b border-white/5 border-dashed"></div>
+                                    <div class="w-full border-b border-white/5 border-dashed"></div>
+                                    <div class="w-full"></div>
+                                </div>
+                                
+                                <!-- The CSS Shape -->
+                                <div class="relative w-full h-full pb-0 flex items-end">
+                                     <div class="area-chart"></div>
+                                </div>
+
+                                <!-- X-Axis Labels -->
+                                <div class="absolute bottom-[-25px] left-4 right-0 flex justify-between text-xs text-slate-500 pt-2 px-2">
+                                    <span>Jan</span>
+                                    <span>Feb</span>
+                                    <span>Mar</span>
+                                    <span>Apr</span>
+                                    <span>May</span>
+                                    <span>Jun</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Donut Chart & List -->
+                        <div class="glass-panel p-6 rounded-2xl flex flex-col animate-widget" style="opacity: 0;">
+                             <div class="mb-6">
+                                <h3 class="font-bold text-lg">Traffic Sources</h3>
+                                <p class="text-sm text-slate-400">Where visitors come from.</p>
+                            </div>
+
+                            <div class="flex justify-center mb-8">
+                                <div class="donut-chart transition-transform hover:scale-105 duration-300">
+                                    <div class="donut-inner flex flex-col items-center">
+                                        <span class="text-2xl font-bold font-heading">65%</span>
+                                        <span class="text-[10px] text-slate-400 uppercase tracking-widest">Organic</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4 flex-1">
+                                <div class="flex justify-between items-center text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-nexus-accent"></span>
+                                        <span>Organic Search</span>
+                                    </div>
+                                    <span class="font-bold">65%</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-nexus-purple"></span>
+                                        <span>Direct</span>
+                                    </div>
+                                    <span class="font-bold">20%</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-slate-600"></span>
+                                        <span>Referral</span>
+                                    </div>
+                                    <span class="font-bold">15%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. BOTTOM ROW: Bar Charts & Activity -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        
+                        <!-- Bar Chart -->
+                        <div class="glass-panel p-6 rounded-2xl min-h-[300px] flex flex-col animate-widget" style="opacity: 0;">
+                            <div class="flex justify-between items-center mb-8">
+                                <div>
+                                    <h3 class="font-bold text-lg">Weekly Performance</h3>
+                                </div>
+                            </div>
+                            <div class="flex-1 w-full border-b border-white/10 pb-2 relative">
+                                <div class="bar-chart-container h-48 w-full pt-4 px-2 justify-between">
+                                    <!-- Bars (Heights set via data attribute for GSAP) -->
+                                    <div class="w-full h-full flex items-end justify-center group"><div class="bar-fill" data-height="40%"></div></div>
+                                    <div class="w-full h-full flex items-end justify-center group"><div class="bar-fill" data-height="70%"></div></div>
+                                    <div class="w-full h-full flex items-end justify-center group"><div class="bar-fill" data-height="55%"></div></div>
+                                    <div class="w-full h-full flex items-end justify-center group"><div class="bar-fill bg-gradient-to-t from-nexus-purple to-pink-500" data-height="90%"></div></div>
+                                    <div class="w-full h-full flex items-end justify-center group"><div class="bar-fill" data-height="60%"></div></div>
+                                    <div class="w-full h-full flex items-end justify-center group"><div class="bar-fill" data-height="30%"></div></div>
+                                    <div class="w-full h-full flex items-end justify-center group"><div class="bar-fill" data-height="50%"></div></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between text-xs text-slate-500 mt-2 px-4">
+                                <span>Mon</span><span>Tue</span><span>Wed</span><span class="text-white font-bold">Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                            </div>
+                        </div>
+
+                        <!-- Activity Feed -->
+                        <div class="glass-panel p-6 rounded-2xl animate-widget" style="opacity: 0;">
+                            <h3 class="font-bold text-lg mb-6">Recent Activity</h3>
+                            <div class="space-y-6">
+                                <!-- Item 1 -->
+                                <div class="flex gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                                        <i class="fa-solid fa-arrow-trend-up"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium">New subscription via <span class="text-white">Stripe</span></p>
+                                        <p class="text-xs text-slate-500 mt-1">2 minutes ago</p>
+                                    </div>
+                                    <div class="ml-auto font-bold text-emerald-400 text-sm">+$49.00</div>
+                                </div>
+                                <!-- Item 2 -->
+                                <div class="flex gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-nexus-accent/20 text-nexus-accent flex items-center justify-center shrink-0 border border-nexus-accent/30">
+                                        <i class="fa-solid fa-user-plus"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium">User <span class="text-white">alex_dev</span> registered</p>
+                                        <p class="text-xs text-slate-500 mt-1">1 hour ago</p>
+                                    </div>
+                                </div>
+                                <!-- Item 3 -->
+                                <div class="flex gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center shrink-0 border border-pink-500/30">
+                                        <i class="fa-solid fa-triangle-exclamation"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-300">Server CPU load exceeded 80%</p>
+                                        <p class="text-xs text-slate-500 mt-1">5 hours ago</p>
+                                    </div>
+                                </div>
+                                <!-- Item 4 -->
+                                <div class="flex gap-4 pt-2">
+                                    <button class="w-full py-2.5 rounded-lg border border-white/10 text-sm text-slate-300 hover:bg-white/5 transition-colors">
+                                        View All Logs
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Back to Hub Bubble -->
+    <a href="../../index.html" class="fixed bottom-6 right-6 w-14 h-14 bg-white text-[#d4af37] cursor-pointer rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-110 hover:-translate-y-1 transition-all z-[9999] border-2 border-white/50 group">
+        <i class="fa-solid fa-house text-xl text-nexus-dark group-hover:text-[#d4af37] transition-colors"></i>
+    </a>
+
+    <script>
+        // GSAP Animations
+        // Entrance animation for all widgets
+        document.addEventListener("DOMContentLoaded", (event) => {
+            gsap.fromTo(".animate-widget", 
+                { opacity: 0, y: 30 }, 
+                { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: "power3.out" }
+            );
+            
+            // Animation for bar charts (grow from bottom)
+            gsap.fromTo(".bar-fill",
+                { height: "0%" },
+                { 
+                    height: function(index, target) { 
+                        return target.getAttribute('data-height'); 
+                    }, 
+                    duration: 1.5, 
+                    stagger: 0.1, 
+                    ease: "bounce.out", 
+                    delay: 0.5 
+                }
+            );
+            
+            // Area chart sweep effect
+            gsap.fromTo(".area-chart",
+                { clipPath: "polygon(0% 100%, 0% 100%, 0% 100%, 0% 100%, 0% 100%, 0% 100%, 0% 100%, 0% 100%, 0% 100%)" },
+                { clipPath: "polygon(0% 100%, 0% 80%, 15% 60%, 30% 70%, 50% 40%, 70% 50%, 85% 20%, 100% 30%, 100% 100%)", duration: 1.5, ease: "power2.inOut", delay: 0.8}
+            );
+
+            // Sidebar Menu Interaction
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active from all
+                    navItems.forEach(nav => {
+                        nav.classList.remove('active', 'bg-nexus-accent/10', 'border-nexus-accent/20', 'text-nexus-accent');
+                        nav.classList.add('border-transparent', 'text-slate-400', 'hover:text-white', 'hover:bg-white/5');
+                        // Remove border if exists
+                        nav.style.borderColor = 'transparent';
+                    });
+                    
+                    // Add active to clicked
+                    this.classList.remove('border-transparent', 'text-slate-400', 'hover:text-white', 'hover:bg-white/5');
+                    this.classList.add('active', 'bg-nexus-accent/10', 'border-nexus-accent/20', 'text-nexus-accent');
+                    // Ensure tailwind border color applies immediately
+                    this.style.borderColor = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

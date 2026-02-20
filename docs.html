@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statis - Theme Documentation</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['"Inter"', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-black': '#0a0a0a',
+                        'brand-dark': '#111111',
+                        'brand-gray': '#1f1f1f',
+                        'brand-gold': '#d4af37',
+                        'brand-gold-light': '#f3e5ab',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #ffffff;
+            scroll-behavior: smooth;
+        }
+
+        /* Ambient Background */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            filter: blur(60px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #1f1f1f; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-gold selection:text-white">
+
+    <div class="ambient-bg"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-4 border-b border-white/5 bg-brand-black/50 backdrop-blur-lg">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold tracking-tighter flex items-center gap-2 group">
+                <div class="w-8 h-8 rounded bg-gradient-to-br from-brand-gold to-yellow-600 text-black flex items-center justify-center font-black group-hover:-rotate-12 transition-transform">
+                    <i class="fa-solid fa-arrow-left text-sm"></i>
+                </div>
+                <span>Statis.<span class="text-brand-gold-light font-normal text-sm ml-1">Documentation</span></span>
+            </a>
+            <a href="index.html" class="px-4 py-2 rounded-lg bg-white/5 border border-brand-gold/20 text-brand-gold hover:bg-white/10 transition-colors text-sm font-medium">
+                Kembali ke Hub
+            </a>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto pt-32 pb-24 px-6 flex flex-col md:flex-row gap-12">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="md:w-1/4 shrink-0">
+            <div class="sticky top-32 bg-brand-dark border border-white/5 rounded-2xl p-6">
+                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Daftar Isi</h3>
+                <ul class="space-y-3">
+                    <li><a href="#intro" class="text-gray-300 hover:text-brand-gold transition-colors font-medium">1. Pendahuluan</a></li>
+                    <li><a href="#tech" class="text-gray-300 hover:text-brand-gold transition-colors font-medium">2. Teknologi yang Digunakan</a></li>
+                    <li><a href="#structure" class="text-gray-300 hover:text-brand-gold transition-colors font-medium">3. Struktur Direktori Tema</a></li>
+                    <li><a href="#how-to" class="text-gray-300 hover:text-brand-gold transition-colors font-medium">4. Menggunakan Tema</a></li>
+                    <li><a href="#placeholders" class="text-brand-gold font-medium">5. CSS/SVG Placeholders</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="md:w-3/4 space-y-16">
+            
+            <!-- Intro Section -->
+            <section id="intro" class="scroll-mt-32">
+                <div class="inline-block px-3 py-1 bg-brand-gold/10 text-brand-gold text-xs font-bold rounded-full mb-4 border border-brand-gold/20">DOCUMENTATION V1.0</div>
+                <h1 class="text-4xl md:text-5xl font-black tracking-tight mb-6 leading-tight">Selamat Datang di <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-brand-gold">Statis Theme Gallery</span></h1>
+                <p class="text-gray-400 text-lg leading-relaxed">
+                    Statis adalah koleksi berisi 10 tema *front-end* premium yang dibuat secara eksklusif menggunakan HTML murni, CSS/Tailwind, dan JavaScript "Vanilla" statis. Semua direktori sepenuhnya **berdiri sendiri (standalone)** tanpa memerlukan server lokal, build-tools, atau npm untuk segera dilihat.
+                </p>
+            </section>
+
+            <!-- Tech Section -->
+            <section id="tech" class="scroll-mt-32 border-t border-white/5 pt-12">
+                <h2 class="text-3xl font-bold mb-6">Teknologi yang Digunakan</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-brand-gray p-6 rounded-xl border border-white/5">
+                        <i class="fa-brands fa-html5 text-3xl text-[#E34F26] mb-4"></i>
+                        <h4 class="font-bold text-lg mb-2">HTML5</h4>
+                        <p class="text-sm text-gray-400">Kerangka dan Markup semantik bebas error untuk SEO.</p>
+                    </div>
+                    <div class="bg-brand-gray p-6 rounded-xl border border-white/5">
+                        <i class="fa-solid fa-wind text-3xl text-[#38B2AC] mb-4"></i>
+                        <h4 class="font-bold text-lg mb-2">Tailwind CSS (CDN)</h4>
+                        <p class="text-sm text-gray-400">Layout, *styling*, dan responsivitas. Disertakan via *script CDN* untuk *zero-configuration*.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Structure Section -->
+            <section id="structure" class="scroll-mt-32 border-t border-white/5 pt-12">
+                <h2 class="text-3xl font-bold mb-6">Struktur Direktori Tema</h2>
+                <p class="text-gray-400 mb-6">Setiap tema berada di dalam folder <code>/theme/</code>. Mereka diisolasi agar kode satu tema tidak bertentangan dengan tema lain.</p>
+                <div class="bg-black/50 p-6 rounded-xl border border-brand-gold/20 font-mono text-sm text-gray-300">
+<pre>design-theme/
+├── index.html          <span class="text-gray-500">// Hub (Halaman Utama ini)</span>
+├── docs.html           <span class="text-brand-gold">// Dokumentasi ini</span>
+└── theme/              <span class="text-gray-500">// Direktori Tema Utama</span>
+    ├── anime/          <span class="text-gray-500">// Tampilan Dunia Otaku Pop-culture</span>
+    ├── cyberpunk/      <span class="text-gray-500">// Estetika Neon & Glitch Tech</span>
+    ├── immersive/      <span class="text-gray-500">// Visual Gelap Paralaks 3D</span>
+    ├── kartun/         <span class="text-gray-500">// Gaya Buku Komik / Superhero</span>
+    ├── makanan/        <span class="text-gray-500">// Desain Restoran / Kuliner hangat</span>
+    ├── minimalist/     <span class="text-gray-500">// Desain Super Bersih ruang kosong lebar</span>
+    ├── modern/         <span class="text-gray-500">// UI Dashboard & Glassmorphism</span>
+    ├── monochrome/     <span class="text-gray-500">// Hitam/Putih kontras tinggi mewah</span>
+    ├── neo-brutalism/  <span class="text-gray-500">// Geometri asimetris warna nyentrik</span>
+    └── retro/          <span class="text-gray-500">// Gaya Vaporwave / Arcade 80's</span></pre>
+                </div>
+            </section>
+
+            <!-- How To Section -->
+            <section id="how-to" class="scroll-mt-32 border-t border-white/5 pt-12">
+                <h2 class="text-3xl font-bold mb-6">Menggunakan Tema</h2>
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 shrink-0 bg-brand-gold text-black rounded-lg flex items-center justify-center font-bold text-xl">1</div>
+                        <div>
+                            <h4 class="text-xl font-bold mb-2">Buka Halaman Langsung (Tidak Perlu Server)</h4>
+                            <p class="text-gray-400">Cukup <code class="bg-white/10 px-2 py-0.5 rounded text-brand-gold-light">Klik Kanan -> Open with Browser</code> pada file <code>index.html</code> apapun di dalam folder tema. Tema akan memusatkan *styling* langsung dari file CDN dan tidak butuh *hot-reloading* NPM.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 shrink-0 bg-brand-gold text-black rounded-lg flex items-center justify-center font-bold text-xl">2</div>
+                        <div>
+                            <h4 class="text-xl font-bold mb-2">Konfigurasi Tailwind via Script Kustom</h4>
+                            <p class="text-gray-400">Pengaturan spesifik mengenai warna (seperti palet Neon pada Cyberpunk) disimpan dalam tag <code>&lt;script&gt; tailwind.config = {...} &lt;/script&gt;</code> di kolom <code>&lt;Head&gt;</code> file HTML masing-masing tema.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Placeholders Warning Section -->
+            <section id="placeholders" class="scroll-mt-32 border-t border-white/5 pt-12">
+                <h2 class="text-3xl font-bold text-brand-gold mb-6 flex items-center gap-3">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Sistem CSS/SVG Placeholders
+                </h2>
+                <div class="bg-brand-gold/10 border-l-4 border-brand-gold p-6 rounded-r-xl">
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        <strong>PENTING:</strong> Agar *template* tidak dipenuhi masalah tautan gambar yang terputus (Broken Image Links/404) ketika dibuka secara lokal oleh klien, kami <strong>Sengaja TIDAK Menggunakan Tag <code>&lt;img&gt;</code> berisi gambar *Unsplash/Pexels* sama sekali!</strong>
+                    </p>
+                    <p class="text-gray-300 leading-relaxed">
+                        Sebagai gantinya, ruang gambar foto telah diganti dengan <strong>CSS Gradients, Pattern, SVG Ikon (FontAwesome), dan Typografi Eksentrik</strong>. Semua ini meniru estetika aslinya (contoh: blok hijau untuk "Hero" di Brutalisme, Ikon Hantu untuk Karakter Anime, dll.).
+                    </p>
+                    <p class="text-gray-300 leading-relaxed mt-4">
+                        <strong>Cara menggantinya untuk Project Asli Anda:</strong> <br>
+                        Temukan div berlapis CSS tersebut dan ganti blok itu dengan blok <code>&lt;img src="path/to/foto-asli.jpg"&gt;</code> milik klien Anda yang sudah di-*hosting*.
+                    </p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-8 border-t border-white/5 text-center text-sm text-gray-500 bg-brand-black">
+        <p>&copy; 2024 Statis. Crafted with precision for high-performance aesthetic.</p>
+    </footer>
+
+</body>
+</html>
