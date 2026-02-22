@@ -137,10 +137,13 @@
 
     <div class="glow-bg"></div>
 
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex h-screen overflow-hidden relative">
         
+        <!-- Mobile Sidebar Overlay -->
+        <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity duration-300 opacity-0 pointer-events-none cursor-pointer"></div>
+
         <!-- SIDEBAR -->
-        <aside class="hidden lg:flex flex-col w-64 glass-sidebar h-full relative z-20 shrink-0">
+        <aside id="sidebar" class="fixed lg:relative flex flex-col w-64 glass-sidebar h-full z-50 shrink-0 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
             <!-- Logo area -->
             <div class="h-20 flex items-center px-6 border-b border-white/5">
                 <div class="flex items-center gap-3 w-full">
@@ -199,7 +202,7 @@
                     <div class="w-8 h-8 rounded bg-nexus-accent flex items-center justify-center font-heading font-bold">N</div>
                     <span class="font-heading font-bold text-lg">NEXUS</span>
                 </div>
-                <button class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white">
+                <button id="mobile-menu-btn" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
             </header>
@@ -474,9 +477,29 @@
         </main>
     </div>
 
-    <!-- Back to Hub Bubble -->
-    <a href="../../index.html" class="fixed bottom-6 right-6 w-14 h-14 bg-white text-[#d4af37] cursor-pointer rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-110 hover:-translate-y-1 transition-all z-[9999] border-2 border-white/50 group">
-        <i class="fa-solid fa-house text-xl text-nexus-dark group-hover:text-[#d4af37] transition-colors"></i>
+    <!-- Copy Source Code Button -->
+    <button onclick="copySourceCode(this)" class="fixed bottom-24 right-8 z-[9999] group flex items-center gap-3 px-6 py-3 bg-nexus-card border border-white/10 rounded-full shadow-2xl backdrop-blur-xl hover:border-nexus-accent/50 hover:shadow-nexus-accent/20 transition-all duration-500" aria-label="Copy Source Code">
+        <div class="w-8 h-8 rounded-lg bg-nexus-accent/10 flex items-center justify-center text-nexus-accent group-hover:scale-110 transition-transform">
+            <i class="fa-regular fa-copy"></i>
+        </div>
+        <span class="text-xs font-bold tracking-widest uppercase text-slate-300 group-hover:text-white">Copy Code</span>
+    </button>
+
+    <!-- Smooth Glassmorphic Pill Back Button -->
+    <a href="../../index.html" class="fixed bottom-8 right-8 z-[9999] group transition-all duration-[600ms] ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-row-reverse items-center overflow-hidden h-14 w-14 hover:w-36 bg-nexus-card/80 backdrop-blur-xl border border-white/10 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-nexus-accent/40 hover:shadow-[0_8px_32px_rgba(59,130,246,0.2)] before:absolute before:-inset-8 before:-z-10" aria-label="Back to Hub">
+        
+        <!-- Icon Container (always right aligned) -->
+        <div class="w-14 h-14 shrink-0 flex items-center justify-center text-slate-400 group-hover:text-nexus-accent transition-colors duration-300 relative z-10">
+            <i class="fa-solid fa-arrow-left text-lg transform group-hover:-translate-x-1 transition-transform duration-[600ms] ease-[cubic-bezier(0.23,1,0.32,1)]"></i>
+        </div>
+
+        <!-- Sliding Text -->
+        <span class="w-[88px] shrink-0 flex items-center justify-center font-sans font-medium text-[11px] tracking-wider text-slate-300 group-hover:text-white opacity-0 group-hover:opacity-100 transition-opacity duration-[600ms] ease-[cubic-bezier(0.23,1,0.32,1)] whitespace-nowrap pl-2">
+            BACK
+        </span>
+        
+        <!-- Subtle Hover Glow Background -->
+        <div class="absolute inset-0 bg-gradient-to-r from-nexus-accent/0 to-nexus-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-[600ms] pointer-events-none -z-10"></div>
     </a>
 
     <script>
@@ -530,7 +553,67 @@
                     this.style.borderColor = '';
                 });
             });
+
+            // Mobile Sidebar Toggle Logic
+            const sidebar = document.getElementById('sidebar');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileOverlay = document.getElementById('mobile-sidebar-overlay');
+            const mainScroll = document.getElementById('main-scroll');
+
+            function toggleMobileSidebar() {
+                const isOpen = !sidebar.classList.contains('-translate-x-full');
+                
+                if (isOpen) {
+                    sidebar.classList.add('-translate-x-full');
+                    mobileOverlay.classList.remove('opacity-100', 'pointer-events-auto');
+                    mobileOverlay.classList.add('opacity-0', 'pointer-events-none');
+                    // Enable scrolling on main content
+                    mainScroll.style.overflow = '';
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                    mobileOverlay.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+                    mobileOverlay.classList.add('opacity-100', 'pointer-events-auto');
+                    // Prevent scrolling on main content while sidebar is open
+                    mainScroll.style.overflow = 'hidden';
+                }
+            }
+
+            if(mobileMenuBtn && sidebar && mobileOverlay) {
+                mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+                mobileOverlay.addEventListener('click', toggleMobileSidebar);
+                
+                // Close sidebar when clicking a link on mobile
+                const sidebarLinks = sidebar.querySelectorAll('a');
+                sidebarLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (window.innerWidth < 1024) { // lg breakpoint
+                            toggleMobileSidebar();
+                        }
+                    });
+                });
+            }
+
         });
+
+        // Global Copy Script
+        function copySourceCode(btn) {
+            const htmlContent = document.documentElement.outerHTML;
+            navigator.clipboard.writeText(htmlContent).then(() => {
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = `
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <span class="text-xs font-bold tracking-widest uppercase text-emerald-400">Copied!</span>
+                `;
+                btn.classList.add('border-emerald-500/50');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.remove('border-emerald-500/50');
+                }, 2000);
+            });
+        }
     </script>
 </body>
 </html>

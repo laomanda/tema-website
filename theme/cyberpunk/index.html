@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEO-TOKYO // CYBERNETICS</title>
+    <title>NEO-OS // TERMINAL ACCESS</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,6 +12,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     
+    <!-- Lenis Smooth Scroll -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+
     <!-- Three.js for 3D Elements -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
@@ -30,15 +33,12 @@
                         'mono': ['"Share Tech Mono"', 'monospace'],
                     },
                     colors: {
-                        'cp-yellow': '#fcee0a', // Cyberpunk Yellow
-                        'cp-blue': '#00f0ff',   // Cyan
-                        'cp-red': '#ff003c',    // Magenta/Red
+                        'cp-yellow': '#fcee0a', 
+                        'cp-blue': '#00f0ff',   
+                        'cp-red': '#ff003c',    
                         'cp-black': '#050505',
                         'cp-dark': '#0a0a0a',
                         'cp-gray': '#1a1a1a',
-                    },
-                    backgroundImage: {
-                        'grid-pattern': "linear-gradient(to right, #1a1a1a 1px, transparent 1px), linear-gradient(to bottom, #1a1a1a 1px, transparent 1px)",
                     },
                     boxShadow: {
                         'neon-blue': '0 0 10px #00f0ff, 0 0 20px #00f0ff',
@@ -53,36 +53,35 @@
     <style>
         body {
             background-color: #050505;
-            color: #e0e0e0;
+            color: #00f0ff; /* Base text color changed to cyan for terminal feel */
             overflow-x: hidden;
+            cursor: crosshair; /* Hacker feel */
         }
+        
+        /* Lenis CSS */
+        html.lenis { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
+        .lenis.lenis-scrolling iframe { pointer-events: none; }
 
-        /* Scanline Overlay */
-        .scanlines {
+        /* CRT Screen Effects */
+        .crt-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
-            background-size: 100% 4px;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none;
-            z-index: 9998;
-            opacity: 0.6;
+            z-index: 9999;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 6px 100%;
+            /* Mild vignette */
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.9);
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #000;
-            border-left: 1px solid #333;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #fcee0a;
-            border: 2px solid #000;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #ff003c;
-        }
+        /* Custom Scrollbar - Fallback */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; border-left: 1px solid #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #00f0ff; border-radius: 0; }
+        ::-webkit-scrollbar-thumb:hover { background: #fcee0a; }
 
         /* Cyberpunk Clip Path (Angled Corners) */
         .clip-corner {
@@ -92,54 +91,34 @@
                 0 100%, 0 20px
             );
         }
-        .clip-corner-sm {
+        .clip-corner-reverse {
             clip-path: polygon(
-                10px 0, 100% 0, 
-                100% calc(100% - 10px), calc(100% - 10px) 100%, 
-                0 100%, 0 10px
+                0 0, calc(100% - 20px) 0, 
+                100% 20px, 100% 100%, 
+                20px 100%, 0 calc(100% - 20px)
             );
         }
+        .clip-corner-sm { clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
 
-        /* Glitch Animation Keyframes */
-        @keyframes glitch-skew {
-            0% { transform: skew(0deg); }
-            10% { transform: skew(-2deg); }
-            20% { transform: skew(2deg); }
-            30% { transform: skew(-1deg); }
-            40% { transform: skew(1deg); }
-            50% { transform: skew(0deg); }
-            100% { transform: skew(0deg); }
-        }
-
-        .glitch-hover:hover {
-            animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
-            color: #fcee0a;
-            text-shadow: 2px 0 #ff003c, -2px 0 #00f0ff;
-        }
-
-        /* Static Glitch Effect for Titles */
-        .glitch-static {
+        /* Complex Glitch Effects */
+        .glitch-text {
             position: relative;
         }
-        .glitch-static::before,
-        .glitch-static::after {
+        .glitch-text::before, .glitch-text::after {
             content: attr(data-text);
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: #050505;
         }
-        .glitch-static::before {
+        .glitch-text::before {
             left: 2px;
-            text-shadow: -1px 0 #00f0ff;
+            text-shadow: -2px 0 #ff003c;
             clip: rect(24px, 550px, 90px, 0);
-            animation: glitch-anim 3s infinite linear alternate-reverse;
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
         }
-        .glitch-static::after {
+        .glitch-text::after {
             left: -2px;
-            text-shadow: -1px 0 #ff003c;
+            text-shadow: -2px 0 #00f0ff;
             clip: rect(85px, 550px, 140px, 0);
             animation: glitch-anim 2.5s infinite linear alternate-reverse;
         }
@@ -152,26 +131,42 @@
             80% { clip: rect(20px, 9999px, 40px, 0); }
             100% { clip: rect(90px, 9999px, 110px, 0); }
         }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(65px, 9999px, 100px, 0); }
+            20% { clip: rect(10px, 9999px, 30px, 0); }
+            40% { clip: rect(40px, 9999px, 70px, 0); }
+            60% { clip: rect(20px, 9999px, 40px, 0); }
+            80% { clip: rect(80px, 9999px, 100px, 0); }
+            100% { clip: rect(10px, 9999px, 30px, 0); }
+        }
 
-        /* Marquee Animation */
-        .marquee-container {
-            overflow: hidden;
-            white-space: nowrap;
+        /* Typewriter Cursor */
+        .type-cursor::after {
+            content: '█';
+            animation: blink 1s step-end infinite;
+            color: #fcee0a;
+            margin-left: 5px;
         }
-        .marquee-content {
-            display: inline-block;
-            animation: marquee 20s linear infinite;
-        }
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
+        @keyframes blink { 0%, 100% {opacity: 1;} 50% {opacity: 0;} }
+
+        /* The Grid Hover Effect Loading Bar */
+        .loading-bar { transform-origin: left; transform: scaleX(0); transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1); }
+        .group:hover .loading-bar { transform: scaleX(1); }
+
+        /* Hide Scrollbar for internal overflow areas */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Terminal Modal Overlay */
+        #modal-overlay { backdrop-filter: blur(10px); }
     </style>
 </head>
 <body class="font-mono bg-grid-pattern bg-[length:40px_40px]">
 
     <!-- Scanline Overlay -->
     <div class="scanlines"></div>
+    <!-- CRT Overlay -->
+    <div class="crt-overlay"></div>
 
     <!-- 3D Background Canvas -->
     <canvas id="webgl-canvas" class="fixed top-0 left-0 w-full h-full z-[-1] opacity-40 pointer-events-none"></canvas>
@@ -190,502 +185,952 @@
                 <a href="#uplink" class="px-6 py-2 border-l border-r border-gray-800 hover:bg-white hover:text-black transition-colors font-bold uppercase text-sm tracking-widest">Uplink</a>
             </div>
 
-            <button class="md:hidden text-cp-yellow text-2xl"><i class="fa-solid fa-bars"></i></button>
+            <button id="mobile-menu-btn" class="md:hidden text-cp-yellow text-2xl hover:text-white transition-colors"><i class="fa-solid fa-bars"></i></button>
+        </div>
+        
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-cp-black/95 backdrop-blur-md border-b border-gray-800 flex-col p-4 gap-2 shadow-neon-blue">
+            <a href="#about" class="mobile-nav-link p-4 border border-gray-800 hover:border-cp-blue hover:text-cp-blue transition-colors font-bold uppercase tracking-widest text-center text-gray-300">System</a>
+            <a href="#augmentations" class="mobile-nav-link p-4 border border-gray-800 hover:border-cp-red hover:text-cp-red transition-colors font-bold uppercase tracking-widest text-center text-gray-300">Augments</a>
+            <a href="#netrunners" class="mobile-nav-link p-4 border border-gray-800 hover:border-cp-yellow hover:text-cp-yellow transition-colors font-bold uppercase tracking-widest text-center text-gray-300">Netrunners</a>
+            <a href="#uplink" class="mobile-nav-link p-4 border border-gray-800 hover:border-white hover:text-white transition-colors font-bold uppercase tracking-widest text-center bg-white/5 text-gray-300">Uplink</a>
         </div>
     </nav>
 
-    <!-- 1. HERO SECTION -->
-    <section class="min-h-screen flex items-center justify-center relative pt-20 overflow-hidden" id="hero">
-        <div class="absolute inset-0 z-0">
-             <!-- Decorative Grids -->
-             <div class="absolute top-1/4 left-10 w-24 h-24 border-t-2 border-l-2 border-cp-blue opacity-50"></div>
-             <div class="absolute bottom-1/4 right-10 w-24 h-24 border-b-2 border-r-2 border-cp-red opacity-50"></div>
-        </div>
-
-        <div class="text-center z-10 px-4 max-w-5xl">
-            <div class="inline-block px-4 py-1 border border-cp-yellow text-cp-yellow text-xs mb-6 tracking-[0.3em] font-bold bg-cp-yellow/10 clip-corner-sm">
-                SYSTEM STATUS: ONLINE
-            </div>
+    <!-- 1. HERO SECTION (Terminal Boot Sequence) -->
+    <section class="min-h-screen flex flex-col justify-center relative pt-20 overflow-hidden px-6" id="hero">
+        <div class="max-w-7xl mx-auto w-full z-10">
             
-            <h1 class="text-6xl md:text-8xl lg:text-9xl font-cyber font-black leading-none mb-4 text-white glitch-static" data-text="WAKE UP">
-                WAKE UP
-            </h1>
-            <h1 class="text-6xl md:text-8xl lg:text-9xl font-cyber font-black leading-none mb-12 text-transparent bg-clip-text bg-gradient-to-r from-cp-blue via-white to-cp-red opacity-90">
-                SAMURAI
-            </h1>
+            <div class="mb-4 text-xs font-mono text-cp-yellow opacity-70" id="boot-sequence">
+                <!-- GSAP will inject text here -->
+            </div>
 
-            <p class="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto bg-black/50 p-4 border-l-4 border-cp-yellow">
-                Kota masa depan menanti. Tingkatkan realitas Anda dengan teknologi cybernetic tercanggih di pasaran gelap.
-            </p>
+            <div class="border-l-4 border-cp-blue pl-6 md:pl-10 relative">
+                <!-- Decorative animated square -->
+                <div class="absolute -left-[14px] top-0 w-6 h-6 bg-cp-blue animate-pulse"></div>
 
-            <div class="flex flex-col sm:flex-row gap-6 justify-center">
-                <a href="#augmentations" class="clip-corner px-8 py-4 bg-cp-yellow text-black font-cyber font-bold text-lg hover:bg-white hover:shadow-neon-yellow transition-all flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-microchip"></i> INSTALL UPGRADE
-                </a>
-                <a href="#uplink" class="clip-corner px-8 py-4 bg-transparent border-2 border-cp-red text-cp-red font-cyber font-bold text-lg hover:bg-cp-red hover:text-black hover:shadow-neon-red transition-all flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-terminal"></i> HACK SYSTEM
-                </a>
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-cyber font-black leading-none mb-2 text-white glitch-text" data-text="SYSTEM">
+                    SYSTEM
+                </h1>
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-cyber font-black leading-none mb-8 text-transparent bg-clip-text bg-gradient-to-r from-cp-blue via-white to-cp-blue opacity-90 glitch-text" data-text="OVERRIDE">
+                    OVERRIDE
+                </h1>
+
+                <p class="text-lg text-gray-400 mb-10 max-w-xl font-mono" id="hero-desc">
+                    <span class="type-cursor text-cp-yellow">></span>
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 mt-12 w-fit">
+                    <a href="#augmentations" class="clip-corner px-8 py-4 bg-cp-blue text-black font-cyber font-bold text-sm tracking-widest hover:bg-white hover:shadow-neon-blue transition-all flex items-center gap-3">
+                        <i class="fa-solid fa-terminal"></i> INITIALIZE PROTOCOL
+                    </a>
+                    <a href="#uplink" class="clip-corner px-8 py-4 border border-cp-gray text-white font-cyber font-bold text-sm tracking-widest hover:border-cp-yellow hover:text-cp-yellow transition-all flex items-center gap-3 bg-black/50 backdrop-blur-sm">
+                        SECURE COMMS >>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Decorative HUD Elements -->
+            <div class="absolute bottom-10 right-10 text-right hidden md:block select-none">
+                <div class="text-4xl text-cp-red font-cyber font-bold opacity-20">NEO-TOKYO</div>
+                <div class="text-xs font-mono text-gray-600">LAT: 35.6762° N // LNG: 139.6503° E</div>
+                <div class="flex justify-end gap-1 mt-2">
+                    <div class="w-8 h-1 bg-cp-red"></div>
+                    <div class="w-2 h-1 bg-gray-800"></div>
+                    <div class="w-1 h-1 bg-gray-800"></div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Marquee Divider -->
-    <div class="bg-cp-yellow text-black font-cyber font-bold py-3 border-y-4 border-black overflow-hidden relative z-20">
-        <div class="marquee-container">
-            <div class="marquee-content text-xl">
-                HIGH TECH LOW LIFE /// DATA BREACH DETECTED /// NEURAL LINK ESTABLISHED /// CYBERNETICS INSTALLED /// WELCOME TO NIGHT CITY /// 
-                HIGH TECH LOW LIFE /// DATA BREACH DETECTED /// NEURAL LINK ESTABLISHED /// CYBERNETICS INSTALLED /// WELCOME TO NIGHT CITY ///
+    <div class="bg-cp-blue text-black font-mono font-bold py-2 border-y border-cp-blue overflow-hidden relative z-20 shadow-neon-blue">
+        <div class="w-full flex overflow-hidden whitespace-nowrap">
+            <!-- Used CSS animation (implied) or GSAP later -->
+            <div class="marquee-content text-sm flex gap-8">
+                <span>WARNING: BREACH DETECTED</span> <span>///</span>
+                <span>DATA CORRUPTION AT 94%</span> <span>///</span>
+                <span>NEURAL LINK UNSTABLE</span> <span>///</span>
+                <span>WARNING: BREACH DETECTED</span> <span>///</span>
+                <span>DATA CORRUPTION AT 94%</span> <span>///</span>
             </div>
         </div>
     </div>
 
-    <!-- 2. THE SYSTEM (About) -->
-    <section id="about" class="py-24 relative border-b border-gray-800">
+    <!-- 2. THE GRID (Services & Augmentations) -->
+    <section id="augmentations" class="py-32 relative border-b border-gray-800 z-10">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-                <!-- Image/Visual -->
-                <div class="relative group">
-                    <div class="absolute inset-0 bg-cp-blue transform translate-x-2 translate-y-2 clip-corner transition-transform group-hover:translate-x-4 group-hover:translate-y-4"></div>
-                    <div class="relative clip-corner bg-gray-900 border border-gray-700 overflow-hidden h-[400px] flex items-center justify-center">
-                        <!-- CSS Holomap -->
-                        <div class="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,240,255,0.05)_10px,rgba(0,240,255,0.05)_11px)]"></div>
-                        <div class="w-64 h-64 border-2 border-cp-blue/50 rounded-full relative animate-pulse flex items-center justify-center">
-                            <div class="absolute inset-x-0 top-1/2 h-px bg-cp-blue/50"></div>
-                            <div class="absolute inset-y-0 left-1/2 w-px bg-cp-blue/50"></div>
-                            <div class="w-48 h-48 border border-dashed border-cp-yellow/50 rounded-full animate-spin [animation-duration:10s]"></div>
-                            <div class="absolute top-10 right-10 text-xs text-cp-yellow font-mono">SECTOR_4</div>
-                            <div class="absolute bottom-10 left-10 text-xs text-cp-red font-mono">UNAUTHORIZED</div>
-                        </div>
-                        <div class="absolute bottom-4 right-4 text-4xl text-gray-800 font-black select-none">CITY_MAP</div>
-                    </div>
-                </div>
-
-                <!-- Content -->
+            
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
                 <div>
-                    <h2 class="text-cp-blue text-sm font-bold tracking-[0.5em] mb-2 uppercase flex items-center gap-2">
-                        <span class="w-4 h-4 bg-cp-blue block"></span> System_Log.txt
+                    <h2 class="text-cp-blue text-xs font-bold tracking-[0.3em] font-mono mb-2 uppercase flex items-center gap-2">
+                        <span class="w-2 h-2 bg-cp-blue block animate-ping"></span> MODULE_OVERVIEW
                     </h2>
-                    <h3 class="text-4xl md:text-5xl font-cyber font-bold mb-6 text-white leading-tight">
-                        ARSITEK DAGING <br> & <span class="text-cp-red bg-white/10 px-2">DIGITAL</span>
-                    </h3>
-                    <p class="text-gray-400 text-lg mb-6 leading-relaxed">
-                        Di era di mana batas antara manusia dan mesin semakin kabur, kami menyediakan infrastruktur untuk evolusi Anda. Neo.IO bukan sekadar agensi; kami adalah operator di balik tirai realitas.
-                    </p>
-                    <ul class="space-y-4 font-mono text-sm text-cp-yellow">
-                        <li class="flex items-center gap-3">
-                            <i class="fa-solid fa-angle-right"></i> PROTOKOL KEAMANAN LEVEL 5
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <i class="fa-solid fa-angle-right"></i> INTEGRASI NEURAL JARINGAN
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <i class="fa-solid fa-angle-right"></i> MODIFIKASI TUBUH SIBERNETIK
-                        </li>
-                    </ul>
+                    <h3 class="text-4xl md:text-5xl font-cyber font-bold text-white uppercase glitch-text" data-text="The Grid">THE GRID</h3>
                 </div>
+                <div class="font-mono text-xs text-right text-gray-500 hidden md:block">
+                    <div class="mb-1">CAPACITY: <span class="text-white">8/12 SLOTS</span></div>
+                    <div class="w-32 h-2 bg-gray-800 border border-gray-700">
+                        <div class="w-2/3 h-full bg-cp-yellow"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
+                
+                <!-- System 1 -->
+                <div class="bg-cp-gray/30 border border-gray-800 p-8 hover:bg-cp-yellow/5 hover:border-cp-yellow transition-colors group relative overflow-hidden cursor-crosshair">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 group-hover:text-cp-yellow transition-all duration-300">
+                        <i class="fa-solid fa-code text-5xl"></i>
+                    </div>
+                    <div class="text-cp-yellow font-mono text-xs mb-4">SYS.01 // WEB_DEV</div>
+                    <h4 class="text-2xl font-cyber font-bold text-white mb-2">DIGITAL HYBRIDS</h4>
+                    <p class="text-gray-400 text-sm font-mono mb-8 h-16">High-performance applications built on unhackable React/Next.js infrastructure. Zero latency guaranteed.</p>
+                    
+                    <div class="mt-auto">
+                        <div class="flex justify-between text-xs font-mono mb-1 text-gray-500">
+                            <span>INSTALLING...</span>
+                            <span class="group-hover:text-cp-yellow">100%</span>
+                        </div>
+                        <div class="w-full h-1 bg-gray-900 border border-gray-800">
+                            <div class="h-full bg-cp-yellow loading-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System 2 -->
+                <div class="bg-cp-gray/30 border border-gray-800 p-8 hover:bg-cp-blue/5 hover:border-cp-blue transition-colors group relative overflow-hidden cursor-crosshair">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 group-hover:text-cp-blue transition-all duration-300">
+                        <i class="fa-solid fa-eye text-5xl"></i>
+                    </div>
+                    <div class="text-cp-blue font-mono text-xs mb-4">OPT.02 // UI_UX</div>
+                    <h4 class="text-2xl font-cyber font-bold text-white mb-2">NEURAL DESIGN</h4>
+                    <p class="text-gray-400 text-sm font-mono mb-8 h-16">Interfaces mapped directly to user retinas. Brutal, glowing, and highly addictive geometric layouts.</p>
+                    
+                    <div class="mt-auto">
+                        <div class="flex justify-between text-xs font-mono mb-1 text-gray-500">
+                            <span>CALIBRATING...</span>
+                            <span class="group-hover:text-cp-blue">100%</span>
+                        </div>
+                        <div class="w-full h-1 bg-gray-900 border border-gray-800">
+                            <div class="h-full bg-cp-blue loading-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System 3 -->
+                <div class="bg-cp-gray/30 border border-gray-800 p-8 hover:bg-cp-red/5 hover:border-cp-red transition-colors group relative overflow-hidden cursor-crosshair">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 group-hover:text-cp-red transition-all duration-300 transform -rotate-12 group-hover:rotate-0">
+                        <i class="fa-solid fa-server text-5xl"></i>
+                    </div>
+                    <div class="text-cp-red font-mono text-xs mb-4">COR.03 // BACKEND</div>
+                    <h4 class="text-2xl font-cyber font-bold text-white mb-2">DATA FORTRESS</h4>
+                    <p class="text-gray-400 text-sm font-mono mb-8 h-16">Impenetrable server architectures. Scalable cloud grids that withstand Level 5 DDoS assaults.</p>
+                    
+                    <div class="mt-auto">
+                        <div class="flex justify-between text-xs font-mono mb-1 text-gray-500">
+                            <span>ENCRYPTING...</span>
+                            <span class="group-hover:text-cp-red">100%</span>
+                        </div>
+                        <div class="w-full h-1 bg-gray-900 border border-gray-800">
+                            <div class="h-full bg-cp-red loading-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <!-- 3. AUGMENTATIONS (Services) -->
-    <section id="augmentations" class="py-24 bg-cp-gray/20 relative">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex justify-between items-end mb-16 border-b border-gray-700 pb-4">
-                <div>
-                    <h2 class="text-4xl md:text-6xl font-cyber font-bold text-white mb-2">AUGMENTATIONS</h2>
-                    <p class="text-gray-500 font-mono">PILIH MODUL UPGRADE ANDA</p>
-                </div>
-                <div class="hidden md:block text-right">
-                    <div class="text-cp-red font-bold text-2xl animate-pulse">REC ●</div>
-                    <div class="text-xs text-gray-500">ENCRYPTION: ENABLED</div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Card 1 -->
-                <div class="clip-corner bg-black border border-gray-800 p-8 hover:border-cp-yellow transition-colors group relative">
-                    <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition-opacity">
-                        <i class="fa-solid fa-eye text-4xl text-cp-yellow"></i>
-                    </div>
-                    <h3 class="text-2xl font-cyber font-bold text-white mb-4 group-hover:text-cp-yellow">OPTICAL<br>IMPLANTS</h3>
-                    <p class="text-gray-400 text-sm mb-6 leading-relaxed">
-                        Tingkatkan penglihatan Anda dengan overlay data real-time, zoom 100x, dan night vision termal.
-                    </p>
-                    <a href="#" class="inline-block text-cp-yellow font-bold text-sm tracking-widest hover:text-white border-b border-cp-yellow pb-1">ACCESS DATA >></a>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="clip-corner bg-black border border-gray-800 p-8 hover:border-cp-blue transition-colors group relative">
-                     <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition-opacity">
-                        <i class="fa-solid fa-brain text-4xl text-cp-blue"></i>
-                    </div>
-                    <h3 class="text-2xl font-cyber font-bold text-white mb-4 group-hover:text-cp-blue">NEURAL<br>LINKING</h3>
-                    <p class="text-gray-400 text-sm mb-6 leading-relaxed">
-                        Terhubung langsung ke Net. Download skill baru dalam hitungan detik. Hati-hati dengan virus.
-                    </p>
-                    <a href="#" class="inline-block text-cp-blue font-bold text-sm tracking-widest hover:text-white border-b border-cp-blue pb-1">ACCESS DATA >></a>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="clip-corner bg-black border border-gray-800 p-8 hover:border-cp-red transition-colors group relative">
-                     <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition-opacity">
-                        <i class="fa-solid fa-hand-fist text-4xl text-cp-red"></i>
-                    </div>
-                    <h3 class="text-2xl font-cyber font-bold text-white mb-4 group-hover:text-cp-red">COMBAT<br>SYSTEMS</h3>
-                    <p class="text-gray-400 text-sm mb-6 leading-relaxed">
-                        Refleks yang ditingkatkan, kulit titanium, dan senjata tersembunyi. Jadilah predator puncak.
-                    </p>
-                    <a href="#" class="inline-block text-cp-red font-bold text-sm tracking-widest hover:text-white border-b border-cp-red pb-1">ACCESS DATA >></a>
-                </div>
+    <!-- 4. VISUAL DATABASE (Data Core) -->
+    <section class="py-24 border-y border-gray-800 bg-black relative z-10" id="database">
+        <div class="max-w-7xl mx-auto px-6 mb-12 flex justify-between items-end border-b border-gray-800 pb-4">
+            <h2 class="text-3xl lg:text-5xl font-cyber text-white">VISUAL_<span class="text-cp-blue">DATABASE</span></h2>
+            <div class="text-right text-xs font-mono text-gray-500">
+                <span class="text-cp-blue">ACCESS GRANTED</span><br>
+                12 ACTIVE NODES
             </div>
         </div>
-    </section>
 
-    <!-- 4. VISUAL DATABASE (Gallery) -->
-    <section class="py-24 border-y border-gray-800 bg-black overflow-hidden">
-        <div class="max-w-7xl mx-auto px-6 mb-12">
-            <h2 class="text-3xl font-cyber text-center"><span class="text-cp-blue">///</span> VISUAL_DATABASE <span class="text-cp-blue">///</span></h2>
-        </div>
-
-        <!-- Horizontal Scrolling Content -->
-        <div class="flex gap-4 overflow-x-auto pb-8 px-6 hide-scroll snap-x">
-            <!-- Item 1 -->
-            <div class="min-w-[300px] md:min-w-[400px] snap-center clip-corner-sm bg-gray-900 border-2 border-gray-800 relative group overflow-hidden">
-                <div class="w-full h-64 bg-black flex flex-col items-center justify-center relative">
-                    <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(252,238,10,0.1)_50%)] bg-[size:100%_4px] opacity-20"></div>
-                     <i class="fa-solid fa-lock text-6xl text-cp-yellow mb-4 animate-bounce"></i>
-                     <span class="font-mono text-cp-yellow text-sm tracking-widest blink">ENCRYPTED</span>
+        <!-- CSS Grid / Masonry Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-6">
+            
+            <!-- Node 1 -->
+            <div class="clip-corner-sm bg-gray-900 border border-gray-800 relative group overflow-hidden cursor-pointer database-item aspect-square md:aspect-auto md:h-80" onclick="openTerminalModal('SEC.07', 'NIGHT MARKET DISTRICT', 'High activity detected. Multiple unregistered cyberware transactions logged in the past 24h. Proceed with extreme caution.')">
+                <div class="w-full h-full bg-black flex flex-col items-center justify-center relative transition-transform duration-700 group-hover:scale-105">
+                    <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(252,238,10,0.1)_50%)] bg-[size:100%_4px] opacity-20 group-hover:opacity-50 transition-opacity"></div>
+                    <i class="fa-solid fa-lock text-6xl text-gray-700 group-hover:text-cp-yellow transition-colors mb-4"></i>
+                    <span class="font-mono text-gray-600 group-hover:text-cp-yellow text-sm tracking-widest group-hover:blink transition-colors">DECRYPTING...</span>
                 </div>
-                <div class="p-4 border-t border-gray-800 bg-black/80 absolute bottom-0 w-full">
-                    <h4 class="text-cp-yellow font-bold">SECTOR 07</h4>
-                    <p class="text-xs text-gray-400">Night Market District</p>
+                <div class="p-4 border-t border-gray-800 bg-black/90 absolute bottom-0 w-full transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <h4 class="text-cp-yellow font-bold text-sm">SECTOR 07</h4>
+                    <p class="text-xs text-gray-400">Night Market</p>
                 </div>
             </div>
 
-             <!-- Item 2 -->
-             <div class="min-w-[300px] md:min-w-[400px] snap-center clip-corner-sm bg-gray-900 border-2 border-gray-800 relative group overflow-hidden">
-                <div class="w-full h-64 bg-black flex flex-col items-center justify-center relative">
-                    <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,240,255,0.1)_50%)] bg-[size:100%_4px] opacity-20"></div>
-                    <div class="text-cp-blue font-mono text-center text-xs opacity-70">
-                        01001000 01100101<br>01111000 00100000<br>01000011 01101111
+            <!-- Node 2 (Spans 2 columns on lg) -->
+            <div class="lg:col-span-2 clip-corner-sm bg-gray-900 border border-gray-800 relative group overflow-hidden cursor-pointer database-item aspect-video md:aspect-auto md:h-80" onclick="openTerminalModal('SYS.01', 'NEON ALLEY NETWORK', 'Underground routing tables compromised. Blueprints for the old subway systems located in sector memory.')">
+                <div class="w-full h-full bg-black flex flex-col items-center justify-center relative transition-transform duration-700 group-hover:scale-105">
+                    <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,240,255,0.1)_50%)] bg-[size:100%_4px] opacity-20 group-hover:opacity-50 transition-opacity"></div>
+                    <div class="text-gray-700 group-hover:text-cp-blue font-mono text-center text-xs opacity-70 transition-colors">
+                        01001000 01100101 01111000<br>00100000 01000011 01101111<br>01110010 01100101 00100000
                     </div>
-                    <div class="absolute inset-0 bg-cp-blue/5 animate-pulse"></div>
+                    <div class="absolute inset-0 bg-transparent group-hover:bg-cp-blue/10 transition-colors"></div>
                 </div>
-                <div class="p-4 border-t border-gray-800 bg-black/80 absolute bottom-0 w-full">
-                    <h4 class="text-cp-blue font-bold">NEON ALLEY</h4>
+                <div class="p-4 border-t border-gray-800 bg-black/90 absolute bottom-0 w-full transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <h4 class="text-cp-blue font-bold text-sm">NEON ALLEY</h4>
                     <p class="text-xs text-gray-400">Underground Network</p>
                 </div>
             </div>
 
-             <!-- Item 3 -->
-             <div class="min-w-[300px] md:min-w-[400px] snap-center clip-corner-sm bg-gray-900 border-2 border-gray-800 relative group overflow-hidden">
-                <div class="w-full h-64 bg-black flex flex-col items-center justify-center relative">
+            <!-- Node 3 (Spans 2 rows on lg) -->
+            <div class="lg:row-span-2 clip-corner-sm bg-gray-900 border border-gray-800 relative group overflow-hidden cursor-pointer database-item aspect-[3/4] md:aspect-auto md:h-[41rem]" onclick="openTerminalModal('CRITICAL', 'DATA CORE MAINFRAME', 'WARNING: Level 5 ICE detected. Do not attempt direct neural link without Black ICE breakers. Fatal feedback loops possible.')">
+                <div class="w-full h-full bg-black flex flex-col items-center justify-center relative transition-transform duration-700 group-hover:scale-105">
+                    <div class="absolute inset-0 bg-gradient-to-t from-cp-red/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(255,0,60,0.1)_50%)] bg-[size:100%_4px] opacity-20"></div>
-                    <i class="fa-solid fa-triangle-exclamation text-6xl text-cp-red mb-4 animate-pulse"></i>
-                    <span class="font-mono text-cp-red text-sm tracking-widest">DANGER</span>
+                    <i class="fa-solid fa-triangle-exclamation text-7xl text-gray-700 group-hover:text-cp-red mb-4 transition-colors"></i>
+                    <span class="font-mono text-gray-600 group-hover:text-cp-red text-sm tracking-widest transition-colors font-bold">RESTRICTED</span>
                 </div>
-                <div class="p-4 border-t border-gray-800 bg-black/80 absolute bottom-0 w-full">
-                    <h4 class="text-cp-red font-bold">DATA CORE</h4>
-                    <p class="text-xs text-gray-400">Server Farm Mainframe</p>
+                <div class="p-4 border-t border-gray-800 bg-black/90 absolute bottom-0 w-full transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <h4 class="text-cp-red font-bold text-sm">DATA CORE</h4>
+                    <p class="text-xs text-gray-400">Server Farm</p>
                 </div>
             </div>
 
-             <!-- Item 4 -->
-             <div class="min-w-[300px] md:min-w-[400px] snap-center clip-corner-sm bg-gray-900 border-2 border-gray-800 relative group overflow-hidden">
-                <div class="w-full h-64 bg-black flex flex-col items-center justify-center relative">
-                     <div class="absolute inset-0 bg-[linear-gradient(45deg,transparent_40%,rgba(255,255,255,0.1)_40%,rgba(255,255,255,0.1)_60%,transparent_60%)] bg-[size:200%_200%] animate-[shimmer_2s_infinite]"></div>
-                     <span class="font-mono text-white text-4xl font-bold tracking-[0.5em] opacity-50">NULL</span>
+            <!-- Node 4 -->
+            <div class="clip-corner-sm bg-gray-900 border border-gray-800 relative group overflow-hidden cursor-pointer database-item aspect-square md:aspect-auto md:h-80" onclick="openTerminalModal('NULL', 'THE VOID', '...Signal lost... Coordinate data corrupted... Do not follow the white rabbit...')">
+                <div class="w-full h-full bg-black flex flex-col items-center justify-center relative transition-transform duration-700 group-hover:scale-105">
+                     <div class="absolute inset-0 bg-[linear-gradient(45deg,transparent_40%,rgba(255,255,255,0.05)_40%,rgba(255,255,255,0.05)_60%,transparent_60%)] bg-[size:200%_200%] animate-[shimmer_2s_infinite] opacity-50 group-hover:opacity-100"></div>
+                     <span class="font-mono text-gray-700 group-hover:text-white text-4xl font-bold tracking-[0.5em] transition-colors">NULL</span>
                 </div>
-                <div class="p-4 border-t border-gray-800 bg-black/80 absolute bottom-0 w-full">
-                    <h4 class="text-white font-bold">THE VOID</h4>
+                <div class="p-4 border-t border-gray-800 bg-black/90 absolute bottom-0 w-full transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <h4 class="text-white font-bold text-sm">THE VOID</h4>
                     <p class="text-xs text-gray-400">Unknown Coordinates</p>
                 </div>
             </div>
+
+            <!-- Node 5 -->
+            <div class="clip-corner-sm bg-gray-900 border border-gray-800 relative group overflow-hidden cursor-pointer database-item aspect-video md:aspect-auto md:h-80" onclick="openTerminalModal('BIO.11', 'BIOTECHNICA LABS', 'Synthetic organ shipment tracking #48291. Status: Delayed. Reason: Intercepted by local gang.')">
+                <div class="w-full h-full bg-black flex flex-col items-center justify-center relative transition-transform duration-700 group-hover:scale-105">
+                     <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,240,255,0.1)_0,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                     <i class="fa-solid fa-dna text-6xl text-gray-700 group-hover:text-cp-blue transition-colors"></i>
+                </div>
+                <div class="p-4 border-t border-gray-800 bg-black/90 absolute bottom-0 w-full transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <h4 class="text-cp-blue font-bold text-sm">BIO LABS</h4>
+                    <p class="text-xs text-gray-400">Synthetic Organics</p>
+                </div>
+            </div>
+
         </div>
     </section>
 
-    <!-- 5. NETRUNNERS (Team) -->
-    <section id="netrunners" class="py-24 relative">
-        <div class="max-w-6xl mx-auto px-6">
-            <h2 class="text-4xl font-cyber text-center mb-16 text-white">ELITE <span class="text-cp-yellow bg-black px-2">NETRUNNERS</span></h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Member 1 -->
-                <div class="bg-black border border-cp-blue/30 p-4 clip-corner-sm hover:border-cp-blue transition-all group">
-                    <div class="w-full h-48 bg-gray-900 mb-4 overflow-hidden flex items-center justify-center relative">
-                        <i class="fa-solid fa-user-secret text-8xl text-cp-blue opacity-80 group-hover:opacity-100 transition-opacity"></i>
-                        <div class="absolute inset-0 bg-scanlines opacity-20"></div>
-                    </div>
-                    <h3 class="text-white font-bold text-xl font-cyber">KAIRO</h3>
-                    <p class="text-cp-blue text-xs font-mono mb-4">LEAD HACKER</p>
-                    <div class="w-full bg-gray-800 h-1">
-                        <div class="bg-cp-blue h-full w-[90%]"></div>
-                    </div>
-                    <p class="text-[10px] text-right mt-1 text-gray-500">INT: 98%</p>
+    <!-- Terminal Modal (Hidden by default) -->
+    <div id="terminal-modal" class="fixed inset-0 z-[10000] hidden flex items-center justify-center p-4">
+        <div id="modal-overlay" class="absolute inset-0 bg-black/80" onclick="closeTerminalModal()"></div>
+        <div class="relative w-full max-w-2xl bg-[#0a0a0a] border border-cp-yellow clip-corner shadow-neon-yellow z-10 p-1 flex flex-col">
+            <!-- Terminal Header -->
+            <div class="bg-cp-yellow text-black flex justify-between items-center px-4 py-2 font-mono font-bold text-sm">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-terminal"></i> <span id="modal-id">SYS.TTY</span>
                 </div>
-
-                <!-- Member 2 -->
-                <div class="bg-black border border-cp-red/30 p-4 clip-corner-sm hover:border-cp-red transition-all group">
-                    <div class="w-full h-48 bg-gray-900 mb-4 overflow-hidden flex items-center justify-center relative">
-                        <i class="fa-solid fa-user-ninja text-8xl text-cp-red opacity-80 group-hover:opacity-100 transition-opacity"></i>
-                        <div class="absolute inset-0 bg-scanlines opacity-20"></div>
-                    </div>
-                    <h3 class="text-white font-bold text-xl font-cyber">NOVA</h3>
-                    <p class="text-cp-red text-xs font-mono mb-4">SECURITY OPS</p>
-                    <div class="w-full bg-gray-800 h-1">
-                        <div class="bg-cp-red h-full w-[85%]"></div>
-                    </div>
-                    <p class="text-[10px] text-right mt-1 text-gray-500">STR: 85%</p>
-                </div>
-
-                <!-- Member 3 -->
-                <div class="bg-black border border-cp-yellow/30 p-4 clip-corner-sm hover:border-cp-yellow transition-all group">
-                    <div class="w-full h-48 bg-gray-900 mb-4 overflow-hidden flex items-center justify-center relative">
-                        <i class="fa-solid fa-robot text-8xl text-cp-yellow opacity-80 group-hover:opacity-100 transition-opacity"></i>
-                        <div class="absolute inset-0 bg-scanlines opacity-20"></div>
-                    </div>
-                    <h3 class="text-white font-bold text-xl font-cyber">CIPHER</h3>
-                    <p class="text-cp-yellow text-xs font-mono mb-4">DATA BROKER</p>
-                    <div class="w-full bg-gray-800 h-1">
-                        <div class="bg-cp-yellow h-full w-[95%]"></div>
-                    </div>
-                    <p class="text-[10px] text-right mt-1 text-gray-500">CHR: 95%</p>
-                </div>
-
-                 <!-- Member 4 -->
-                 <div class="bg-black border border-white/30 p-4 clip-corner-sm hover:border-white transition-all group">
-                    <div class="w-full h-48 bg-gray-900 mb-4 overflow-hidden flex items-center justify-center relative">
-                        <i class="fa-solid fa-ghost text-8xl text-white opacity-80 group-hover:opacity-100 transition-opacity animate-pulse"></i>
-                        <div class="absolute inset-0 bg-scanlines opacity-20"></div>
-                    </div>
-                    <h3 class="text-white font-bold text-xl font-cyber">ECHO</h3>
-                    <p class="text-white text-xs font-mono mb-4">GHOST</p>
-                    <div class="w-full bg-gray-800 h-1">
-                        <div class="bg-white h-full w-[60%]"></div>
-                    </div>
-                    <p class="text-[10px] text-right mt-1 text-gray-500">STL: 100%</p>
-                </div>
+                <button onclick="closeTerminalModal()" class="hover:text-white transition-colors bg-black text-cp-yellow px-2 border border-black clip-corner-sm">X</button>
+            </div>
+            <!-- Terminal Body -->
+            <div class="p-6 text-cp-blue font-mono text-sm leading-relaxed overflow-y-auto max-h-[60vh]">
+                <div class="text-gray-500 mb-4">> Establishing secure connection... <span class="text-green-500">OK</span><br>> Decrypting file <span id="modal-title" class="text-white"></span>...</div>
+                <div id="modal-content" class="text-white"></div>
+                <div class="mt-4"><span class="type-cursor text-cp-yellow">></span></div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- 6. CREDITS (Pricing) -->
-    <section class="py-24 bg-cp-gray/10 border-t border-gray-800">
-        <div class="max-w-5xl mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-cyber mb-4">CREDIT PACKAGES</h2>
-                <p class="text-gray-500 font-mono">SECURE TRANSACTION /// ANONYMOUS</p>
-            </div>
+    <!-- 5. THE ROSTER (Team Dossiers) -->
+    <section id="netrunners" class="py-24 relative bg-cp-dark border-t border-gray-800 z-10 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row gap-12 relative">
+            
+            <!-- Left: Roster List -->
+            <div class="w-full lg:w-1/3 z-20">
+                <h2 class="text-4xl lg:text-5xl font-cyber text-white mb-2">THE <span class="text-cp-red">ROSTER</span></h2>
+                <p class="text-gray-500 font-mono text-xs mb-8 tracking-widest uppercase">Select Operative // View Dossier</p>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Plan 1 -->
-                <div class="border border-gray-700 p-8 clip-corner hover:border-cp-blue transition-colors text-center bg-black/50">
-                    <h3 class="text-cp-blue font-bold text-xl mb-4">STREET KID</h3>
-                    <div class="text-4xl font-mono font-bold text-white mb-6">€$ 500</div>
-                    <ul class="text-sm text-gray-400 space-y-4 mb-8 text-left font-mono">
-                        <li>[x] Basic Optic Jammer</li>
-                        <li>[x] 24h Support</li>
-                        <li>[ ] Neural Bypass</li>
-                    </ul>
-                    <button class="w-full py-2 border border-cp-blue text-cp-blue hover:bg-cp-blue hover:text-black transition-colors font-bold uppercase clip-corner-sm">PURCHASE</button>
-                </div>
-
-                <!-- Plan 2 -->
-                <div class="border-2 border-cp-yellow p-8 clip-corner transform md:-translate-y-4 bg-black relative">
-                    <div class="absolute top-0 right-0 bg-cp-yellow text-black text-xs font-bold px-2 py-1">BEST VALUE</div>
-                    <h3 class="text-cp-yellow font-bold text-xl mb-4">MERCENARY</h3>
-                    <div class="text-4xl font-mono font-bold text-white mb-6">€$ 2000</div>
-                    <ul class="text-sm text-gray-400 space-y-4 mb-8 text-left font-mono">
-                        <li>[x] Military Grade Tech</li>
-                        <li>[x] Priority Access</li>
-                        <li>[x] Neural Bypass Level 1</li>
-                    </ul>
-                    <button class="w-full py-2 bg-cp-yellow text-black hover:bg-white transition-colors font-bold uppercase clip-corner-sm">PURCHASE</button>
-                </div>
-
-                <!-- Plan 3 -->
-                <div class="border border-gray-700 p-8 clip-corner hover:border-cp-red transition-colors text-center bg-black/50">
-                    <h3 class="text-cp-red font-bold text-xl mb-4">CORPO</h3>
-                    <div class="text-4xl font-mono font-bold text-white mb-6">€$ 9999</div>
-                    <ul class="text-sm text-gray-400 space-y-4 mb-8 text-left font-mono">
-                        <li>[x] Experimental Tech</li>
-                        <li>[x] Dedicated Team</li>
-                        <li>[x] Total Immunity</li>
-                    </ul>
-                    <button class="w-full py-2 border border-cp-red text-cp-red hover:bg-cp-red hover:text-black transition-colors font-bold uppercase clip-corner-sm">PURCHASE</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 7. UPLINK (Contact) -->
-    <section id="uplink" class="min-h-screen flex items-center justify-center relative py-24">
-         <!-- Background Code Rain Effect (Static CSS implementation for simplicity) -->
-         <div class="absolute inset-0 bg-black overflow-hidden z-[-1]">
-             <div class="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-cp-green to-transparent opacity-20"></div>
-             <div class="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-cp-green to-transparent opacity-20"></div>
-         </div>
-
-        <div class="max-w-4xl w-full mx-auto px-6 relative z-10">
-            <div class="clip-corner bg-gray-900/80 border-2 border-cp-yellow p-8 md:p-12 backdrop-blur-md">
-                <div class="flex justify-between items-start mb-8 border-b border-gray-700 pb-4">
-                    <h2 class="text-3xl md:text-5xl font-cyber text-white">ESTABLISH UPLINK</h2>
-                    <div class="text-right font-mono text-xs text-cp-yellow animate-pulse">
-                        CONNECTION: SECURE<br>
-                        PING: 2ms
-                    </div>
-                </div>
-
-                <form class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="relative group">
-                            <label class="text-xs text-cp-blue font-bold mb-1 block uppercase">Codename</label>
-                            <input type="text" class="w-full bg-black border border-gray-600 p-3 text-white focus:outline-none focus:border-cp-blue focus:shadow-neon-blue transition-all font-mono clip-corner-sm" placeholder="e.g. Ghost">
+                <div class="flex flex-col gap-2 font-mono">
+                    <!-- Roster Button 1 -->
+                    <button onclick="openDossier('kairo')" class="roster-btn group flex items-center justify-between p-4 bg-black border border-gray-800 hover:border-cp-blue transition-all w-full text-left clip-corner-reverse focus:outline-none focus:border-cp-blue">
+                        <div class="flex items-center gap-4">
+                            <span class="text-gray-600 font-bold text-xl group-hover:text-cp-blue transition-colors">01</span>
+                            <div>
+                                <h3 class="text-white font-bold group-hover:text-cp-blue transition-colors">KAIRO</h3>
+                                <p class="text-xs text-gray-500">LEAD HACKER</p>
+                            </div>
                         </div>
-                        <div class="relative group">
-                            <label class="text-xs text-cp-blue font-bold mb-1 block uppercase">Frequency (Email)</label>
-                            <input type="email" class="w-full bg-black border border-gray-600 p-3 text-white focus:outline-none focus:border-cp-blue focus:shadow-neon-blue transition-all font-mono clip-corner-sm" placeholder="ghost@net.io">
-                        </div>
-                    </div>
-                    <div class="relative group">
-                        <label class="text-xs text-cp-blue font-bold mb-1 block uppercase">Encrypted Message</label>
-                        <textarea rows="4" class="w-full bg-black border border-gray-600 p-3 text-white focus:outline-none focus:border-cp-blue focus:shadow-neon-blue transition-all font-mono clip-corner-sm resize-none" placeholder="Enter data packet..."></textarea>
-                    </div>
-
-                    <button type="button" class="w-full py-4 bg-cp-yellow text-black font-cyber font-bold text-xl uppercase tracking-widest hover:bg-white hover:shadow-neon-yellow transition-all clip-corner">
-                        TRANSMIT DATA
+                        <i class="fa-solid fa-chevron-right text-gray-700 group-hover:text-cp-blue transition-colors"></i>
                     </button>
-                </form>
+
+                    <!-- Roster Button 2 -->
+                    <button onclick="openDossier('nova')" class="roster-btn group flex items-center justify-between p-4 bg-black border border-gray-800 hover:border-cp-red transition-all w-full text-left clip-corner-reverse focus:outline-none focus:border-cp-red">
+                        <div class="flex items-center gap-4">
+                            <span class="text-gray-600 font-bold text-xl group-hover:text-cp-red transition-colors">02</span>
+                            <div>
+                                <h3 class="text-white font-bold group-hover:text-cp-red transition-colors">NOVA</h3>
+                                <p class="text-xs text-gray-500">SECURITY OPS</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-gray-700 group-hover:text-cp-red transition-colors"></i>
+                    </button>
+
+                    <!-- Roster Button 3 -->
+                    <button onclick="openDossier('cipher')" class="roster-btn group flex items-center justify-between p-4 bg-black border border-gray-800 hover:border-cp-yellow transition-all w-full text-left clip-corner-reverse focus:outline-none focus:border-cp-yellow">
+                        <div class="flex items-center gap-4">
+                            <span class="text-gray-600 font-bold text-xl group-hover:text-cp-yellow transition-colors">03</span>
+                            <div>
+                                <h3 class="text-white font-bold group-hover:text-cp-yellow transition-colors">CIPHER</h3>
+                                <p class="text-xs text-gray-500">DATA BROKER</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-gray-700 group-hover:text-cp-yellow transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Dynamic Dossier Panel -->
+            <div class="w-full lg:w-2/3 lg:min-h-[500px] relative">
+                <!-- Idle State -->
+                <div id="dossier-idle" class="absolute inset-0 border-2 border-dashed border-gray-800 flex items-center justify-center clip-corner bg-black/20">
+                    <div class="text-center font-mono opacity-50">
+                        <i class="fa-solid fa-fingerprint text-6xl text-gray-700 mb-4 animate-pulse"></i>
+                        <p class="text-gray-500 tracking-[0.2em] text-sm">AWAITING BIOMETRIC SCAN...</p>
+                    </div>
+                </div>
+
+                <!-- Active Dossier Panel (Hidden initially via opacity, managed by JS) -->
+                <div id="dossier-panel" class="opacity-0 pointer-events-none absolute inset-0 bg-black border border-gray-700 clip-corner p-6 md:p-10 flex flex-col transition-all duration-500 transform translate-x-8">
+                    
+                    <div class="flex justify-between items-start mb-8 border-b border-gray-800 pb-4">
+                        <div>
+                            <div id="dos-role" class="text-xs font-mono tracking-widest mb-1 text-cp-yellow">#ROLE</div>
+                            <h3 id="dos-name" class="text-4xl md:text-5xl font-cyber font-bold text-white uppercase glitch-text" data-text="NAME">NAME</h3>
+                        </div>
+                        <div class="hidden sm:block">
+                            <!-- Abstract "Portrait" -->
+                            <div class="w-24 h-24 border border-gray-700 bg-gray-900 clip-corner-sm flex items-center justify-center overflow-hidden relative border-cp-pulse">
+                                <div class="absolute inset-0 bg-scanlines opacity-30"></div>
+                                <i id="dos-icon" class="fa-solid fa-user text-4xl text-gray-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p id="dos-desc" class="text-gray-400 font-mono text-sm leading-relaxed mb-8 h-20">Description goes here.</p>
+
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 font-mono text-xs mt-auto">
+                        <div class="border-t border-gray-800 pt-2">
+                            <span class="text-gray-500 block mb-1">INTEL</span>
+                            <div class="w-full bg-gray-900 h-1"><div id="stat-int" class="h-full w-[0%] transition-all duration-1000 delay-300"></div></div>
+                        </div>
+                        <div class="border-t border-gray-800 pt-2">
+                            <span class="text-gray-500 block mb-1">STRENGTH</span>
+                            <div class="w-full bg-gray-900 h-1"><div id="stat-str" class="h-full w-[0%] transition-all duration-1000 delay-300"></div></div>
+                        </div>
+                        <div class="border-t border-gray-800 pt-2">
+                            <span class="text-gray-500 block mb-1">STEALTH</span>
+                            <div class="w-full bg-gray-900 h-1"><div id="stat-stl" class="h-full w-[0%] transition-all duration-1000 delay-300"></div></div>
+                        </div>
+                        <div class="border-t border-gray-800 pt-2">
+                            <span class="text-gray-500 block mb-1">AURA</span>
+                            <div class="w-full bg-gray-900 h-1"><div id="stat-aur" class="h-full w-[0%] transition-all duration-1000 delay-300"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- 6. CYBER-LOG (Interactive FAQ) -->
+    <section class="py-24 bg-cp-gray/10 border-t border-gray-800" id="faq">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="mb-12 flex justify-between items-end border-b border-gray-800 pb-4">
+                <div>
+                    <h2 class="text-3xl md:text-5xl font-cyber mb-2 text-white">CYBER_<span class="text-cp-blue">LOG</span></h2>
+                    <p class="text-gray-500 font-mono text-sm uppercase">Accessing encrypted local databanks...</p>
+                </div>
+                <div class="hidden md:block text-right text-cp-yellow font-mono text-xs animate-pulse">
+                    [ RECORDING ]
+                </div>
+            </div>
+
+            <!-- Accordion List -->
+            <div class="space-y-4 font-mono">
+                <!-- FAQ Item 1 -->
+                <div class="faq-item border border-gray-800 bg-black overflow-hidden clip-corner-sm group transition-colors duration-300">
+                    <button class="w-full text-left p-6 flex justify-between items-center focus:outline-none group-hover:bg-cp-blue/5 transition-colors" onclick="toggleFaq(this)">
+                        <div class="flex items-center gap-4">
+                            <span class="text-cp-blue font-bold opacity-50 text-sm">Q.01</span>
+                            <h3 class="text-white md:text-lg">Berapa lama waktu implementasi neural-link pada website?</h3>
+                        </div>
+                        <i class="fa-solid fa-plus text-cp-blue transition-transform duration-300 faq-icon"></i>
+                    </button>
+                    <div class="faq-content h-0 overflow-hidden bg-gray-900/50 transition-all duration-300">
+                        <div class="p-6 border-t border-gray-800 text-gray-400 text-sm leading-relaxed flex gap-4">
+                            <span class="text-cp-yellow">></span>
+                            <p class="faq-answer max-w-2xl">Proses standar memakan waktu 2 hingga 4 minggu cycletime. Website landing page "Street Kid" beroperasi dalam 48 jam, sementara sistem "Corpo" yang kompleks membutuhkan penyesuaian matriks hingga satu bulan.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="faq-item border border-gray-800 bg-black overflow-hidden clip-corner-sm group transition-colors duration-300">
+                    <button class="w-full text-left p-6 flex justify-between items-center focus:outline-none group-hover:bg-cp-red/5 transition-colors" onclick="toggleFaq(this)">
+                        <div class="flex items-center gap-4">
+                            <span class="text-cp-red font-bold opacity-50 text-sm">Q.02</span>
+                            <h3 class="text-white md:text-lg">Apakah data klien aman dari peretasan Level 5?</h3>
+                        </div>
+                        <i class="fa-solid fa-plus text-cp-red transition-transform duration-300 faq-icon"></i>
+                    </button>
+                    <div class="faq-content h-0 overflow-hidden bg-gray-900/50 transition-all duration-300">
+                        <div class="p-6 border-t border-gray-800 text-gray-400 text-sm leading-relaxed flex gap-4">
+                            <span class="text-cp-yellow">></span>
+                            <p class="faq-answer max-w-2xl">Keamanan absolut adalah mitos. Namun, kami menerapkan protokol Black ICE kustom, desentralisasi node, dan enkripsi militer 2048-bit. Hanya ghost terbaik yang bisa menembusnya.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="faq-item border border-gray-800 bg-black overflow-hidden clip-corner-sm group transition-colors duration-300">
+                    <button class="w-full text-left p-6 flex justify-between items-center focus:outline-none group-hover:bg-cp-yellow/5 transition-colors" onclick="toggleFaq(this)">
+                        <div class="flex items-center gap-4">
+                            <span class="text-cp-yellow font-bold opacity-50 text-sm">Q.03</span>
+                            <h3 class="text-white md:text-lg">Bisakah saya melakukan upgrade sistem di kemudian hari?</h3>
+                        </div>
+                        <i class="fa-solid fa-plus text-cp-yellow transition-transform duration-300 faq-icon"></i>
+                    </button>
+                    <div class="faq-content h-0 overflow-hidden bg-gray-900/50 transition-all duration-300">
+                        <div class="p-6 border-t border-gray-800 text-gray-400 text-sm leading-relaxed flex gap-4">
+                            <span class="text-cp-yellow">></span>
+                            <p class="faq-answer max-w-2xl">Arsitektur kami modular (Plug & Play). Anda dapat memulai dengan node dasar dan menambahkan modul UI/UX atau Database kustom seiring pertumbuhan traksi jaringan Anda di masa depan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. UPLINK (Interactive Contact Form) -->
+    <section id="uplink" class="min-h-screen flex items-center justify-center relative py-24 bg-black overflow-hidden z-10">
+        <!-- Interactive 3D Grid container (handled by JS) -->
+        <div id="three-grid-bg" class="absolute inset-0 z-0 opacity-40"></div>
+        
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black z-0 pointer-events-none"></div>
+
+        <div class="max-w-3xl w-full mx-auto px-6 relative z-10">
+            <div class="bg-black/80 border border-cp-yellow p-1 backdrop-blur-sm clip-corner shadow-neon-yellow">
+                <!-- Terminal Header -->
+                <div class="bg-cp-yellow text-black flex justify-between items-center px-4 py-2 font-mono font-bold text-sm">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-satellite-dish"></i> DIRECT_UPLINK.EXE
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="w-3 h-3 bg-black rounded-full block"></span>
+                        <span class="w-3 h-3 bg-black rounded-full block"></span>
+                    </div>
+                </div>
+
+                <!-- Form Body -->
+                <div class="p-8 md:p-12 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 border-t border-r border-cp-yellow/20 mt-4 mr-4 pointer-events-none"></div>
+                    <div class="absolute bottom-0 left-0 w-32 h-32 border-b border-l border-cp-yellow/20 mb-4 ml-4 pointer-events-none"></div>
+
+                    <h2 class="text-3xl md:text-4xl font-cyber text-white mb-2 glitch-text" data-text="ESTABLISH CONNECTION">ESTABLISH CONNECTION</h2>
+                    <p class="font-mono text-gray-500 text-xs mb-8">Enter your credentials to transmit unencryptable packets to Neo.IO servers.</p>
+
+                    <form id="cyber-form" class="space-y-6 font-mono" onsubmit="handleFormSubmit(event)">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="relative group">
+                                <label class="text-xs text-cp-yellow mb-1 block uppercase">> CODENAME_</label>
+                                <input type="text" id="form-name" required class="w-full bg-black/50 border border-gray-700 p-3 text-white focus:outline-none focus:border-cp-yellow focus:bg-cp-yellow/5 transition-all text-sm placeholder-gray-700" placeholder="ENTER ALIAS...">
+                                <div class="absolute bottom-0 left-0 h-[1px] bg-cp-yellow w-0 group-focus-within:w-full transition-all duration-300"></div>
+                            </div>
+                            <div class="relative group">
+                                <label class="text-xs text-cp-yellow mb-1 block uppercase">> FREQUENCY (EMAIL)_</label>
+                                <input type="email" id="form-email" required class="w-full bg-black/50 border border-gray-700 p-3 text-white focus:outline-none focus:border-cp-yellow focus:bg-cp-yellow/5 transition-all text-sm placeholder-gray-700" placeholder="ENTER ROUTINE...">
+                                <div class="absolute bottom-0 left-0 h-[1px] bg-cp-yellow w-0 group-focus-within:w-full transition-all duration-300"></div>
+                            </div>
+                        </div>
+                        <div class="relative group">
+                            <label class="text-xs text-cp-yellow mb-1 block uppercase">> ENCRYPTED_PAYLOAD_</label>
+                            <textarea id="form-message" required rows="4" class="w-full bg-black/50 border border-gray-700 p-3 text-white focus:outline-none focus:border-cp-yellow focus:bg-cp-yellow/5 transition-all text-sm placeholder-gray-700 resize-none" placeholder="ENTER DATA PACKET..."></textarea>
+                            <div class="absolute bottom-0 left-0 h-[1px] bg-cp-yellow w-0 group-focus-within:w-full transition-all duration-300"></div>
+                        </div>
+
+                        <!-- Glitch Button -->
+                        <button type="submit" id="submit-btn" class="w-full py-4 mt-4 bg-cp-yellow text-black font-cyber font-bold text-xl uppercase tracking-widest hover:bg-white transition-all clip-corner relative overflow-hidden group">
+                            <span class="relative z-10 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-bolt"></i> <span id="btn-text">TRANSMIT</span>
+                            </span>
+                            <div class="absolute inset-0 bg-white transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out z-0"></div>
+                        </button>
+                        
+                        <!-- Terminal Response Output -->
+                        <div id="form-response" class="hidden mt-4 p-4 border border-green-500 bg-green-500/10 text-green-500 text-xs text-center blink clip-corner-sm">
+                            PACKET TRANSMITTED SUCCESSFULLY. AWAIT REPLY BATCH.
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="bg-black border-t border-gray-800 py-12 font-mono text-xs">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="text-gray-500">
-                <p>NEO.IO SYSTEMS © 2077</p>
-                <p>NO UNAUTHORIZED ACCESS.</p>
+    <footer class="bg-black border-t border-cp-blue py-12 relative overflow-hidden z-10">
+        <!-- Scanline Overlay for footer -->
+        <div class="absolute inset-0 bg-scanlines opacity-10 pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 items-center font-mono text-xs relative z-10">
+            <!-- Left: Branding -->
+            <div class="text-center md:text-left">
+                <h2 class="text-2xl font-cyber text-white mb-2">NEO<span class="text-cp-blue">.IO</span></h2>
+                <p class="text-gray-500 mb-1">ARCHITECTS OF THE GRID v2.0</p>
+                <p class="text-gray-600 tracking-widest uppercase">Unauthorized access is strictly fatal.</p>
             </div>
-            <div class="flex gap-6 text-xl">
-                <a href="#" class="text-gray-500 hover:text-cp-blue transition-colors"><i class="fa-brands fa-discord"></i></a>
-                <a href="#" class="text-gray-500 hover:text-cp-red transition-colors"><i class="fa-brands fa-github"></i></a>
-                <a href="#" class="text-gray-500 hover:text-cp-yellow transition-colors"><i class="fa-brands fa-twitter"></i></a>
+
+            <!-- Center: Coordinates & Status -->
+            <div class="text-center text-gray-500 flex flex-col items-center justify-center">
+                <div class="w-16 h-16 border border-gray-800 rounded-full flex items-center justify-center mb-4 relative">
+                    <div class="w-2 h-2 bg-cp-blue rounded-full animate-ping absolute"></div>
+                    <div class="w-2 h-2 bg-cp-blue rounded-full"></div>
+                    <div class="absolute w-full h-px bg-gray-800 rotate-45"></div>
+                    <div class="absolute w-full h-px bg-gray-800 -rotate-45"></div>
+                </div>
+                <p>LAT: 35.6762° N // LNG: 139.6503° E</p>
+                <p class="text-cp-yellow mt-1">NIGHT CITY SERVER HUB</p>
             </div>
-            <div class="text-right text-gray-600">
-                <p>STATUS: <span class="text-green-500">OPTIMAL</span></p>
-                <p>LOCATION: NIGHT CITY</p>
+            
+            <!-- Right: Links & Copyright -->
+            <div class="text-center md:text-right flex flex-col items-center md:items-end justify-center">
+                <div class="flex gap-4 text-xl mb-4">
+                    <a href="#" class="w-10 h-10 border border-gray-700 text-gray-400 flex items-center justify-center hover:border-cp-blue hover:text-cp-blue transition-colors clip-corner-sm bg-black/50 hover:bg-cp-blue/10"><i class="fa-brands fa-discord"></i></a>
+                    <a href="#" class="w-10 h-10 border border-gray-700 text-gray-400 flex items-center justify-center hover:border-cp-red hover:text-cp-red transition-colors clip-corner-sm bg-black/50 hover:bg-cp-red/10"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="w-10 h-10 border border-gray-700 text-gray-400 flex items-center justify-center hover:border-cp-yellow hover:text-cp-yellow transition-colors clip-corner-sm bg-black/50 hover:bg-cp-yellow/10"><i class="fa-brands fa-twitter"></i></a>
+                </div>
+                <p class="text-gray-600">&copy; 2077 NEO.IO SYSTEMS.</p>
+                <p class="text-gray-700">ALL RIGHTS RESERVED.</p>
             </div>
         </div>
     </footer>
 
+    <!-- Copy Source Code Button (Cyberpunk Style) -->
+    <button onclick="copySourceCode(this)" class="fixed bottom-24 right-6 z-[9999] group px-6 py-3 bg-black border border-cp-blue text-cp-blue clip-corner transition-all duration-300 hover:bg-cp-blue hover:text-black">
+        <div class="flex items-center gap-3 font-mono font-bold tracking-widest uppercase">
+            <i class="fa-regular fa-copy"></i>
+            <span class="text-xs">Copy Source</span>
+        </div>
+    </button>
+
+     <!-- Back to Hub Button (Cyberpunk Style) -->
+     <a href="../../index.html" class="fixed bottom-6 right-6 z-[9999] group">
+        <div class="relative w-14 h-14 bg-black border border-cp-yellow text-cp-yellow flex items-center justify-center clip-corner transition-all duration-300 hover:bg-cp-yellow hover:text-black">
+            <div class="absolute -top-1 -right-1 w-2 h-2 bg-cp-yellow animate-pulse"></div>
+            <i class="fa-solid fa-person-walking-arrow-right text-xl"></i>
+        </div>
+        <div class="absolute bottom-full right-0 mb-2 font-mono text-[10px] text-cp-yellow bg-black border border-cp-yellow px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            RETURN ALONE >>
+        </div>
+    </a>
+
+
     <script>
-        // --- Three.js Digital Rain / Particles ---
-        const initThreeJS = () => {
-            const canvas = document.querySelector('#webgl-canvas');
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-            
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+        // --- Central Data & Logic ---
+        
+        // 1. Terminal Data (For Visual Database Modals)
+        const terminalData = {
+            'SEC.07': `> ACCESSING NIGHT MARKET LOGS...\n\n[10:45] Transaction: Kiroshi Optics v4 (Illegal Modification)\n[11:20] Signal lost in sector G-4.\n[13:00] Warning: Arasaka security sweep imminent.\n\n> END OF LOG`,
+            'SYS.01': `> SCANNING SUBWAY ARCHITECTURE...\n\nMap topology retrieved. \nWarning: High radiation levels detected in lower tunnels.\nRecommended gear: Hazard Suit Mk.II or Android Proxy.\n\n> END OF LOG`,
+            'CRITICAL': `> INITIATING ICE BREAKER PROTOCOL...\n\n[!] ERROR: BLACK ICE DETECTED.\n[!] ERROR: NEURAL FEEDBACK LOOP INITIATED.\n[!] DISCONNECT IMMEDIATELY.\n... \n... \nConnection Terminated safely by proxy server.`,
+            'NULL': `> ERROR 404: REALITY NOT FOUND.\n\nThe coordinates you are looking for belong to a ghost city erased during the DataKrash. Cease inquiry.`,
+            'BIO.11': `> INTERCEPTING SHIPMENT DATA...\n\nCargo: 50x Synthetic Livers (Militech Grade)\nDestination: Clinic 404, Kabuki.\nStatus: Hijacked by Maelstrom.\nAction: Contract available for retrieval. Pay: €$ 45,000.\n\n> END OF LOG`
+        };
 
-            // Particles - Neon Rain
-            const particlesGeometry = new THREE.BufferGeometry();
-            const particlesCount = 1500;
+        function openTerminalModal(id, title, desc) {
+            document.getElementById('terminal-modal').classList.remove('hidden');
+            document.getElementById('modal-id').innerText = id + ".TTY";
+            document.getElementById('modal-title').innerText = title;
             
-            const posArray = new Float32Array(particlesCount * 3);
-            const colorsArray = new Float32Array(particlesCount * 3); // For multicolor
+            // Re-trigger typewriter for content based on ID
+            const content = terminalData[id] || desc;
+            const contentEl = document.getElementById('modal-content');
+            contentEl.innerHTML = ''; // clear
             
-            for(let i = 0; i < particlesCount * 3; i+=3) {
-                posArray[i] = (Math.random() - 0.5) * 20; // x
-                posArray[i+1] = (Math.random() - 0.5) * 20; // y
-                posArray[i+2] = (Math.random() - 0.5) * 20; // z
-
-                // Randomly assign Neon Yellow or Cyan
-                if (Math.random() > 0.5) {
-                    colorsArray[i] = 1; colorsArray[i+1] = 0.93; colorsArray[i+2] = 0.04; // Yellow
-                } else {
-                    colorsArray[i] = 0; colorsArray[i+1] = 0.94; colorsArray[i+2] = 1; // Cyan
+            // Simple typewriter effect for modal
+            let i = 0;
+            function typeWriter() {
+                if (i < content.length) {
+                    contentEl.innerHTML += content.charAt(i) === '\n' ? '<br>' : content.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 15); // Fast typing
                 }
             }
+            // Add slight delay before typing starts
+            setTimeout(typeWriter, 400);
+        }
+
+        function closeTerminalModal() {
+            document.getElementById('terminal-modal').classList.add('hidden');
+            document.getElementById('modal-content').innerHTML = '';
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'Escape') closeTerminalModal();
+        });
+
+        // 2. Dossier Data & Logic
+        const agents = {
+            kairo: {
+                role: 'LEAD HACKER', name: 'KAIRO',
+                desc: 'Mantan operator korporasi yang membelot. Ahli dalam meretas sistem keamanan level 5 dan memanipulasi arus data. Selalu menggunakan neural-link berpendingin cairan.',
+                icon: 'fa-user-secret',
+                stats: { int: '98%', str: '30%', stl: '85%', aur: '60%' },
+                color: 'cp-blue'
+            },
+            nova: {
+                role: 'SECURITY OPS', name: 'NOVA',
+                desc: 'Solo kelas atas dengan tubuh yang 80% telah dimodifikasi secara cybernetic. Menguasai pertarungan jarak dekat dan pengoperasian senjata berat.',
+                icon: 'fa-user-ninja',
+                stats: { int: '40%', str: '95%', stl: '70%', aur: '80%' },
+                color: 'cp-red'
+            },
+            cipher: {
+                role: 'DATA BROKER', name: 'CIPHER',
+                desc: 'Menguasai jaringan pasar gelap. Jika ada data atau hardware ilegal yang Anda butuhkan, Cipher tahu siapa yang menyimpannya. Kharismatik dan berbahaya.',
+                icon: 'fa-robot',
+                stats: { int: '85%', str: '20%', stl: '50%', aur: '95%' },
+                color: 'cp-yellow'
+            }
+        };
+
+        function openDossier(agentKey) {
+            const data = agents[agentKey];
+            if(!data) return;
+
+            // Hide Idle, Show Panel
+            document.getElementById('dossier-idle').style.opacity = '0';
+            const panel = document.getElementById('dossier-panel');
             
-            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
-            
-            const material = new THREE.PointsMaterial({
-                size: 0.03,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.8,
+            // Reset transition classes to trigger animation
+            panel.classList.remove('opacity-100', 'translate-x-0', 'pointer-events-auto');
+            panel.classList.add('opacity-0', 'translate-x-8', 'pointer-events-none');
+
+            // Reset stats width
+            ['int', 'str', 'stl', 'aur'].forEach(stat => {
+                document.getElementById(`stat-${stat}`).style.width = '0%';
             });
-            
-            const particlesMesh = new THREE.Points(particlesGeometry, material);
-            scene.add(particlesMesh);
-            
-            camera.position.z = 5;
 
-            // Animation
-            const animate = () => {
-                requestAnimationFrame(animate);
+            setTimeout(() => {
+                // Populate text
+                document.getElementById('dos-role').innerText = data.role;
+                // Change color of role based on agent
+                document.getElementById('dos-role').className = `text-xs font-mono tracking-widest mb-1 text-${data.color}`;
                 
-                // Falling effect
-                particlesMesh.rotation.y += 0.002;
-                const positions = particlesGeometry.attributes.position.array;
+                const nameEl = document.getElementById('dos-name');
+                nameEl.innerText = data.name;
+                nameEl.setAttribute('data-text', data.name);
                 
-                for(let i = 1; i < particlesCount * 3; i+=3) {
-                    positions[i] -= 0.02; // Move down
-                    if (positions[i] < -10) {
-                        positions[i] = 10; // Reset to top
+                document.getElementById('dos-icon').className = `fa-solid ${data.icon} text-4xl text-gray-600`;
+                document.getElementById('dos-desc').innerText = data.desc;
+
+                // Set stat colors dynamically
+                document.getElementById('stat-int').className = `h-full transition-all duration-1000 delay-300 bg-${data.color}`;
+                document.getElementById('stat-str').className = `h-full transition-all duration-1000 delay-300 bg-${data.color}`;
+                document.getElementById('stat-stl').className = `h-full transition-all duration-1000 delay-300 bg-${data.color}`;
+                document.getElementById('stat-aur').className = `h-full transition-all duration-1000 delay-300 bg-${data.color}`;
+
+
+                // Animate In
+                panel.classList.remove('opacity-0', 'translate-x-8', 'pointer-events-none');
+                panel.classList.add('opacity-100', 'translate-x-0', 'pointer-events-auto');
+
+                // Animate Stats
+                setTimeout(() => {
+                    document.getElementById('stat-int').style.width = data.stats.int;
+                    document.getElementById('stat-str').style.width = data.stats.str;
+                    document.getElementById('stat-stl').style.width = data.stats.stl;
+                    document.getElementById('stat-aur').style.width = data.stats.aur;
+                }, 100);
+
+            }, 300); // Wait for fade out
+        }
+
+        // 3. Cyber-Log (FAQ) Toggle
+        function toggleFaq(btn) {
+            const content = btn.nextElementSibling;
+            const icon = btn.querySelector('.faq-icon');
+            const isActive = content.style.height && content.style.height !== '0px';
+            
+            // Close all others
+            document.querySelectorAll('.faq-content').forEach(el => {
+                el.style.height = '0px';
+                el.previousElementSibling.querySelector('.faq-icon').style.transform = 'rotate(0deg)';
+                el.previousElementSibling.classList.remove('bg-gray-900/30');
+            });
+
+            if (!isActive) {
+                // Open current
+                content.style.height = content.scrollHeight + 'px';
+                icon.style.transform = 'rotate(45deg)';
+                btn.classList.add('bg-gray-900/30');
+            }
+        }
+
+        // 4. Glitch Form Submit Simulation
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const text = document.getElementById('btn-text');
+            const response = document.getElementById('form-response');
+
+            // Loading state
+            text.innerText = "ENCRYPTING...";
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            
+            // Simulate network delay
+            setTimeout(() => {
+                // Reset form
+                document.getElementById('cyber-form').reset();
+                text.innerText = "TRANSMIT";
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                
+                // Show success
+                response.classList.remove('hidden');
+                
+                // Hide success after 4s
+                setTimeout(() => {
+                    response.classList.add('hidden');
+                }, 4000);
+                
+            }, 1500);
+        }
+
+        // --- Lenis Smooth Scrolling ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+            infinite: false,
+        })
+
+        function raf(time) {
+            lenis.raf(time)
+            requestAnimationFrame(raf)
+        }
+        requestAnimationFrame(raf)
+
+        // --- GSAP Hero Typewriter Effect ---
+        function runBootSequence() {
+            const bootLog = [
+                "Initialize kernel... [OK]",
+                "Loading neural drivers... [OK]",
+                "Bypassing ICE... [WARNING: Unauthorized]",
+                "Establishing secure connection to Neo.IO...",
+                "Access Granted."
+            ];
+            
+            const bootContainer = document.getElementById('boot-sequence');
+            let tl = gsap.timeline();
+
+            bootLog.forEach((line, index) => {
+                tl.to(bootContainer, {
+                    delay: 0.1,
+                    onStart: () => {
+                        bootContainer.innerHTML += `<div>> ${line}</div>`;
                     }
-                }
-                particlesGeometry.attributes.position.needsUpdate = true;
+                });
+            });
 
+            // Type hero description after boot sequence
+            tl.to({}, {delay: 0.5, onComplete: () => {
+                 const text = "Kota masa depan menanti. Tingkatkan realitas Anda dengan teknologi cybernetic tercanggih di pasaran gelap.";
+                 const descEl = document.getElementById('hero-desc');
+                 // Clear cursor temporarily
+                 descEl.innerHTML = ''; 
+                 
+                 let i = 0;
+                 function typeDesc() {
+                    if (i < text.length) {
+                        descEl.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(typeDesc, 20); // typing speed
+                    } else {
+                        // Add animated cursor at end
+                        descEl.innerHTML += '<span class="type-cursor text-cp-yellow ml-1 block mt-2 inline-block shadow-neon-yellow shadow-sm bg-cp-yellow w-3 h-5 align-middle"></span>';
+                    }
+                 }
+                 typeDesc();
+            }});
+        }
+        // Run boot sequence on load
+        window.onload = runBootSequence;
+
+        // --- Three.js Interactive Grid for Uplink Section ---
+        const initInteractiveGrid = () => {
+            const container = document.getElementById('three-grid-bg');
+            if(!container) return;
+
+            const scene = new THREE.Scene();
+            // Use Orthographic for flat retro grid look or Perspective for depth
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            // Create Grid Helper
+            // size, divisions, colorCenterLine, colorGrid
+            const gridHelper = new THREE.GridHelper(50, 50, 0xfcee0a, 0x333333);
+            gridHelper.position.y = -2; // move down
+            // Slightly tilt
+            gridHelper.rotation.x = Math.PI / 16; 
+            scene.add(gridHelper);
+
+            camera.position.z = 10;
+            camera.position.y = 2;
+
+            // Mouse Interaction Logic
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+            const windowHalfX = window.innerWidth / 2;
+            const windowHalfY = window.innerHeight / 2;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX - windowHalfX) * 0.005;
+                // invert Y
+                mouseY = (event.clientY - windowHalfY) * 0.005; 
+            });
+
+            const animateGrid = () => {
+                requestAnimationFrame(animateGrid);
+                
+                // Interpolate target values for smooth camera movement
+                targetX = mouseX * 2;
+                targetY = mouseY * 2;
+                
+                camera.position.x += (targetX - camera.position.x) * 0.02;
+                // optional: camera.position.y += (targetY - camera.position.y) * 0.02;
+                
+                // Slowly move grid forward to simulate movement
+                gridHelper.position.z += 0.02;
+                if(gridHelper.position.z > 2) {
+                    gridHelper.position.z = 0; // reset
+                }
+
+                camera.lookAt(scene.position);
                 renderer.render(scene, camera);
             };
             
-            animate();
+            animateGrid();
 
-            // Resize
+            // Resize handle
             window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.aspect = container.clientWidth / container.clientHeight;
                 camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setSize(container.clientWidth, container.clientHeight);
             });
         };
+        // Initialize 3D grid
+        initInteractiveGrid();
 
-        initThreeJS();
-
-        // --- GSAP Animations ---
+        // --- GSAP Scroll Animations ---
         gsap.registerPlugin(ScrollTrigger);
 
-        // Glitch reveal for sections
-        gsap.utils.toArray('section').forEach(section => {
-            gsap.from(section.children, {
+        // General fade-in for section content
+        gsap.utils.toArray('section > div').forEach(sectionDiv => {
+            gsap.from(sectionDiv, {
                 scrollTrigger: {
-                    trigger: section,
-                    start: "top 80%",
+                    trigger: sectionDiv,
+                    start: "top 85%", // animation starts when element is 85% into view
                 },
-                y: 50,
+                y: 30,
                 opacity: 0,
                 duration: 0.8,
-                stagger: 0.2,
                 ease: "power2.out"
             });
         });
 
-        // Hover Effect for Glitch Text
-        const glitchTexts = document.querySelectorAll('.glitch-hover');
-        glitchTexts.forEach(text => {
-            text.addEventListener('mouseover', () => {
-                gsap.to(text, { skewX: 10, duration: 0.1, yoyo: true, repeat: 5 });
-            });
-        });
+        // Mobile Menu Toggle
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const icon = mobileBtn ? mobileBtn.querySelector('i') : null;
 
+        if (mobileBtn && mobileMenu) {
+            function toggleMenu() {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('flex');
+                if (mobileMenu.classList.contains('hidden')) {
+                    icon.classList.remove('fa-xmark');
+                    icon.classList.add('fa-bars');
+                    mobileBtn.classList.remove('text-cp-red');
+                    mobileBtn.classList.add('text-cp-yellow');
+                } else {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-xmark');
+                    mobileBtn.classList.remove('text-cp-yellow');
+                    mobileBtn.classList.add('text-cp-red');
+                }
+            }
+
+            mobileBtn.addEventListener('click', toggleMenu);
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.addEventListener('click', toggleMenu);
+            });
+        }
     </script>
-            <!-- Back to Hub Bubble -->
-    <a href="../../index.html" class="fixed bottom-6 right-6 w-14 h-14 bg-white text-[#d4af37] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 hover:-translate-y-1 transition-all z-[9999] border-2 border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.4)] group">
-        <i class="fa-solid fa-house text-xl group-hover:text-yellow-600 transition-colors"></i>
+
+        // Global Copy Script
+        function copySourceCode(btn) {
+            const htmlContent = document.documentElement.outerHTML;
+            navigator.clipboard.writeText(htmlContent).then(() => {
+                const originalContent = btn.innerHTML;
+                
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3 font-mono font-bold tracking-widest uppercase text-cp-yellow">
+                        <i class="fa-solid fa-check"></i>
+                        <span class="text-xs">Transmitted</span>
+                    </div>
+                `;
+                btn.classList.add('border-cp-yellow');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.remove('border-cp-yellow');
+                }, 2000);
+            });
+        }
+    </script>
+    <!-- Cyberpunk Terminal Back Button -->
+    <a href="../../index.html" class="fixed bottom-8 right-8 z-[9999] group flex flex-row-reverse items-center h-14 w-14 hover:w-48 bg-black border border-cp-yellow shadow-neon-yellow transition-all duration-300 ease-out clip-corner overflow-hidden cursor-crosshair before:absolute before:-inset-8" aria-label="System Exit">
+        
+        <!-- Status Indicator (Pulse) -->
+        <div class="absolute -top-1 -right-1 w-2 h-2 bg-cp-yellow space-x-1 animate-pulse z-20 pointer-events-none"></div>
+
+        <!-- Terminal Icon Block (Fixed Right) -->
+        <div class="w-14 h-full shrink-0 flex items-center justify-center text-cp-yellow group-hover:bg-cp-yellow group-hover:text-black transition-colors duration-200 relative z-10 border-l border-transparent group-hover:border-black pointer-events-none">
+            <i class="fa-solid fa-arrow-left text-xl"></i>
+        </div>
+
+        <!-- Terminal Text Block -->
+        <div class="w-[136px] shrink-0 h-full flex items-center justify-start pl-4 font-mono text-[11px] font-bold tracking-widest text-cp-yellow opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            <span class="relative">
+                BACK
+                <span class="absolute bottom-[-4px] left-0 w-full h-[2px] bg-cp-yellow scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 delay-100"></span>
+            </span>
+        </div>
+        
     </a>
 </body>
 </html>

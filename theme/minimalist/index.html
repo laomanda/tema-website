@@ -143,12 +143,19 @@
                 <a href="#contact" class="link-line">Get in Touch</a>
             </div>
 
-            <!-- Mobile Menu Toggle (Visual only for minimal aesthetic) -->
-            <button class="md:hidden text-lg">
+            <!-- Mobile Menu Toggle -->
+            <button id="mobile-menu-btn" class="md:hidden text-lg z-50 mix-blend-difference text-pure-white transition-transform">
                 <i class="fa-solid fa-grip-lines"></i>
             </button>
         </div>
     </nav>
+    
+    <!-- Fullscreen Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-pure-white z-40 hidden flex-col justify-center items-center gap-8 text-ink opacity-0 transition-opacity duration-500">
+        <a href="#work" class="mobile-nav-link text-2xl font-serif uppercase tracking-widest link-line">Works</a>
+        <a href="#services" class="mobile-nav-link text-2xl font-serif uppercase tracking-widest link-line">Expertise</a>
+        <a href="#contact" class="mobile-nav-link text-2xl font-serif uppercase tracking-widest link-line">Contact</a>
+    </div>
 
     <!-- 1. HERO: Massive Typography & Whitespace -->
     <section class="min-h-screen flex flex-col justify-end px-6 md:px-12 pb-12 md:pb-24 pt-32">
@@ -438,9 +445,33 @@
         </div>
     </section>
 
-    <!-- Back to Hub Bubble -->
-    <a href="../../index.html" class="fixed bottom-6 right-6 w-14 h-14 bg-[#d4af37] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 hover:-translate-y-1 transition-all z-[9999] border-2 border-white/50 group">
-        <i class="fa-solid fa-house text-xl group-hover:text-black transition-colors"></i>
+    <!-- Copy Source Code Button -->
+    <button onclick="copySourceCode(this)" class="fixed bottom-24 right-8 z-[9999] group mix-blend-difference block before:absolute before:-inset-8 before:-z-10" aria-label="Copy Source Code">
+        <div class="relative flex flex-row-reverse items-center h-14 w-14 bg-pure-white rounded-full overflow-hidden transition-all duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] shadow-sm">
+            <div class="w-14 h-14 shrink-0 flex items-center justify-center text-pure-black relative z-10 transition-transform duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:-translate-x-1">
+                <i class="fa-regular fa-copy"></i>
+            </div>
+            <span class="w-[88px] shrink-0 flex items-center justify-center border-r border-transparent font-sans text-[11px] uppercase tracking-widest text-pure-black font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-[800ms] whitespace-nowrap pl-2">
+                COPY
+            </span>
+        </div>
+    </button>
+
+    <!-- Advanced Minimalist Back Button (Expanding Invert Pill) -->
+    <a href="../../index.html" class="fixed bottom-8 right-8 z-[9999] group mix-blend-difference block before:absolute before:-inset-8 before:-z-10" aria-label="Return to Index">
+        <div class="relative flex flex-row-reverse items-center h-14 w-14 group-hover:w-36 bg-pure-white rounded-full overflow-hidden transition-all duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] shadow-sm">
+            
+            <!-- Icon -->
+            <div class="w-14 h-14 shrink-0 flex items-center justify-center text-pure-black relative z-10 transition-transform duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:-translate-x-1">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
+            </div>
+            
+            <!-- Sliding Text -->
+            <span class="w-[88px] shrink-0 flex items-center justify-center border-r border-transparent font-sans text-[11px] uppercase tracking-widest text-pure-black font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-[800ms] whitespace-nowrap pl-2">
+                BACK
+            </span>
+
+        </div>
     </a>
 
     <script>
@@ -514,7 +545,67 @@
             
             // Keyframe animation handled by tailwind for small scroll line
             // Marquee animation handled by pure CSS keyframes for infinite smooth loop
+            
+            // Mobile menu toggle
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileIcon = mobileBtn ? mobileBtn.querySelector('i') : null;
+            
+            function toggleMenu() {
+                if (!mobileMenu || !mobileIcon) return;
+                const isOpen = !mobileMenu.classList.contains('hidden');
+                
+                if (isOpen) {
+                    mobileMenu.classList.remove('opacity-100');
+                    mobileMenu.classList.add('opacity-0');
+                    mobileIcon.className = "fa-solid fa-grip-lines";
+                    setTimeout(() => {
+                        mobileMenu.classList.add('hidden');
+                        mobileMenu.classList.remove('flex');
+                        document.body.style.overflow = '';
+                    }, 500);
+                } else {
+                    mobileMenu.classList.remove('hidden');
+                    mobileMenu.classList.add('flex');
+                    mobileIcon.className = "fa-solid fa-xmark";
+                    document.body.style.overflow = 'hidden';
+                    // Trigger reflow
+                    void mobileMenu.offsetWidth;
+                    mobileMenu.classList.remove('opacity-0');
+                    mobileMenu.classList.add('opacity-100');
+                }
+            }
+
+            if (mobileBtn && mobileMenu) {
+                mobileBtn.addEventListener('click', toggleMenu);
+                
+                document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                    link.addEventListener('click', toggleMenu);
+                });
+            }
         });
+
+        // Global Copy Script
+        function copySourceCode(btn) {
+            const htmlContent = document.documentElement.outerHTML;
+            navigator.clipboard.writeText(htmlContent).then(() => {
+                const container = btn.querySelector('div');
+                const originalHTML = container.innerHTML;
+                
+                container.innerHTML = `
+                    <div class="w-14 h-14 shrink-0 flex items-center justify-center text-emerald-600 relative z-10">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <span class="w-[88px] shrink-0 flex items-center justify-center font-sans text-[11px] uppercase tracking-widest text-emerald-600 font-bold whitespace-nowrap pl-2">
+                        DONE
+                    </span>
+                `;
+                
+                setTimeout(() => {
+                    container.innerHTML = originalHTML;
+                }, 2000);
+            });
+        }
     </script>
 
 </body>

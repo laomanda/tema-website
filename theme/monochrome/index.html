@@ -33,36 +33,41 @@
         }
     </script>
     <style>
-        body {
+        html, body {
             background-color: #000000;
             color: #ffffff;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
             font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+            scroll-behavior: smooth;
         }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 0px; } /* Hide to make it extremely raw */
 
-        /* Typography */
+        /* Responsive Typography */
         .text-giant {
-            font-size: clamp(4rem, 15vw, 16rem);
-            line-height: 0.85;
+            font-size: clamp(3rem, 12vw, 15rem);
+            line-height: 0.9;
             letter-spacing: -0.04em;
             text-transform: uppercase;
+            word-wrap: break-word; /* Prevents overflow */
         }
         .text-huge {
-            font-size: clamp(3rem, 8vw, 8rem);
-            line-height: 0.9;
+            font-size: clamp(2rem, 8vw, 8rem);
+            line-height: 1;
             letter-spacing: -0.02em;
             text-transform: uppercase;
+            word-wrap: break-word;
         }
 
         /* Brutalist Borders & Grid */
         .brutal-border { border: 2px solid #ffffff; }
         .brutal-border-b { border-bottom: 2px solid #ffffff; }
         .brutal-border-t { border-top: 2px solid #ffffff; }
+        .brutal-border-r { border-right: 2px solid #ffffff; }
+        .brutal-border-l { border-left: 2px solid #ffffff; }
 
         /* Hover Invert Effect */
         .hover-invert { transition: background-color 0.3s, color 0.3s; cursor: pointer; }
@@ -76,10 +81,19 @@
             -webkit-text-stroke: 2px #ffffff;
             color: transparent;
         }
+        /* Fix outline stroke size on tiny mobile */
+        @media (max-width: 640px) {
+            .text-outline { -webkit-text-stroke: 1px #ffffff; }
+        }
+
         .text-outline-dark {
             -webkit-text-stroke: 2px #000000;
             color: transparent;
         }
+        @media (max-width: 640px) {
+            .text-outline-dark { -webkit-text-stroke: 1px #000000; }
+        }
+
         .hover-fill:hover {
             -webkit-text-stroke: 0px transparent;
             color: #ffffff;
@@ -88,7 +102,9 @@
         /* Horizontal Scroll Container */
         .horizontal-section {
             overflow: hidden;
-            height: 100vh; /* Viewport height for pinning */
+            height: 100vh;
+            /* Use dvh for mobile address bar compensation */
+            height: 100dvh;
             background-color: #000000;
         }
         .horizontal-scroll-wrapper {
@@ -99,15 +115,18 @@
         }
         
         .gallery-card {
-            width: 80vw;
-            height: 100vh;
+            width: 100vw; /* Full width on mobile */
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 4rem;
+            padding: 2rem;
             flex-shrink: 0;
             border-right: 2px solid #ffffff;
             position: relative;
+        }
+        @media (min-width: 768px) {
+            .gallery-card { width: 80vw; padding: 4rem; }
         }
 
         /* CSS Abstract Art for Brutalist gallery */
@@ -147,8 +166,8 @@
         }
 
         /* Art 3: Giant Typos */
-        .art-typo { background: #000; color: #fff; flex-direction: column; align-items: flex-start; padding: 4rem;}
-        .art-typo .txt { font-family: 'Syne', sans-serif; font-size: 30vmin; font-weight: 800; line-height: 0.8; letter-spacing: -0.05em; }
+        .art-typo { background: #000; color: #fff; flex-direction: column; align-items: flex-start; padding: 4rem; }
+        .art-typo .txt { font-family: 'Syne', sans-serif; font-size: 25vmin; font-weight: 800; line-height: 0.8; letter-spacing: -0.05em; word-break: break-all;}
 
         /* Art 4: Split screen */
         .art-split { background: linear-gradient(90deg, #000 50%, #fff 50%); }
@@ -159,39 +178,39 @@
 <body class="selection:bg-white selection:text-black">
 
     <!-- Fixed Header -->
-    <header class="fixed w-full top-0 z-50 p-6 flex justify-between items-start mix-blend-difference text-white font-sans text-xs uppercase font-bold tracking-[0.2em] pointer-events-none">
+    <header class="fixed w-full top-0 z-50 p-6 md:p-8 flex justify-between items-start mix-blend-difference text-white font-sans text-[10px] md:text-xs uppercase font-bold tracking-[0.2em] pointer-events-none">
         <div>
-            <span class="block text-2xl font-display font-extrabold tracking-tighter pointer-events-auto cursor-pointer">MONO.</span>
-            <span class="block mt-2">Design Studio</span>
+            <span class="block text-xl md:text-2xl font-display font-extrabold tracking-tighter pointer-events-auto cursor-pointer">MONO.</span>
+            <span class="block mt-2 hidden sm:block">Design Studio</span>
         </div>
         <div class="text-right flex flex-col items-end gap-1 pointer-events-auto">
-            <a href="#manifesto" class="hover:line-through">Manifesto</a>
-            <a href="#exhibition" class="hover:line-through">Exhibition</a>
-            <a href="#capabilities" class="hover:line-through">Capabilities</a>
-            <a href="#contact" class="hover:line-through">Contact</a>
+            <a href="#manifesto" class="hover:line-through transition-all">Manifesto</a>
+            <a href="#exhibition" class="hover:line-through transition-all">Exhibition</a>
+            <a href="#capabilities" class="hover:line-through transition-all">Capabilities</a>
+            <a href="#contact" class="hover:line-through transition-all">Contact</a>
         </div>
     </header>
 
     <!-- 1. HERO -->
-    <section class="h-screen flex flex-col justify-center px-6 md:px-12 pt-32 pb-12 brutal-border-b relative overflow-hidden bg-black">
+    <section class="min-h-screen md:h-screen flex flex-col justify-center px-6 md:px-12 pt-32 pb-12 brutal-border-b relative overflow-hidden bg-black">
         <div class="h-full flex flex-col justify-between max-w-[2000px] w-full mx-auto relative z-10">
-            <div class="max-w-2xl reveal-up opacity-0">
-                <p class="font-sans text-sm md:text-base uppercase tracking-widest font-bold mb-8">Raw. Unfiltered. Absolute.</p>
+            <div class="max-w-2xl reveal-up opacity-0 mt-8 md:mt-0">
+                <p class="font-sans text-xs md:text-sm uppercase tracking-widest font-bold mb-6 md:mb-8">Raw. Unfiltered. Absolute.</p>
                 <!-- Brutalist lines -->
-                <div class="w-32 md:w-48 h-2 bg-white mb-2"></div>
-                <div class="w-16 md:w-24 h-2 bg-white mb-2"></div>
-                <div class="w-48 md:w-64 h-2 bg-white mb-12"></div>
+                <div class="w-24 md:w-48 h-1 md:h-2 bg-white mb-2"></div>
+                <div class="w-12 md:w-24 h-1 md:h-2 bg-white mb-2"></div>
+                <div class="w-32 md:w-64 h-1 md:h-2 bg-white mb-10 md:mb-12"></div>
             </div>
             
-            <div class="reveal-up opacity-0">
+            <div class="reveal-up opacity-0 flex-1 flex flex-col justify-center py-8">
                 <h1 class="text-giant font-display font-bold">
                     Pure<br>
-                    <span class="text-outline cursor-default hover-fill transition-all duration-500 block">Contrast.</span>
+                    <span class="text-outline cursor-default hover-fill transition-all duration-500 block break-words">Contrast.</span>
                 </h1>
             </div>
             
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 font-sans text-xs font-bold uppercase tracking-widest reveal-up opacity-0 mt-8">
-                <p>Scroll to explore</p>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-8 font-sans text-[10px] md:text-xs font-bold uppercase tracking-widest reveal-up opacity-0 mt-0 md:mt-8">
+                <p class="border-b border-white pb-1">Scroll to explore</p>
                 <div class="text-left md:text-right">
                     <p class="mb-1">Vol. 01 / 2024</p>
                     <p>Global Impact</p>
@@ -201,11 +220,11 @@
     </section>
 
     <!-- 2. MANIFESTO -->
-    <section id="manifesto" class="py-32 px-6 md:px-12 brutal-border-b bg-white text-black overflow-hidden relative">
+    <section id="manifesto" class="py-24 md:py-32 lg:py-48 px-6 md:px-12 brutal-border-b bg-white text-black overflow-hidden relative">
         <div class="max-w-[2000px] mx-auto">
-            <h2 class="font-sans text-sm uppercase font-bold mb-16 md:mb-24 tracking-widest">— The Manifesto</h2>
+            <h2 class="font-sans text-xs md:text-sm uppercase font-bold mb-12 md:mb-24 tracking-widest">— The Manifesto</h2>
             <h3 class="text-huge font-display font-bold text-black leading-none max-w-7xl reveal-line opacity-0 translate-y-12">
-                WE STRIP AWAY THE NOISE. WE BELIEVE IN THE POWER OF BLACK AND WHITE, THE STRICT GRID, AND MASSIVE TYPOGRAPHY.<br><br> DECORATION IS DISTRACTION. WE BUILD SYSTEMS THAT COMMAND ATTENTION THROUGH <span class="text-outline-dark">RAW STRUCTURE ALONE.</span>
+                WE STRIP AWAY THE NOISE. WE BELIEVE IN THE POWER OF BLACK AND WHITE, THE STRICT GRID, AND MASSIVE TYPOGRAPHY.<br class="hidden md:block"><br class="hidden md:block"> DECORATION IS DISTRACTION. WE BUILD SYSTEMS THAT COMMAND ATTENTION THROUGH <span class="text-outline-dark">RAW STRUCTURE ALONE.</span>
             </h3>
         </div>
     </section>
@@ -213,20 +232,20 @@
     <!-- 3. EXHIBITION (Horizontal Scroll) -->
     <section id="exhibition" class="horizontal-section relative border-b-2 border-white">
         <!-- Progress bar mapped to horizontal scroll -->
-        <div class="absolute top-0 left-0 w-full h-[2px] bg-white/20 z-10">
+        <div class="absolute top-0 left-0 w-full h-[2px] bg-white/20 z-10 pointer-events-none">
             <div class="h-full bg-white w-0" id="scroll-progress"></div>
         </div>
 
         <div class="horizontal-scroll-wrapper" id="scroll-wrapper">
             
             <!-- Intro Panel -->
-            <div class="w-screen md:w-[50vw] h-screen flex flex-col justify-between md:justify-end p-6 md:p-12 border-r-2 border-white flex-shrink-0 relative overflow-hidden bg-black group">
-                <div class="absolute inset-0 border-8 border-white m-4 opacity-10 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+            <div class="w-screen md:w-[50vw] h-full flex flex-col justify-between md:justify-end p-6 md:p-12 border-r-2 border-white flex-shrink-0 relative overflow-hidden bg-black group pt-32 md:pt-12">
+                <div class="absolute inset-0 border-4 md:border-8 border-white m-4 opacity-10 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
                 
-                <h2 class="text-huge font-display font-bold mb-8 text-outline mt-32 md:mt-0">01.</h2>
-                <div>
-                    <h3 class="text-5xl md:text-6xl lg:text-8xl font-display font-bold uppercase mb-8">Selected<br>Works</h3>
-                    <p class="font-sans font-bold uppercase tracking-widest text-xs max-w-xs text-gray-400">Scroll horizontally to view our brutalist exhibition pieces.</p>
+                <h2 class="text-huge font-display font-bold mb-8 md:mb-12 text-outline mt-16 md:mt-0">01.</h2>
+                <div class="mb-8 md:mb-0">
+                    <h3 class="text-5xl md:text-6xl lg:text-8xl font-display font-bold uppercase mb-6 md:mb-8 leading-none">Selected<br>Works</h3>
+                    <p class="font-sans font-bold uppercase tracking-widest text-[10px] md:text-xs max-w-[200px] md:max-w-xs text-gray-400">Scroll horizontally to view our brutalist exhibition pieces.</p>
                 </div>
             </div>
 
@@ -235,8 +254,8 @@
                 <div class="art-canvas art-circle">
                     <div class="shape"><div class="line"></div></div>
                     <div class="absolute bottom-6 md:bottom-12 left-6 md:left-12 mix-blend-difference text-white">
-                        <h4 class="font-display text-4xl md:text-6xl lg:text-7xl font-bold uppercase mb-2">The Void</h4>
-                        <p class="font-sans text-xs md:text-sm uppercase tracking-widest font-bold">Spatial Design</p>
+                        <h4 class="font-display text-4xl md:text-6xl lg:text-7xl font-bold uppercase mb-2 leading-none">The Void</h4>
+                        <p class="font-sans text-[10px] md:text-xs uppercase tracking-widest font-bold">Spatial Design</p>
                     </div>
                 </div>
             </div>
@@ -246,8 +265,8 @@
                 <div class="art-canvas art-grid">
                     <div class="shape"></div>
                     <div class="absolute bottom-6 md:bottom-12 left-6 md:left-12 bg-black text-white p-4 md:p-6 border-2 border-white">
-                        <h4 class="font-display text-4xl md:text-6xl font-bold uppercase mb-2">Structure 02</h4>
-                        <p class="font-sans text-xs md:text-sm uppercase tracking-widest font-bold">Architecture</p>
+                        <h4 class="font-display text-4xl md:text-6xl font-bold uppercase mb-2 leading-none">Structure 02</h4>
+                        <p class="font-sans text-[10px] md:text-xs uppercase tracking-widest font-bold">Architecture</p>
                     </div>
                 </div>
             </div>
@@ -257,9 +276,9 @@
                 <div class="art-canvas art-typo">
                     <div class="txt">DATA.</div>
                     <div class="txt text-transparent" style="-webkit-text-stroke: 2px #fff; -webkit-text-fill-color: transparent;">BASE.</div>
-                    <div class="absolute top-6 md:top-12 right-6 md:right-12 text-right">
-                        <p class="font-sans text-xs md:text-sm uppercase tracking-widest font-bold text-white mb-2">Brand Identity</p>
-                        <p class="font-sans text-xs uppercase text-gray-400">Case Study 03</p>
+                    <div class="absolute top-6 bottom-auto md:top-12 right-6 md:right-12 text-right">
+                        <p class="font-sans text-[10px] md:text-xs uppercase tracking-widest font-bold text-white mb-2">Brand Identity</p>
+                        <p class="font-sans text-[10px] md:text-xs uppercase text-gray-400">Case Study 03</p>
                     </div>
                 </div>
             </div>
@@ -269,19 +288,19 @@
                 <div class="art-canvas art-split">
                     <div class="shape"></div>
                     <div class="absolute bottom-6 md:bottom-12 left-6 md:left-12 mix-blend-difference text-white z-10 w-full pr-12">
-                        <h4 class="font-display text-4xl md:text-6xl lg:text-7xl font-bold uppercase mb-2">Duality Concept</h4>
-                        <div class="w-full bg-white h-[2px] my-4"></div>
-                        <p class="font-sans text-xs md:text-sm uppercase tracking-widest font-bold">Digital Art & UI</p>
+                        <h4 class="font-display text-4xl md:text-6xl lg:text-7xl font-bold uppercase mb-2 leading-none">Duality Concept</h4>
+                        <div class="w-[80%] md:w-full bg-white h-[2px] my-4"></div>
+                        <p class="font-sans text-[10px] md:text-xs uppercase tracking-widest font-bold">Digital Art & UI</p>
                     </div>
                 </div>
             </div>
 
             <!-- Outro Panel -->
-            <div class="w-screen md:w-[50vw] h-screen flex flex-col items-center justify-center p-6 border-r-2 border-transparent flex-shrink-0 hover-invert bg-black text-white">
-                <a href="#" class="text-5xl md:text-7xl lg:text-8xl font-display font-bold uppercase text-center block w-full leading-none group">
+            <div class="w-screen md:w-[50vw] h-full flex flex-col items-center justify-center p-6 border-r-2 border-transparent flex-shrink-0 hover-invert bg-black text-white transition-colors duration-500">
+                <a href="#" class="text-4xl md:text-7xl lg:text-8xl font-display font-bold uppercase text-center block w-full leading-none group text-inherit">
                     <span class="block mb-4">View</span>
                     <span class="block mb-4">Archive</span>
-                    <i class="fa-solid fa-arrow-right mt-8 transform group-hover:translate-x-8 transition-transform duration-300"></i>
+                    <i class="fa-solid fa-arrow-right mt-8 text-3xl md:text-5xl transform group-hover:translate-x-8 transition-transform duration-300"></i>
                 </a>
             </div>
 
@@ -290,70 +309,71 @@
 
     <!-- 4. CAPABILITIES & PROCESS -->
     <section id="capabilities" class="bg-black text-white">
-        <div class="grid grid-cols-1 lg:grid-cols-2 divide-y-2 lg:divide-y-0 lg:divide-x-2 divide-white">
+        <!-- Replaced grid with stacked columns on mobile, proper divider logic -->
+        <div class="flex flex-col lg:flex-row w-full divide-y-2 lg:divide-y-0 lg:divide-x-2 divide-white border-b-2 border-white">
             
             <!-- Left: Process -->
-            <div class="p-6 md:p-12 lg:p-24 flex flex-col min-h-screen justify-center">
+            <div class="w-full lg:w-1/2 p-6 md:p-12 lg:p-24 flex flex-col min-h-screen justify-center">
                 <h2 class="font-sans text-xs md:text-sm uppercase font-bold mb-16 md:mb-32 tracking-widest text-gray-400">— The Process</h2>
                 
-                <div class="flex-1 flex flex-col justify-center space-y-24">
+                <div class="flex-1 flex flex-col justify-center space-y-16 md:space-y-24 py-8">
                     <div class="reveal-process opacity-0 translate-y-8">
-                        <div class="flex items-center gap-6 mb-6">
-                            <h3 class="text-6xl md:text-8xl font-display font-bold">01</h3>
+                        <div class="flex items-center gap-4 md:gap-6 mb-6">
+                            <h3 class="text-5xl md:text-7xl lg:text-8xl font-display font-bold leading-none">01</h3>
                             <div class="flex-1 h-[2px] bg-white"></div>
                         </div>
-                        <h4 class="text-3xl md:text-4xl font-display font-bold mb-4 uppercase">Deconstruct</h4>
-                        <p class="font-sans font-bold text-sm md:text-base max-w-md text-gray-400">We tear the brief apart. Finding the absolute core truth of the brand or product, stripping away all assumptions.</p>
+                        <h4 class="text-2xl md:text-4xl font-display font-bold mb-4 uppercase">Deconstruct</h4>
+                        <p class="font-sans font-bold text-xs md:text-sm lg:text-base max-w-md text-gray-400 leading-relaxed">We tear the brief apart. Finding the absolute core truth of the brand or product, stripping away all assumptions.</p>
                     </div>
                     
                     <div class="reveal-process opacity-0 translate-y-8">
-                        <div class="flex items-center gap-6 mb-6">
-                            <h3 class="text-6xl md:text-8xl font-display font-bold">02</h3>
+                        <div class="flex items-center gap-4 md:gap-6 mb-6">
+                            <h3 class="text-5xl md:text-7xl lg:text-8xl font-display font-bold leading-none">02</h3>
                             <div class="flex-1 h-[2px] bg-white"></div>
                         </div>
-                        <h4 class="text-3xl md:text-4xl font-display font-bold mb-4 uppercase">Rebuild</h4>
-                        <p class="font-sans font-bold text-sm md:text-base max-w-md text-gray-400">Using severe brutalist constraints, we engineer robust, highly functional structures and systems.</p>
+                        <h4 class="text-2xl md:text-4xl font-display font-bold mb-4 uppercase">Rebuild</h4>
+                        <p class="font-sans font-bold text-xs md:text-sm lg:text-base max-w-md text-gray-400 leading-relaxed">Using severe brutalist constraints, we engineer robust, highly functional structures and systems.</p>
                     </div>
                     
                     <div class="reveal-process opacity-0 translate-y-8">
-                        <div class="flex items-center gap-6 mb-6">
-                            <h3 class="text-6xl md:text-8xl font-display font-bold">03</h3>
+                        <div class="flex items-center gap-4 md:gap-6 mb-6">
+                            <h3 class="text-5xl md:text-7xl lg:text-8xl font-display font-bold leading-none">03</h3>
                             <div class="flex-1 h-[2px] bg-white"></div>
                         </div>
-                        <h4 class="text-3xl md:text-4xl font-display font-bold mb-4 uppercase">Execute</h4>
-                        <p class="font-sans font-bold text-sm md:text-base max-w-md text-gray-400">Deployment with meticulous precision. Zero fluff. Pure, unfiltered performance and impact.</p>
+                        <h4 class="text-2xl md:text-4xl font-display font-bold mb-4 uppercase">Execute</h4>
+                        <p class="font-sans font-bold text-xs md:text-sm lg:text-base max-w-md text-gray-400 leading-relaxed">Deployment with meticulous precision. Zero fluff. Pure, unfiltered performance and impact.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Right: Table of Capabilities -->
-            <div class="flex flex-col">
-                <div class="p-6 md:p-12 brutal-border-b">
+            <div class="w-full lg:w-1/2 flex flex-col">
+                <div class="p-6 md:p-12 brutal-border-b bg-black">
                     <h2 class="font-sans text-xs md:text-sm uppercase font-bold tracking-widest text-gray-400">— Core Capabilities</h2>
                 </div>
                 <!-- Rows -->
                 <a href="#" class="flex-1 flex flex-col justify-center p-6 md:p-12 brutal-border-b hover-invert group">
-                    <div class="flex justify-between items-center w-full">
-                        <span class="text-4xl md:text-6xl lg:text-7xl font-display font-bold uppercase max-w-[80%] break-words leading-none">Architecture</span>
-                        <i class="fa-solid fa-arrow-right -rotate-45 text-3xl group-hover:rotate-0 transition-transform duration-300"></i>
+                    <div class="flex justify-between items-center w-full gap-4">
+                        <span class="text-3xl md:text-5xl lg:text-7xl font-display font-bold uppercase break-words leading-none">Architecture</span>
+                        <i class="fa-solid fa-arrow-right -rotate-45 text-2xl md:text-4xl shrink-0 group-hover:rotate-0 transition-transform duration-300"></i>
                     </div>
                 </a>
                 <a href="#" class="flex-1 flex flex-col justify-center p-6 md:p-12 brutal-border-b hover-invert group">
-                    <div class="flex justify-between items-center w-full">
-                        <span class="text-4xl md:text-6xl lg:text-7xl font-display font-bold uppercase max-w-[80%] break-words leading-none">Digital Interface</span>
-                        <i class="fa-solid fa-arrow-right -rotate-45 text-3xl group-hover:rotate-0 transition-transform duration-300"></i>
+                    <div class="flex justify-between items-center w-full gap-4">
+                        <span class="text-3xl md:text-5xl lg:text-7xl font-display font-bold uppercase break-words leading-none">Digital Interface</span>
+                        <i class="fa-solid fa-arrow-right -rotate-45 text-2xl md:text-4xl shrink-0 group-hover:rotate-0 transition-transform duration-300"></i>
                     </div>
                 </a>
                 <a href="#" class="flex-1 flex flex-col justify-center p-6 md:p-12 brutal-border-b hover-invert group">
-                    <div class="flex justify-between items-center w-full">
-                        <span class="text-4xl md:text-6xl lg:text-7xl font-display font-bold uppercase max-w-[80%] break-words leading-none">Brand System</span>
-                        <i class="fa-solid fa-arrow-right -rotate-45 text-3xl group-hover:rotate-0 transition-transform duration-300"></i>
+                    <div class="flex justify-between items-center w-full gap-4">
+                        <span class="text-3xl md:text-5xl lg:text-7xl font-display font-bold uppercase break-words leading-none">Brand System</span>
+                        <i class="fa-solid fa-arrow-right -rotate-45 text-2xl md:text-4xl shrink-0 group-hover:rotate-0 transition-transform duration-300"></i>
                     </div>
                 </a>
                 <a href="#" class="flex-1 flex flex-col justify-center p-6 md:p-12 hover-invert group">
-                    <div class="flex justify-between items-center w-full">
-                        <span class="text-4xl md:text-6xl lg:text-7xl font-display font-bold uppercase max-w-[80%] break-words leading-none">Typography</span>
-                        <i class="fa-solid fa-arrow-right -rotate-45 text-3xl group-hover:rotate-0 transition-transform duration-300"></i>
+                    <div class="flex justify-between items-center w-full gap-4">
+                        <span class="text-3xl md:text-5xl lg:text-7xl font-display font-bold uppercase break-words leading-none">Typography</span>
+                        <i class="fa-solid fa-arrow-right -rotate-45 text-2xl md:text-4xl shrink-0 group-hover:rotate-0 transition-transform duration-300"></i>
                     </div>
                 </a>
             </div>
@@ -361,36 +381,36 @@
     </section>
 
     <!-- 5. JOURNAL -->
-    <section id="journal" class="brutal-border-t bg-black">
+    <section id="journal" class="bg-black">
         <!-- Header -->
-        <div class="p-6 md:p-12 brutal-border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div class="p-6 md:p-12 brutal-border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
             <h2 class="font-sans text-xs md:text-sm uppercase font-bold tracking-widest text-gray-400">— Journal</h2>
-            <a href="#" class="font-sans text-xs md:text-sm uppercase font-bold tracking-widest bg-white text-black px-6 py-3 hover:bg-gray-200 transition-colors">Read All Entries</a>
+            <a href="#" class="font-sans text-[10px] md:text-xs uppercase font-bold tracking-widest bg-white text-black px-6 py-3 border-2 border-white hover:bg-black hover:text-white transition-colors duration-300">Read All Entries</a>
         </div>
         
         <!-- Articles List -->
         <div class="divide-y-2 divide-white">
-            <article class="p-6 md:p-12 hover-invert group transition-none flex flex-col md:flex-row gap-8 justify-between items-start md:items-center">
-                <div class="w-full md:w-1/4 font-sans font-bold uppercase tracking-widest text-xs md:text-sm">OCTOBER 15, 2024</div>
-                <div class="w-full md:w-1/2">
-                    <h3 class="text-3xl md:text-5xl font-display font-bold uppercase mb-4 leading-none">The Death of Decoration</h3>
-                    <p class="font-sans font-bold text-sm text-gray-400 group-hover:text-black">Why modern design must return to its purely functional, brutalist roots to survive the noise of the current digital era.</p>
+            <article class="p-6 md:p-12 hover-invert group transition-colors duration-300 flex flex-col lg:flex-row gap-6 lg:gap-8 justify-between lg:items-center">
+                <div class="w-full lg:w-1/4 font-sans font-bold uppercase tracking-widest text-[10px] md:text-sm text-gray-500 group-hover:text-black">OCTOBER 15, 2024</div>
+                <div class="w-full lg:w-1/2">
+                    <h3 class="text-2xl md:text-4xl lg:text-5xl font-display font-bold uppercase mb-4 leading-none">The Death of Decoration</h3>
+                    <p class="font-sans font-bold text-xs md:text-sm lg:text-base text-gray-400 group-hover:text-black">Why modern design must return to its purely functional, brutalist roots to survive the noise of the current digital era.</p>
                 </div>
-                <div class="w-full md:w-1/4 flex justify-start md:justify-end mt-4 md:mt-0">
-                    <div class="w-16 h-16 border-2 border-current rounded-full flex items-center justify-center">
+                <div class="w-full lg:w-1/4 flex justify-start lg:justify-end mt-4 lg:mt-0">
+                    <div class="w-12 h-12 md:w-16 md:h-16 border-2 border-current rounded-full flex items-center justify-center shrink-0">
                         <i class="fa-solid fa-arrow-right -rotate-45 group-hover:rotate-0 transition-transform"></i>
                     </div>
                 </div>
             </article>
 
-            <article class="p-6 md:p-12 hover-invert group transition-none flex flex-col md:flex-row gap-8 justify-between items-start md:items-center">
-                <div class="w-full md:w-1/4 font-sans font-bold uppercase tracking-widest text-xs md:text-sm">SEPTEMBER 02, 2024</div>
-                <div class="w-full md:w-1/2">
-                    <h3 class="text-3xl md:text-5xl font-display font-bold uppercase mb-4 leading-none">Black and White UX</h3>
-                    <p class="font-sans font-bold text-sm text-gray-400 group-hover:text-black">Designing with maximum contrast to enforce strict visual hierarchies and guide user intent without reliance on color psychology.</p>
+            <article class="p-6 md:p-12 hover-invert group transition-colors duration-300 flex flex-col lg:flex-row gap-6 lg:gap-8 justify-between lg:items-center">
+                <div class="w-full lg:w-1/4 font-sans font-bold uppercase tracking-widest text-[10px] md:text-sm text-gray-500 group-hover:text-black">SEPTEMBER 02, 2024</div>
+                <div class="w-full lg:w-1/2">
+                    <h3 class="text-2xl md:text-4xl lg:text-5xl font-display font-bold uppercase mb-4 leading-none">Black and White UX</h3>
+                    <p class="font-sans font-bold text-xs md:text-sm lg:text-base text-gray-400 group-hover:text-black">Designing with maximum contrast to enforce strict visual hierarchies and guide user intent without reliance on color psychology.</p>
                 </div>
-                <div class="w-full md:w-1/4 flex justify-start md:justify-end mt-4 md:mt-0">
-                    <div class="w-16 h-16 border-2 border-current rounded-full flex items-center justify-center">
+                <div class="w-full lg:w-1/4 flex justify-start lg:justify-end mt-4 lg:mt-0">
+                    <div class="w-12 h-12 md:w-16 md:h-16 border-2 border-current rounded-full flex items-center justify-center shrink-0">
                         <i class="fa-solid fa-arrow-right -rotate-45 group-hover:rotate-0 transition-transform"></i>
                     </div>
                 </div>
@@ -399,42 +419,56 @@
     </section>
 
     <!-- 6. MASSIVE FOOTER -->
-    <section id="contact" class="min-h-screen bg-white text-black flex flex-col justify-between pt-12 md:pt-24 border-t-2 border-white">
-        <div class="px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 font-sans font-bold uppercase tracking-widest text-xs">
+    <section id="contact" class="min-h-[80vh] md:min-h-screen bg-white text-black flex flex-col justify-between pt-16 md:pt-24 border-t-2 border-white">
+        <div class="px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 font-sans font-bold uppercase tracking-widest text-[10px] md:text-xs">
             <div>
                 <p class="mb-4 text-gray-500">Locate Us</p>
-                <p class="text-sm md:text-base leading-loose">101 Brutal Block<br>Neo-Tokyo District<br>Earth</p>
+                <p class="text-xs md:text-sm leading-loose">101 Brutal Block<br>Neo-Tokyo District<br>Earth</p>
             </div>
             <div>
                 <p class="mb-4 text-gray-500">Socials</p>
-                <div class="flex flex-col gap-2 text-sm md:text-base">
+                <div class="flex flex-col gap-2 text-xs md:text-sm">
                     <a href="#" class="hover:line-through inline-block w-fit">Instagram</a>
                     <a href="#" class="hover:line-through inline-block w-fit">X (Twitter)</a>
                     <a href="#" class="hover:line-through inline-block w-fit">Are.na</a>
                 </div>
             </div>
-            <div class="lg:col-span-2 flex flex-col justify-between">
-                <div>
+            <div class="lg:col-span-2 flex flex-col justify-between h-full">
+                <div class="mb-16">
                     <p class="mb-4 text-gray-500">Inquiries</p>
-                    <a href="mailto:strike@mono.style" class="text-xl md:text-3xl font-display font-bold hover:line-through">STRIKE@MONO.STYLE</a>
+                    <a href="mailto:strike@mono.style" class="text-lg md:text-2xl lg:text-3xl font-display font-bold hover:line-through break-all">STRIKE@MONO.STYLE</a>
                 </div>
-                <div class="mt-16 md:mt-0 pt-8 border-t-2 border-black flex justify-between">
+                <!-- Pushed to bottom align on desktop -->
+                <div class="pt-8 md:pt-12 mt-auto border-t-2 border-black flex flex-col sm:flex-row justify-between gap-4 sm:gap-0">
                     <p>&copy; 2024 MONO STUDIO.</p>
                     <p>ALL RIGHTS RESERVED.</p>
                 </div>
             </div>
         </div>
 
-        <div class="w-full relative mt-24 md:mt-auto overflow-hidden flex items-end justify-center bg-black text-white pt-12 pb-4">
-            <h2 class="text-[20vw] font-display font-extrabold m-0 p-0 text-center tracking-tighter leading-none select-none text-outline-dark hover-fill transition-all duration-500">
+        <div class="w-full relative mt-16 md:mt-24 flex items-end justify-center bg-black text-white pt-16 pb-4 md:pb-8">
+            <h2 class="text-[11vw] md:text-[11vw] lg:text-[10vw] font-display font-extrabold m-0 p-0 text-center tracking-tighter leading-none select-none text-outline hover-fill transition-colors duration-500 w-full whitespace-nowrap">
                 SAY HELLO.
             </h2>
         </div>
     </section>
 
-    <!-- Back to Hub Bubble -->
-    <a href="../../index.html" class="fixed bottom-6 right-6 w-14 h-14 bg-white text-[#d4af37] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-110 hover:-translate-y-1 transition-all z-[9999] border-2 border-white/50 group mix-blend-difference">
-        <i class="fa-solid fa-house text-xl transition-colors"></i>
+    <!-- Copy Source Code Button (Monochrome Style) -->
+    <button onclick="copySourceCode(this)" class="fixed bottom-28 right-8 z-[9999] group mix-blend-difference bg-black text-white brutal-border hover-invert transition-all duration-300 flex items-center justify-center p-4">
+        <div class="flex items-center gap-3 font-display text-sm font-bold uppercase tracking-widest">
+            <i class="fa-regular fa-copy text-xl"></i>
+            <span>SALIN KODE</span>
+        </div>
+    </button>
+
+    <!-- Brutalist Kinetic Back Button -->
+    <a href="../../index.html" class="fixed bottom-8 right-8 z-[9999] group mix-blend-difference bg-black text-white brutal-border hover-invert transition-all duration-[400ms] ease-[cubic-bezier(0.87,0,0.13,1)] flex flex-row-reverse items-center overflow-hidden h-14 w-14 hover:w-36 before:absolute before:-inset-8" aria-label="Go Back">
+        <div class="w-14 h-full shrink-0 flex items-center justify-center border-l-2 border-transparent group-hover:border-inherit transition-colors duration-75 relative z-10 bg-inherit">
+            <i class="fa-solid fa-arrow-left text-xl transform group-hover:-translate-x-1 transition-transform duration-300"></i>
+        </div>
+        <span class="w-[88px] shrink-0 flex items-center justify-center font-display font-bold text-base uppercase tracking-widest whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            BACK
+        </span>
     </a>
 
     <script>
@@ -446,9 +480,9 @@
                 y: 0,
                 opacity: 1,
                 duration: 1.2,
-                stagger: 0.2,
+                stagger: 0.15,
                 ease: "power4.out",
-                delay: 0.2
+                delay: 0.1
             });
 
             // 2. Manifesto Scroll Reveal
@@ -459,40 +493,46 @@
                 ease: "power3.out",
                 scrollTrigger: {
                     trigger: "#manifesto",
-                    start: "top 75%",
+                    start: "top 80%",
                 }
             });
 
-            // 3. Horizontal Scroll Implementation
+            // 3. Horizontal Scroll Implementation (Mobile Safe)
             const wrapper = document.getElementById('scroll-wrapper');
             const sections = gsap.utils.toArray('.horizontal-section .horizontal-scroll-wrapper > div');
             const progressBar = document.getElementById('scroll-progress');
 
-            // Set up horizontal scroll tween
-            let scrollTween = gsap.to(sections, {
-                xPercent: -100 * (sections.length - 1),
-                ease: "none",
-                scrollTrigger: {
-                    trigger: ".horizontal-section",
-                    pin: true,
-                    scrub: 1,
-                    snap: false, // Better for variable widths
-                    // The end value determines how long you scroll down to pan sideways. Let's make it intuitive.
-                    end: () => "+=" + (wrapper.scrollWidth - window.innerWidth)
-                }
-            });
+            if (wrapper && sections.length) {
+                // Ensure correct end calculation mapping to scrolling distance
+                const getScrollAmount = () => wrapper.scrollWidth - window.innerWidth;
 
-            // Progress bar for horizontal scroll
-            gsap.to(progressBar, {
-                width: "100%",
-                ease: "none",
-                scrollTrigger: {
-                    trigger: ".horizontal-section",
-                    scrub: 1,
-                    start: "top top",
-                    end: () => "+=" + (wrapper.scrollWidth - window.innerWidth)
-                }
-            });
+                let tween = gsap.to(sections, {
+                    xPercent: -100 * (sections.length - 1),
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: ".horizontal-section",
+                        pin: true,
+                        scrub: 1,
+                        snap: false,
+                        // invalidateOnRefresh ensures proper recalculation on resize (mobile rotation etc)
+                        invalidateOnRefresh: true,
+                        end: () => "+=" + getScrollAmount()
+                    }
+                });
+
+                // Progress bar for horizontal scroll
+                gsap.to(progressBar, {
+                    width: "100%",
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: ".horizontal-section",
+                        scrub: 1,
+                        start: "top top",
+                        invalidateOnRefresh: true,
+                        end: () => "+=" + getScrollAmount()
+                    }
+                });
+            }
 
             // 4. Process List Reveal
             const processItems = gsap.utils.toArray('.reveal-process');
@@ -509,6 +549,29 @@
                     }
                 });
             });
+
+            // Global Copy Script
+            window.copySourceCode = function(btn) {
+                const htmlContent = document.documentElement.outerHTML;
+                navigator.clipboard.writeText(htmlContent).then(() => {
+                    const originalContent = btn.innerHTML;
+                    
+                    btn.innerHTML = `
+                        <div class="flex items-center gap-3 font-display text-sm font-bold uppercase tracking-widest text-black">
+                            <i class="fa-solid fa-check"></i>
+                            <span>GRABBED</span>
+                        </div>
+                    `;
+                    btn.classList.replace('bg-black', 'bg-white');
+                    btn.classList.replace('text-white', 'text-black');
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalContent;
+                        btn.classList.replace('bg-white', 'bg-black');
+                        btn.classList.replace('text-black', 'text-white');
+                    }, 2000);
+                });
+            }
 
         });
     </script>

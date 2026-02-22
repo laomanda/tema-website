@@ -14,6 +14,13 @@
     
     <!-- Three.js for 3D Elements -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Lenis for Smooth Scrolling -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+
+    <!-- Swiper JS for Carousel -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -36,20 +43,21 @@
                         'ani-pink': '#FF0080',
                         'ani-purple': '#7928CA',
                         'ani-cyan': '#00DFD8',
-                        'ani-dark': '#0f0c29',
-                        'ani-bg': '#1a1b26',
+                        'ani-dark': '#0a0a0f',
+                        'ani-bg': '#12121a',
+                        'ani-panel': '#1a1a24'
                     },
                     backgroundImage: {
                         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
                     },
                     animation: {
                         'float': 'float 6s ease-in-out infinite',
-                        'bounce-slow': 'bounce 3s infinite',
+                        'spin-slow': 'spin 15s linear infinite',
                     },
                     keyframes: {
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
+                            '50%': { transform: 'translateY(-15px)' },
                         }
                     }
                 }
@@ -58,52 +66,89 @@
     </script>
 
     <style>
+        /* Lenis Setup */
+        html.lenis {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+
         body {
-            background-color: #0f0c29;
+            background-color: #0a0a0f;
             color: #fff;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
-                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+                radial-gradient(at 0% 0%, hsla(253,16%,10%,1) 0, transparent 40%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,15%,1) 0, transparent 40%);
         }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 12px;
+            width: 10px;
         }
         ::-webkit-scrollbar-track {
-            background: #0f0c29;
+            background: #0a0a0f;
         }
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(to bottom, #FF0080, #7928CA);
-            border-radius: 6px;
-            border: 3px solid #0f0c29;
+            border-radius: 5px;
+        }
+
+        /* Manga Speed Lines Overlay */
+        .speed-lines {
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.03) 10px,
+                rgba(255,255,255,0.03) 11px
+            );
+            mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+        }
+
+        /* Halftone Pattern */
+        .halftone {
+            background-image: radial-gradient(circle, #ffffff 1px, transparent 2.5px);
+            background-size: 12px 12px;
+            opacity: 0.05;
         }
 
         /* Anime Card Hover Effect */
         .anime-card {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .anime-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 30px rgba(121, 40, 202, 0.3);
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .anime-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            opacity: 0.6;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+            opacity: 0.8;
             transition: opacity 0.3s;
+            z-index: 1;
+        }
+        .anime-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -10px rgba(255, 0, 128, 0.3);
         }
         .anime-card:hover::before {
-            opacity: 0.8;
+            opacity: 0.9;
+        }
+        .anime-card > * {
+            position: relative;
+            z-index: 2;
         }
 
         /* Text Stroke */
         .text-stroke {
-            -webkit-text-stroke: 1px #fff;
+            -webkit-text-stroke: 1px rgba(255,255,255,0.2);
             color: transparent;
         }
         .text-stroke-pink {
@@ -115,558 +160,1040 @@
         .marquee-container {
             overflow: hidden;
             white-space: nowrap;
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
         }
         .marquee-content {
             display: inline-block;
-            animation: marquee 20s linear infinite;
+            animation: marquee 25s linear infinite;
         }
         @keyframes marquee {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
 
-        /* Halftone Pattern */
-        .halftone {
-            background-image: radial-gradient(circle, #ffffff 1px, transparent 2.5px);
-            background-size: 10px 10px;
-            opacity: 0.1;
+        /* Custom Swiper pagination */
+        .swiper-pagination-bullet {
+            background: white !important;
+            opacity: 0.3 !important;
+        }
+        .swiper-pagination-bullet-active {
+            background: #FF0080 !important;
+            opacity: 1 !important;
+            box-shadow: 0 0 10px #FF0080;
+        }
+        
+        /* Interactive Nav Link */
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: #FF0080;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Hide Scrollbar for filter tabs */
+        .hide-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scroll {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
     </style>
 </head>
-<body class="font-body">
+<body class="font-body bg-ani-bg text-white">
 
-    <!-- 3D Background Canvas -->
-    <canvas id="webgl-canvas" class="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"></canvas>
+    <!-- Manga Speed Lines Fixed Background -->
+    <div class="fixed inset-0 pointer-events-none speed-lines mix-blend-screen opacity-50 z-[-1]"></div>
+
+    <!-- 3D Background Canvas (Will keep this for particles if needed later) -->
+    <canvas id="webgl-canvas" class="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none opacity-30"></canvas>
 
     <!-- Navigation -->
-    <nav class="fixed top-0 left-0 w-full z-50 p-4 border-b border-white/10 bg-ani-dark/80 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="#" class="flex items-center gap-2 group">
-                <div class="w-10 h-10 bg-gradient-to-br from-ani-pink to-ani-purple rounded-full flex items-center justify-center text-xl font-bold group-hover:rotate-12 transition-transform">
-                    あ
+    <nav class="fixed w-full z-50 bg-black/40 backdrop-blur-md border-b border-white/5 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 cursor-pointer group">
+                    <span class="font-anime text-2xl font-black italic tracking-widest text-white drop-shadow-lg group-hover:text-ani-cyan transition-colors">
+                        ANI<span class="text-ani-pink">WORLD</span>
+                    </span>
+                    <div class="text-[10px] font-jp text-gray-400 tracking-[0.2em] -mt-1 group-hover:text-white transition-colors">オタク文化</div>
                 </div>
-                <span class="text-2xl font-anime tracking-wider text-white">ANI<span class="text-ani-cyan">.WORLD</span></span>
-            </a>
-            
-            <div class="hidden md:flex gap-8">
-                <a href="#hero" class="hover:text-ani-pink transition-colors font-semibold">Beranda</a>
-                <a href="#seasonal" class="hover:text-ani-pink transition-colors font-semibold">Musim Ini</a>
-                <a href="#characters" class="hover:text-ani-pink transition-colors font-semibold">Karakter</a>
-                <a href="#schedule" class="hover:text-ani-pink transition-colors font-semibold">Jadwal</a>
-                <a href="#community" class="hover:text-ani-pink transition-colors font-semibold">Komunitas</a>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#hero" class="nav-link text-white hover:text-ani-pink px-3 py-2 rounded-md font-bold text-sm tracking-widest uppercase transition-colors">Toko</a>
+                        <a href="#trending" class="nav-link text-gray-300 hover:text-ani-pink px-3 py-2 rounded-md font-bold text-sm tracking-widest uppercase transition-colors">Trending</a>
+                        <a href="#seasonal" class="nav-link text-gray-300 hover:text-ani-pink px-3 py-2 rounded-md font-bold text-sm tracking-widest uppercase transition-colors">Musim Ini</a>
+                        <a href="#characters" class="nav-link text-gray-300 hover:text-ani-pink px-3 py-2 rounded-md font-bold text-sm tracking-widest uppercase transition-colors">Karakter</a>
+                        <a href="#schedule" class="nav-link text-gray-300 hover:text-ani-pink px-3 py-2 rounded-md font-bold text-sm tracking-widest uppercase transition-colors">Jadwal</a>
+                    </div>
+                </div>
+                
+                <!-- CTA Button -->
+                <div class="hidden md:block">
+                    <button class="relative bg-ani-pink hover:bg-white text-white hover:text-ani-pink px-6 py-2 rounded-none font-bold italic tracking-wider transition-colors overflow-hidden group border-2 border-transparent hover:border-ani-pink transform -skew-x-12">
+                        <span class="relative z-10 transform skew-x-12 inline-block">GABUNG</span>
+                        <div class="absolute inset-0 h-full w-0 bg-white transition-all duration-300 ease-out group-hover:w-full z-0"></div>
+                    </button>
+                </div>
+                
+                <!-- Mobile menu button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-white/10 focus:outline-none" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-btn">
+                        <span class="sr-only">Open main menu</span>
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
             </div>
+        </div>
 
-            <div class="flex items-center gap-4">
-                <button class="hidden md:block px-6 py-2 rounded-full border-2 border-ani-cyan text-ani-cyan font-bold hover:bg-ani-cyan hover:text-ani-dark transition-all">
-                    LOGIN
-                </button>
-                <button class="md:hidden text-2xl text-white"><i class="fa-solid fa-bars"></i></button>
+        <!-- Mobile Menu Panel -->
+        <div class="md:hidden hidden bg-ani-dark/95 backdrop-blur-xl border-b border-white/10" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#hero" class="text-ani-pink block px-3 py-2 rounded-md text-base font-bold uppercase tracking-wider">Toko</a>
+                <a href="#trending" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-bold uppercase tracking-wider">Trending</a>
+                <a href="#seasonal" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-bold uppercase tracking-wider">Musim Ini</a>
+                <a href="#characters" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-bold uppercase tracking-wider">Karakter</a>
+                <a href="#schedule" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-bold uppercase tracking-wider">Jadwal</a>
             </div>
         </div>
     </nav>
 
-    <!-- 1. HERO SECTION -->
-    <section class="min-h-screen flex items-center justify-center relative pt-20 overflow-hidden" id="hero">
-        <!-- Background Elements -->
-        <div class="absolute inset-0 halftone pointer-events-none"></div>
-        <div class="absolute top-1/4 right-0 w-96 h-96 bg-ani-pink rounded-full blur-[150px] opacity-30 animate-pulse"></div>
-        <div class="absolute bottom-0 left-0 w-96 h-96 bg-ani-cyan rounded-full blur-[150px] opacity-30 animate-pulse"></div>
+    <!-- 1. HERO SECTION (Manga Panel Layout) -->
+    <section class="min-h-screen relative pt-20 overflow-hidden flex items-center" id="hero">
+        
+        <!-- Decorative Background Halftone -->
+        <div class="absolute inset-0 halftone z-0 pointer-events-none"></div>
 
-        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-            <div class="text-center lg:text-left">
-                <div class="inline-block px-4 py-1 bg-white/10 backdrop-blur rounded-full text-ani-cyan text-sm font-bold mb-6 border border-ani-cyan/30">
-                    <i class="fa-solid fa-star mr-2"></i> STREAMING ANIME NO. #1
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                <!-- Left Text Side -->
+                <div class="lg:col-span-5 text-center lg:text-left z-20">
+                    <div class="inline-block px-4 py-1 bg-ani-pink text-white text-xs font-black italic tracking-widest mb-6 border border-white/20 transform -skew-x-12">
+                        <span class="inline-block transform skew-x-12"><i class="fa-solid fa-play mr-2"></i> UPDATE TERBARU</span>
+                    </div>
+                    
+                    <h1 class="text-6xl md:text-8xl font-anime font-black leading-none mb-4 text-white drop-shadow-2xl">
+                        DUNIA <br> 
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-ani-cyan via-white to-ani-pink filter drop-shadow-[0_0_10px_rgba(255,0,128,0.8)]">オタク</span>
+                    </h1>
+                    
+                    <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-lg mx-auto lg:mx-0 font-medium leading-relaxed">
+                        Jelajahi dimensi baru animasi. Streaming resolusi 4K, baca rilis manga mingguan, dan gabung faksi wibu elit.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="#trending" class="group relative px-8 py-4 bg-white text-ani-bg font-bold italic tracking-wider hover:bg-ani-cyan transition-colors overflow-hidden transform -skew-x-12 shadow-[8px_8px_0px_#FF0080]">
+                            <span class="relative z-10 inline-block transform skew-x-12">MULAI STREAMING <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i></span>
+                            <div class="absolute inset-0 w-0 bg-ani-cyan transition-all duration-300 ease-out group-hover:w-full z-0"></div>
+                        </a>
+                        <a href="#" class="px-8 py-4 bg-transparent text-white font-bold italic tracking-wider border-2 border-white/20 hover:border-white hover:bg-white/5 transition-all transform -skew-x-12">
+                            <span class="inline-block transform skew-x-12"><i class="fa-solid fa-book-open mr-2 text-ani-pink"></i> BACA MANGA</span>
+                        </a>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="mt-12 grid grid-cols-3 gap-4 border-t border-white/10 pt-8">
+                        <div>
+                            <div class="text-3xl font-anime text-ani-cyan">5K+</div>
+                            <div class="text-xs font-bold text-gray-400 tracking-wider">JUDUL ANIME</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-anime text-ani-pink">10K</div>
+                            <div class="text-xs font-bold text-gray-400 tracking-wider">CHAPTER MANGA</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-anime text-white">2M</div>
+                            <div class="text-xs font-bold text-gray-400 tracking-wider">USER AKTIF</div>
+                        </div>
+                    </div>
                 </div>
-                
-                <h1 class="text-6xl md:text-8xl font-anime font-black leading-none mb-4 text-white drop-shadow-lg">
-                    DUNIA <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-ani-pink to-ani-purple">OTAKU</span>
-                </h1>
-                
-                <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-lg mx-auto lg:mx-0 font-light">
-                    Temukan ribuan judul anime, baca manga terbaru, dan bergabunglah dengan komunitas wibu terbesar di Indonesia.
-                </p>
 
-                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    <a href="#seasonal" class="px-8 py-4 bg-gradient-to-r from-ani-pink to-ani-purple text-white font-bold rounded-xl shadow-lg shadow-ani-purple/50 hover:scale-105 transition-transform flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-play"></i> MULAI NONTON
-                    </a>
-                    <a href="#community" class="px-8 py-4 bg-white/10 border border-white/20 text-white font-bold rounded-xl hover:bg-white hover:text-ani-dark transition-all flex items-center justify-center gap-2">
-                        <i class="fa-brands fa-discord"></i> DISCORD
-                    </a>
+                <!-- Right Visual Side (Manga Panels) -->
+                <div class="lg:col-span-7 relative h-[600px] hidden lg:block perspective-1000 manga-perspective">
+                    <!-- Panel 1 -->
+                    <div class="manga-panel absolute top-0 right-0 w-2/3 h-64 bg-gray-800 border-4 border-white overflow-hidden transform rotate-3 shadow-[15px_15px_0px_rgba(255,0,128,0.5)] z-10 flex items-center justify-center">
+                        <span class="font-anime text-4xl text-gray-600 tracking-widest opacity-50 transform -skew-x-12">PANEL 1</span>
+                        <div class="absolute bottom-2 right-2 px-2 py-1 bg-white text-black font-jp font-black text-xl transform -skew-x-12">スゴイ!</div>
+                    </div>
+                    
+                    <!-- Panel 2 -->
+                    <div class="manga-panel absolute top-32 left-0 w-1/2 h-80 bg-gray-900 border-4 border-white overflow-hidden transform -rotate-6 shadow-[-10px_15px_0px_rgba(0,223,216,0.5)] z-20 flex items-center justify-center">
+                        <span class="font-anime text-5xl text-gray-700 tracking-widest opacity-50 transform skew-y-6">PANEL 2</span>
+                    </div>
+                    
+                    <!-- Panel 3 -->
+                    <div class="manga-panel absolute bottom-0 right-10 w-3/5 h-56 bg-black border-4 border-white overflow-hidden transform rotate-2 shadow-[10px_-10px_0px_rgba(121,40,202,0.5)] z-30 flex items-center justify-center">
+                        <span class="font-anime text-3xl text-gray-800 tracking-widest opacity-50">PANEL 3</span>
+                        <div class="absolute top-2 left-2 bg-black/80 px-2 py-1 text-ani-cyan font-bold text-xs border border-ani-cyan/30">EPISODE TERBARU</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. TRENDING CAROUSEL SECTION -->
+    <section class="py-20 bg-ani-bg relative border-t border-white/5" id="trending">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-4xl md:text-5xl font-anime font-black text-white italic">
+                        TOP <span class="text-transparent bg-clip-text bg-gradient-to-r from-ani-cyan to-ani-pink">TRENDING</span>
+                    </h2>
+                    <p class="text-gray-400 mt-2 font-light">Paling banyak ditonton minggu ini</p>
+                </div>
+                <!-- Swiper Navigation Buttons -->
+                <div class="hidden md:flex gap-4">
+                    <button class="trending-prev w-12 h-12 bg-ani-panel border border-white/10 hover:border-ani-cyan text-white flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button class="trending-next w-12 h-12 bg-ani-panel border border-white/10 hover:border-ani-pink text-white flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
 
-            <!-- Hero Image Replacement -->
-            <div class="relative hidden lg:block h-[500px] w-full">
-                <div class="absolute inset-0 bg-gradient-to-t from-ani-dark to-transparent z-10 bottom-0 h-20"></div>
-                <!-- Japanese Text Background -->
-                <div class="absolute -top-10 -right-10 text-9xl font-jp font-black text-white/5 z-0 select-none writing-vertical-rl">
-                    アニメ
-                </div>
-                
-                <!-- CSS Manga Composition -->
-                <div class="relative z-10 w-full h-full rounded-2xl shadow-2xl border-4 border-white/10 transform rotate-2 hover:rotate-0 transition-transform duration-500 animate-float overflow-hidden bg-ani-bg group">
-                    <!-- Speed Lines BG -->
-                    <div class="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0_340deg,white_360deg)] opacity-10 animate-spin [animation-duration:10s]"></div>
-                    <div class="absolute inset-0 bg-[radial-gradient(circle,transparent_30%,#1a1b26_80%)]"></div>
-                    
-                    <!-- Central Icon -->
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <i class="fa-solid fa-khanda text-9xl text-white drop-shadow-[0_0_15px_rgba(255,0,128,0.8)] transform group-hover:scale-110 transition-transform duration-300"></i>
-                    </div>
-                    
-                    <!-- Floating Elements -->
-                    <div class="absolute top-10 left-10 text-6xl text-ani-cyan opacity-20 font-jp font-black">力</div>
-                    <div class="absolute bottom-20 right-10 text-6xl text-ani-pink opacity-20 font-jp font-black">愛</div>
-                </div>
-                
-                <!-- Floating Card -->
-                <div class="absolute bottom-10 -left-10 bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 z-20 animate-bounce-slow">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-ani-pink flex items-center justify-center bg-black">
-                            <i class="fa-solid fa-fire text-ani-pink"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-sm">Episode Baru!</h4>
-                            <p class="text-xs text-ani-cyan">Demon Slayer S4</p>
+            <!-- Swiper Container -->
+            <div class="swiper trendingSwiper pb-12">
+                <div class="swiper-wrapper">
+                    <!-- Slide 1 -->
+                    <div class="swiper-slide">
+                        <div class="anime-card relative h-96 group rounded-lg overflow-hidden cursor-pointer bg-gray-900 flex items-center justify-center border border-white/5">
+                            <i class="fa-solid fa-fire text-6xl text-ani-pink opacity-20 group-hover:scale-150 transition-transform duration-700"></i>
+                            
+                            <!-- Badges -->
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                <span class="bg-ani-pink text-white font-bold text-xs px-2 py-1 rounded shadow-lg">#1 TRENDING</span>
+                                <span class="bg-black/60 text-white font-bold text-xs px-2 py-1 rounded shadow-lg border border-white/10">SUB/DUB</span>
+                            </div>
+                            
+                            <!-- Content Info -->
+                            <div class="absolute bottom-0 left-0 w-full p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black via-black/80 to-transparent">
+                                <h3 class="text-2xl font-bold font-anime mb-1 text-stroke tracking-wider group-hover:text-stroke-pink group-hover:text-white transition-all">DEMON SLAYER</h3>
+                                <p class="text-sm text-gray-300 line-clamp-2 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                                    Perjalanan Tanjiro membasmi iblis terus berlanjut ke arc berikutnya dengan animasi yang semakin memukau.
+                                </p>
+                                <div class="flex items-center gap-4 text-sm text-gray-400">
+                                    <span><i class="fa-solid fa-star text-yellow-400 mr-1"></i> 9.8</span>
+                                    <span><i class="fa-solid fa-eye mr-1"></i> 2.4M Views</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    
+                    <!-- Slide 2 -->
+                    <div class="swiper-slide">
+                        <div class="anime-card relative h-96 group rounded-lg overflow-hidden cursor-pointer bg-gray-900 flex items-center justify-center border border-white/5">
+                            <i class="fa-solid fa-skull text-6xl text-ani-cyan opacity-20 group-hover:scale-150 transition-transform duration-700"></i>
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                <span class="bg-ani-cyan text-black font-bold text-xs px-2 py-1 rounded shadow-lg">#2 TRENDING</span>
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-full p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black via-black/80 to-transparent">
+                                <h3 class="text-2xl font-bold font-anime mb-1">JUJUTSU KAISEN</h3>
+                                <div class="flex items-center gap-4 text-sm text-gray-400 mt-2">
+                                    <span><i class="fa-solid fa-star text-yellow-400 mr-1"></i> 9.6</span>
+                                    <span><i class="fa-solid fa-eye mr-1"></i> 1.8M Views</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3 -->
+                    <div class="swiper-slide">
+                        <div class="anime-card relative h-96 group rounded-lg overflow-hidden cursor-pointer bg-gray-900 flex items-center justify-center border border-white/5">
+                            <i class="fa-solid fa-dog text-6xl text-ani-purple opacity-20 group-hover:scale-150 transition-transform duration-700"></i>
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                <span class="bg-ani-purple text-white font-bold text-xs px-2 py-1 rounded shadow-lg">#3 TRENDING</span>
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-full p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black via-black/80 to-transparent">
+                                <h3 class="text-2xl font-bold font-anime mb-1">CHAINSAW MAN</h3>
+                                <div class="flex items-center gap-4 text-sm text-gray-400 mt-2">
+                                    <span><i class="fa-solid fa-star text-yellow-400 mr-1"></i> 9.4</span>
+                                    <span><i class="fa-solid fa-eye mr-1"></i> 1.5M Views</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <!-- Pagination -->
+                <div class="swiper-pagination mt-8"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. SEASONAL ANIME WITH CATEGORY TABS -->
+    <section class="py-20 relative bg-black border-t border-white/10" id="seasonal">
+        <div class="absolute inset-0 halftone z-0"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-12">
+                <p class="text-ani-cyan font-bold tracking-widest text-sm mb-2 uppercase">Katalog Musim Gugur 2024</p>
+                <h2 class="text-4xl md:text-5xl font-anime font-black text-white italic">
+                    ANIME <span class="text-stroke-pink text-transparent">MUSIM INI</span>
+                </h2>
+            </div>
+            
+            <!-- Filter Tabs -->
+            <div class="flex overflow-x-auto hide-scroll justify-center gap-4 mb-10 pb-4">
+                <button class="filter-btn active px-6 py-2 bg-white text-black font-bold text-sm transform -skew-x-12 transition-all hover:bg-gray-200">
+                    <span class="inline-block transform skew-x-12">ALL</span>
+                </button>
+                <button class="filter-btn px-6 py-2 bg-transparent text-white border border-white/20 font-bold text-sm transform -skew-x-12 transition-all hover:border-ani-cyan hover:text-ani-cyan">
+                    <span class="inline-block transform skew-x-12">ACTION</span>
+                </button>
+                <button class="filter-btn px-6 py-2 bg-transparent text-white border border-white/20 font-bold text-sm transform -skew-x-12 transition-all hover:border-ani-cyan hover:text-ani-cyan">
+                    <span class="inline-block transform skew-x-12">ROMANCE</span>
+                </button>
+                <button class="filter-btn px-6 py-2 bg-transparent text-white border border-white/20 font-bold text-sm transform -skew-x-12 transition-all hover:border-ani-cyan hover:text-ani-cyan">
+                    <span class="inline-block transform skew-x-12">ISEKAI</span>
+                </button>
+            </div>
+
+            <!-- Anime Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="anime-card group relative overflow-hidden bg-ani-panel rounded border border-white/5 aspect-[3/4] flex items-center justify-center">
+                    <span class="font-anime text-4xl text-gray-800 tracking-widest absolute opacity-20 transform -rotate-45">COVER IMAGE</span>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 z-10 pointer-events-none"></div>
+                    <div class="absolute top-2 right-2 bg-black/60 px-2 py-1 text-xs font-bold text-white border border-white/20 z-20 backdrop-blur-sm rounded">Ep. 12</div>
+                    <div class="absolute bottom-0 left-0 w-full p-4 z-20 pointer-events-none">
+                        <div class="text-[10px] text-ani-cyan font-bold tracking-widest mb-1">ACTION</div>
+                        <h4 class="text-lg font-bold text-white leading-tight mb-2 group-hover:text-ani-pink transition-colors line-clamp-2">Solo Leveling Season 2</h4>
+                        <div class="text-xs text-gray-400">Studio: A-1 Pictures</div>
+                    </div>
+                </div>
+                
+                <div class="anime-card group relative overflow-hidden bg-ani-panel rounded border border-white/5 aspect-[3/4] flex items-center justify-center">
+                    <span class="font-anime text-4xl text-gray-800 tracking-widest absolute opacity-20 transform -rotate-45">COVER IMAGE</span>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 z-10 pointer-events-none"></div>
+                    <div class="absolute bottom-0 left-0 w-full p-4 z-20 pointer-events-none">
+                        <div class="text-[10px] text-ani-pink font-bold tracking-widest mb-1">ROMANCE</div>
+                        <h4 class="text-lg font-bold text-white leading-tight mb-2 group-hover:text-ani-pink transition-colors line-clamp-2">Kimi ni Todoke 3rd Season</h4>
+                        <div class="text-xs text-gray-400">Studio: Production I.G</div>
+                    </div>
+                </div>
+
+                <div class="anime-card group relative overflow-hidden bg-ani-panel rounded border border-white/5 aspect-[3/4] flex items-center justify-center">
+                    <span class="font-anime text-4xl text-gray-800 tracking-widest absolute opacity-20 transform -rotate-45">COVER IMAGE</span>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 z-10 pointer-events-none"></div>
+                    <div class="absolute top-2 right-2 bg-ani-cyan px-2 py-1 text-xs font-bold text-black z-20 rounded">NEW</div>
+                    <div class="absolute bottom-0 left-0 w-full p-4 z-20 pointer-events-none">
+                        <div class="text-[10px] text-purple-400 font-bold tracking-widest mb-1">ISEKAI</div>
+                        <h4 class="text-lg font-bold text-white leading-tight mb-2 group-hover:text-ani-pink transition-colors line-clamp-2">Mushoku Tensei Cour 2</h4>
+                        <div class="text-xs text-gray-400">Studio: Studio Bind</div>
+                    </div>
+                </div>
+
+                <div class="anime-card group relative overflow-hidden bg-ani-panel rounded border border-white/5 aspect-[3/4]">
+                    <div class="absolute inset-0 bg-gradient-to-br from-ani-dark to-purple-900 border-2 border-dashed border-white/20 flex flex-col items-center justify-center p-6 text-center group-hover:border-ani-cyan transition-colors">
+                        <i class="fa-solid fa-plus text-4xl text-gray-400 group-hover:text-white mb-4 transition-colors relative z-20"></i>
+                        <span class="font-bold tracking-widest text-sm relative z-20 group-hover:text-ani-cyan transition-colors">LIHAT SEMUA</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="#" class="inline-block border-b-2 border-ani-cyan text-white hover:text-ani-cyan font-bold tracking-wider pb-1 transition-colors">
+                    Eksplorasi Katalog Lengkap <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
+                </a>
             </div>
         </div>
     </section>
 
     <!-- Marquee Divider -->
-    <div class="bg-ani-pink text-white font-anime font-bold py-3 transform -rotate-1 relative z-20 border-y-4 border-black">
-        <div class="marquee-container">
-            <div class="marquee-content text-xl">
-                NEW EPISODE RELEASED /// NARUTO /// ONE PIECE /// ATTACK ON TITAN /// JUJUTSU KAISEN /// SPY X FAMILY /// CHAINSAW MAN ///
-                NEW EPISODE RELEASED /// NARUTO /// ONE PIECE /// ATTACK ON TITAN /// JUJUTSU KAISEN /// SPY X FAMILY /// CHAINSAW MAN ///
-            </div>
+    <div class="bg-ani-pink py-3 marquee-container border-y-4 border-black font-jp font-black text-2xl text-black">
+        <div class="marquee-content flex gap-8 whitespace-nowrap">
+            <span>アニメ</span> <span>•</span>
+            <span>マンガ</span> <span>•</span>
+            <span>オタク</span> <span>•</span>
+            <span>新作</span> <span>•</span>
+            <span>アニメ</span> <span>•</span>
+            <span>マンガ</span> <span>•</span>
+            <span>オタク</span> <span>•</span>
+            <span>新作</span> <span>•</span>
+            <span>アニメ</span> <span>•</span>
+            <span>マンガ</span> <span>•</span>
+            <span>オタク</span> <span>•</span>
+            <span>新作</span>
         </div>
     </div>
 
-    <!-- 2. SEASONAL ANIME (Grid) -->
-    <section id="seasonal" class="py-24 relative">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-12">
-                <div>
-                    <h2 class="text-ani-cyan font-bold tracking-widest uppercase mb-2">Musim Panas 2024</h2>
-                    <h3 class="text-4xl md:text-5xl font-anime text-white">ANIME <span class="text-ani-pink">TRENDING</span></h3>
-                </div>
-                <div class="flex gap-2 mt-4 md:mt-0">
-                    <button class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-colors"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-colors"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <!-- Card 1 -->
-                <div class="relative rounded-2xl overflow-hidden group anime-card cursor-pointer bg-gray-900 h-[400px]">
-                    <div class="absolute inset-0 bg-gradient-to-br from-purple-900 to-black opacity-80"></div>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <i class="fa-solid fa-robot text-8xl text-white/20 group-hover:text-ani-pink transition-colors duration-300"></i>
-                    </div>
-                    <div class="absolute top-2 left-2 bg-ani-pink text-white text-xs font-bold px-2 py-1 rounded">EP 12</div>
-                    <div class="absolute bottom-0 left-0 w-full p-4 z-10 translate-y-4 group-hover:translate-y-0 transition-transform">
-                        <h4 class="font-bold text-lg leading-tight mb-1">Cyberpunk: Edgerunners</h4>
-                        <div class="flex gap-2 text-xs text-gray-300">
-                            <span>Action</span> • <span>Sci-Fi</span>
-                        </div>
-                        <button class="mt-3 w-full py-2 bg-white text-black font-bold text-xs rounded hover:bg-ani-cyan transition-colors opacity-0 group-hover:opacity-100">NONTON</button>
-                    </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="relative rounded-2xl overflow-hidden group anime-card cursor-pointer bg-gray-900 h-[400px]">
-                    <div class="absolute inset-0 bg-gradient-to-br from-red-900 to-black opacity-80"></div>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <i class="fa-solid fa-ghost text-8xl text-white/20 group-hover:text-ani-purple transition-colors duration-300"></i>
-                    </div>
-                    <div class="absolute top-2 left-2 bg-ani-purple text-white text-xs font-bold px-2 py-1 rounded">NEW</div>
-                    <div class="absolute bottom-0 left-0 w-full p-4 z-10 translate-y-4 group-hover:translate-y-0 transition-transform">
-                        <h4 class="font-bold text-lg leading-tight mb-1">Jujutsu Kaisen</h4>
-                        <div class="flex gap-2 text-xs text-gray-300">
-                            <span>Supernatural</span> • <span>Action</span>
-                        </div>
-                         <button class="mt-3 w-full py-2 bg-white text-black font-bold text-xs rounded hover:bg-ani-cyan transition-colors opacity-0 group-hover:opacity-100">NONTON</button>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="relative rounded-2xl overflow-hidden group anime-card cursor-pointer bg-gray-900 h-[400px]">
-                    <div class="absolute inset-0 bg-gradient-to-br from-green-900 to-black opacity-80"></div>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                         <i class="fa-solid fa-leaf text-8xl text-white/20 group-hover:text-ani-cyan transition-colors duration-300"></i>
-                    </div>
-                    <div class="absolute top-2 left-2 bg-ani-cyan text-black text-xs font-bold px-2 py-1 rounded">POPULAR</div>
-                    <div class="absolute bottom-0 left-0 w-full p-4 z-10 translate-y-4 group-hover:translate-y-0 transition-transform">
-                        <h4 class="font-bold text-lg leading-tight mb-1">My Neighbor Totoro</h4>
-                        <div class="flex gap-2 text-xs text-gray-300">
-                            <span>Fantasy</span> • <span>Family</span>
-                        </div>
-                         <button class="mt-3 w-full py-2 bg-white text-black font-bold text-xs rounded hover:bg-ani-cyan transition-colors opacity-0 group-hover:opacity-100">NONTON</button>
-                    </div>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="relative rounded-2xl overflow-hidden group anime-card cursor-pointer bg-gray-900 h-[400px]">
-                    <div class="absolute inset-0 bg-gradient-to-br from-blue-900 to-black opacity-80"></div>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <i class="fa-solid fa-dragon text-8xl text-white/20 group-hover:text-ani-pink transition-colors duration-300"></i>
-                    </div>
-                    <div class="absolute top-2 left-2 bg-ani-pink text-white text-xs font-bold px-2 py-1 rounded">EP 24</div>
-                    <div class="absolute bottom-0 left-0 w-full p-4 z-10 translate-y-4 group-hover:translate-y-0 transition-transform">
-                        <h4 class="font-bold text-lg leading-tight mb-1">Demon Slayer</h4>
-                        <div class="flex gap-2 text-xs text-gray-300">
-                            <span>Adventure</span> • <span>Demon</span>
-                        </div>
-                         <button class="mt-3 w-full py-2 bg-white text-black font-bold text-xs rounded hover:bg-ani-cyan transition-colors opacity-0 group-hover:opacity-100">NONTON</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3. CHARACTERS (Team Style) -->
-    <section id="characters" class="py-24 bg-white/5 relative border-y border-white/10">
-        <!-- Japanese Background Text -->
-        <div class="absolute top-10 left-0 w-full text-center pointer-events-none opacity-5">
-            <span class="text-[10rem] font-jp font-black text-white">キャラクター</span>
-        </div>
-
-        <div class="max-w-7xl mx-auto px-6 relative z-10">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-anime mb-4">FAVORIT <span class="text-transparent bg-clip-text bg-gradient-to-r from-ani-cyan to-ani-purple">FANS</span></h2>
-                <p class="text-gray-400">Karakter dengan voting tertinggi minggu ini</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Character 1 -->
-                <div class="group relative">
-                    <div class="absolute inset-0 bg-gradient-to-r from-ani-pink to-ani-purple rounded-2xl transform rotate-3 group-hover:rotate-6 transition-transform opacity-70"></div>
-                    <div class="bg-ani-dark border border-white/20 p-6 rounded-2xl relative z-10">
-                        <div class="w-full h-64 rounded-xl overflow-hidden mb-6 bg-gray-800 flex items-center justify-center">
-                            <i class="fa-solid fa-xmarks-lines text-8xl text-ani-pink group-hover:scale-110 transition-transform duration-300"></i>
-                        </div>
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="text-2xl font-bold font-anime">ZORO</h3>
-                            <span class="text-ani-pink font-bold text-xl">#1</span>
-                        </div>
-                        <p class="text-gray-400 text-sm mb-4">Swordmaster dari serial One Piece. Suka tersesat tapi sangat kuat.</p>
-                        
-                        <div class="space-y-2">
-                            <div class="flex justify-between text-xs font-bold">
-                                <span>Strength</span>
-                                <span class="text-ani-cyan">95%</span>
-                            </div>
-                            <div class="w-full bg-white/10 rounded-full h-2">
-                                <div class="bg-ani-cyan h-2 rounded-full" style="width: 95%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Character 2 -->
-                <div class="group relative mt-8 md:mt-0">
-                    <div class="absolute inset-0 bg-gradient-to-r from-ani-cyan to-blue-500 rounded-2xl transform -rotate-3 group-hover:-rotate-6 transition-transform opacity-70"></div>
-                    <div class="bg-ani-dark border border-white/20 p-6 rounded-2xl relative z-10">
-                         <div class="w-full h-64 rounded-xl overflow-hidden mb-6 bg-gray-800 flex items-center justify-center">
-                            <i class="fa-solid fa-khanda text-8xl text-ani-cyan group-hover:scale-110 transition-transform duration-300"></i>
-                        </div>
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="text-2xl font-bold font-anime">MIKASA</h3>
-                            <span class="text-ani-cyan font-bold text-xl">#2</span>
-                        </div>
-                        <p class="text-gray-400 text-sm mb-4">Prajurit elit dari Attack on Titan. Loyalitas tanpa batas.</p>
-                        
-                        <div class="space-y-2">
-                            <div class="flex justify-between text-xs font-bold">
-                                <span>Speed</span>
-                                <span class="text-ani-purple">90%</span>
-                            </div>
-                            <div class="w-full bg-white/10 rounded-full h-2">
-                                <div class="bg-ani-purple h-2 rounded-full" style="width: 90%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Character 3 -->
-                <div class="group relative">
-                    <div class="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl transform rotate-3 group-hover:rotate-6 transition-transform opacity-70"></div>
-                    <div class="bg-ani-dark border border-white/20 p-6 rounded-2xl relative z-10">
-                         <div class="w-full h-64 rounded-xl overflow-hidden mb-6 bg-gray-800 flex items-center justify-center">
-                            <i class="fa-solid fa-hurricane text-8xl text-yellow-400 group-hover:scale-110 transition-transform duration-300"></i>
-                        </div>
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="text-2xl font-bold font-anime">NARUTO</h3>
-                            <span class="text-yellow-400 font-bold text-xl">#3</span>
-                        </div>
-                        <p class="text-gray-400 text-sm mb-4">Ninja Hokage yang pantang menyerah. Dattebayo!</p>
-                        
-                        <div class="space-y-2">
-                            <div class="flex justify-between text-xs font-bold">
-                                <span>Chakra</span>
-                                <span class="text-yellow-400">100%</span>
-                            </div>
-                            <div class="w-full bg-white/10 rounded-full h-2">
-                                <div class="bg-yellow-400 h-2 rounded-full" style="width: 100%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 4. SCHEDULE (Timeline) -->
-    <section id="schedule" class="py-24 relative overflow-hidden">
-        <div class="max-w-4xl mx-auto px-6">
-            <h2 class="text-4xl font-anime text-center mb-16">JADWAL <span class="text-ani-pink">TAYANG</span></h2>
+    <!-- 4. CHARACTER ROSTER (Split Pane Component Placeholder) -->
+    <section class="py-20 bg-ani-bg relative overflow-hidden" id="characters">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl md:text-5xl font-anime font-black text-white italic mb-12 text-center md:text-left">
+                KARAKTER <span class="text-ani-cyan">FAVORIT</span>
+            </h2>
             
-            <div class="space-y-6">
-                <!-- Day Item -->
-                <div class="flex items-center gap-6 group cursor-pointer p-4 rounded-xl hover:bg-white/5 transition-colors">
-                    <div class="w-24 text-right">
-                        <span class="block text-2xl font-bold text-ani-cyan font-anime">SENIN</span>
-                        <span class="text-xs text-gray-500">20:00 WIB</span>
-                    </div>
-                    <div class="w-1 h-16 bg-white/20 relative group-hover:bg-ani-pink transition-colors">
-                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-ani-dark border-2 border-white rounded-full group-hover:border-ani-pink group-hover:bg-ani-pink transition-colors"></div>
-                    </div>
-                    <div class="flex-1">
-                        <div class="bg-ani-dark border border-white/10 p-4 rounded-xl flex gap-4 items-center shadow-lg">
-                            <div class="w-16 h-16 rounded bg-ani-cyan/20 flex items-center justify-center border border-ani-cyan/50">
-                                <i class="fa-solid fa-play text-ani-cyan"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-lg">Bleach: Thousand-Year Blood War</h4>
-                                <p class="text-xs text-gray-400">Episode 14 - "The Last 9 Days"</p>
-                            </div>
+            <div class="bg-ani-panel border border-white/10 rounded-xl overflow-hidden flex flex-col lg:flex-row h-[600px] shadow-2xl">
+                <!-- Left: Character List -->
+                <div class="w-full lg:w-1/3 bg-black/50 border-r border-white/10 overflow-y-auto custom-scrollbar">
+                    <div class="p-4 border-b border-white/10 font-bold text-gray-400 tracking-wider text-sm sticky top-0 bg-ani-panel/90 backdrop-blur z-10">PILIH KARAKTER</div>
+                    
+                    <!-- Character Items -->
+                    <button class="w-full flex items-center p-4 border-b border-white/5 hover:bg-white/5 transition-colors text-left group active-char border-l-4 border-ani-pink bg-white/5">
+                        <div class="w-12 h-12 rounded-full border-2 border-ani-pink flex items-center justify-center font-bold text-[10px] text-ani-pink bg-gray-900 group-[.grayscale]:border-transparent group-[.grayscale]:text-gray-500 char-thumb-placeholder">IMG</div>
+                        <div class="ml-4">
+                            <div class="font-bold text-white uppercase group-hover:text-ani-pink transition-colors">Ryomen Sukuna</div>
+                            <div class="text-xs text-gray-500">Jujutsu Kaisen</div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Day Item -->
-                <div class="flex items-center gap-6 group cursor-pointer p-4 rounded-xl hover:bg-white/5 transition-colors">
-                    <div class="w-24 text-right">
-                        <span class="block text-2xl font-bold text-ani-purple font-anime">RABU</span>
-                        <span class="text-xs text-gray-500">21:30 WIB</span>
-                    </div>
-                     <div class="w-1 h-16 bg-white/20 relative group-hover:bg-ani-pink transition-colors">
-                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-ani-dark border-2 border-white rounded-full group-hover:border-ani-pink group-hover:bg-ani-pink transition-colors"></div>
-                    </div>
-                    <div class="flex-1">
-                         <div class="bg-ani-dark border border-white/10 p-4 rounded-xl flex gap-4 items-center shadow-lg">
-                             <div class="w-16 h-16 rounded bg-ani-purple/20 flex items-center justify-center border border-ani-purple/50">
-                                <i class="fa-solid fa-play text-ani-purple"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-lg">Oshi no Ko</h4>
-                                <p class="text-xs text-gray-400">Episode 5 - "Reality Dating Show"</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Day Item -->
-                <div class="flex items-center gap-6 group cursor-pointer p-4 rounded-xl hover:bg-white/5 transition-colors">
-                    <div class="w-24 text-right">
-                        <span class="block text-2xl font-bold text-ani-pink font-anime">SABTU</span>
-                        <span class="text-xs text-gray-500">22:00 WIB</span>
-                    </div>
-                     <div class="w-1 h-16 bg-white/20 relative group-hover:bg-ani-pink transition-colors">
-                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-ani-dark border-2 border-white rounded-full group-hover:border-ani-pink group-hover:bg-ani-pink transition-colors"></div>
-                    </div>
-                    <div class="flex-1">
-                        <div class="bg-ani-dark border border-white/10 p-4 rounded-xl flex gap-4 items-center shadow-lg">
-                           <div class="w-16 h-16 rounded bg-ani-pink/20 flex items-center justify-center border border-ani-pink/50">
-                                <i class="fa-solid fa-play text-ani-pink"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-lg">Spy x Family</h4>
-                                <p class="text-xs text-gray-400">Episode 23 - "Mission Complete"</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 5. COMMUNITY / JOIN -->
-    <section id="community" class="py-24 bg-gradient-to-b from-ani-dark to-black relative overflow-hidden">
-        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-        
-        <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
-            <h2 class="text-5xl md:text-7xl font-anime mb-6 drop-shadow-lg">GABUNG <span class="text-stroke-pink text-transparent">KLUB</span></h2>
-            <p class="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-                Dapatkan akses ke konten eksklusif, wallpaper 4K, diskon merch, dan chat dengan sesama penggemar.
-            </p>
-
-            <div class="bg-white/5 border border-white/10 p-8 rounded-3xl backdrop-blur-sm max-w-3xl mx-auto">
-                <form class="flex flex-col md:flex-row gap-4">
-                    <input type="email" placeholder="Masukkan Email Waifu-mu..." class="flex-1 bg-black/50 border border-white/20 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-ani-pink transition-colors">
-                    <button class="bg-ani-pink text-white font-bold font-anime text-xl px-10 py-4 rounded-xl hover:bg-ani-purple transition-colors shadow-lg shadow-ani-pink/30">
-                        JOIN SEKARANG
                     </button>
-                </form>
-                <p class="text-xs text-gray-500 mt-4">*Kami tidak akan mengirim spam, janji ninja!</p>
+
+                    <button class="w-full flex items-center p-4 border-b border-white/5 hover:bg-white/5 transition-colors text-left group border-l-4 border-transparent">
+                        <div class="w-12 h-12 rounded-full border-2 border-transparent group-hover:border-ani-cyan flex items-center justify-center font-bold text-[10px] text-gray-500 bg-gray-900 opacity-50 grayscale group-hover:grayscale-0 char-thumb-placeholder">IMG</div>
+                        <div class="ml-4">
+                            <div class="font-bold text-gray-400 uppercase group-hover:text-ani-cyan transition-colors">Tanjiro Kamado</div>
+                            <div class="text-xs text-gray-500">Demon Slayer</div>
+                        </div>
+                    </button>
+                    
+                    <button class="w-full flex items-center p-4 border-b border-white/5 hover:bg-white/5 transition-colors text-left group border-l-4 border-transparent">
+                        <div class="w-12 h-12 rounded-full border-2 border-transparent group-hover:border-ani-purple flex items-center justify-center font-bold text-[10px] text-gray-500 bg-gray-900 opacity-50 grayscale group-hover:grayscale-0 char-thumb-placeholder">IMG</div>
+                        <div class="ml-4">
+                            <div class="font-bold text-gray-400 uppercase group-hover:text-ani-purple transition-colors">Makima</div>
+                            <div class="text-xs text-gray-500">Chainsaw Man</div>
+                        </div>
+                    </button>
+                </div>
+                
+                <!-- Right: Character Details (Dynamic Pane) -->
+                <div class="w-full lg:w-2/3 relative flex flex-col justify-center items-center overflow-hidden bg-black p-8">
+                    <!-- Huge Background text -->
+                     <h2 class="absolute -right-20 top-0 font-jp font-black text-[200px] text-white/5 truncate pointer-events-none select-none">
+                        呪いの王
+                     </h2>
+
+                     <!-- Character Image cutout style (Replaced with text/box) -->
+                     <div class="absolute right-0 bottom-0 h-4/5 w-1/2 flex items-center justify-center border-l bg-gray-900/50 border-white/10 mask-image-gradient opacity-90 char-main-img-placeholder">
+                         <span class="font-anime text-3xl font-bold text-gray-600 tracking-widest transform -rotate-90">CHARACTER ASSET</span>
+                     </div>
+                     
+                     <!-- Stats & Info Overlay -->
+                     <div class="relative z-10 w-full max-w-lg mr-auto self-start mt-10">
+                         <div class="inline-block bg-ani-pink px-3 py-1 text-black font-black text-xs font-jp uppercase transform -skew-x-12 mb-4">
+                             <span class="inline-block transform skew-x-12">Raja Kutukan</span>
+                         </div>
+                         <h3 class="text-5xl font-anime font-black text-white mb-2 italic">SUKUNA</h3>
+                         <div class="text-ani-cyan font-bold tracking-widest text-sm mb-6 pb-6 border-b border-white/10 uppercase">Jujutsu Kaisen</div>
+                         
+                         <!-- Stats Grid -->
+                         <div class="grid grid-cols-2 gap-x-8 gap-y-4 text-sm font-bold mb-8">
+                             <div>
+                                 <span class="text-gray-500 block text-[10px] tracking-widest">Kekuatan</span>
+                                 <div class="w-full bg-white/10 h-2 mt-1 rounded-full overflow-hidden">
+                                    <div class="bg-ani-pink h-full w-[98%]"></div>
+                                 </div>
+                             </div>
+                             <div>
+                                 <span class="text-gray-500 block text-[10px] tracking-widest">Kecepatan</span>
+                                 <div class="w-full bg-white/10 h-2 mt-1 rounded-full overflow-hidden">
+                                     <div class="bg-ani-cyan h-full w-[90%]"></div>
+                                 </div>
+                             </div>
+                             <div>
+                                 <span class="text-gray-500 block text-[10px] tracking-widest">Kepintaran</span>
+                                 <div class="w-full bg-white/10 h-2 mt-1 rounded-full overflow-hidden">
+                                     <div class="bg-ani-purple h-full w-[85%]"></div>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <p class="text-gray-400 font-light text-sm leading-relaxed border-l-2 border-white/20 pl-4 italic">
+                             "Cahaya bulan seolah menerangi malam ini... tapi aku lah kutukan seutuhnya."
+                         </p>
+                     </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer class="bg-black border-t border-white/10 py-12 text-sm">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
-            <div class="text-center md:text-left">
-                <a href="#" class="text-2xl font-anime tracking-wider text-white block mb-2">ANI<span class="text-ani-cyan">.WORLD</span></a>
-                <p class="text-gray-500">Made with <i class="fa-solid fa-heart text-ani-pink"></i> by Otaku for Otaku.</p>
+    <!-- 5. SCHEDULE TIMELINE (Placeholder) -->
+    <section class="py-20 bg-black relative border-t border-white/10" id="schedule">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl md:text-5xl font-anime font-black text-white text-center mb-16 italic">
+                JADWAL <span class="text-transparent border-text" style="-webkit-text-stroke: 1px #00DFD8;">RILIS</span>
+            </h2>
+            
+            <div class="flex flex-col md:flex-row justify-center items-center mb-12 gap-4">
+                <button class="bg-ani-pink text-white px-6 py-2 rounded-full font-bold text-sm">HARI INI</button>
+                <div class="hidden md:flex gap-4">
+                    <button class="text-gray-500 hover:text-white transition-colors">Senin</button>
+                    <button class="text-gray-500 hover:text-white transition-colors">Selasa</button>
+                    <button class="text-gray-500 hover:text-white transition-colors">Rabu</button>
+                    <button class="text-gray-500 hover:text-white transition-colors">Kamis</button>
+                    <button class="text-gray-500 hover:text-white transition-colors">Jumat</button>
+                </div>
             </div>
             
-            <div class="flex gap-6 text-2xl">
-                <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#5865F2] hover:text-white transition-all"><i class="fa-brands fa-discord"></i></a>
-                <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#1DA1F2] hover:text-white transition-all"><i class="fa-brands fa-twitter"></i></a>
-                <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#FF0000] hover:text-white transition-all"><i class="fa-brands fa-youtube"></i></a>
-                <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#E1306C] hover:text-white transition-all"><i class="fa-brands fa-instagram"></i></a>
+            <!-- Simple List format for now -->
+            <div class="max-w-3xl mx-auto bg-ani-panel border border-white/10 rounded-lg p-6">
+                 <div class="flex items-center justify-between py-4 border-b border-white/5 hover:bg-white/5 px-4 transition-colors">
+                     <div class="flex items-center gap-4">
+                         <span class="font-anime text-xl text-ani-cyan">18:00</span>
+                         <div>
+                             <h4 class="font-bold text-white">One Piece</h4>
+                             <p class="text-xs text-gray-500">Episode 1098</p>
+                         </div>
+                     </div>
+                     <button class="text-gray-400 hover:text-white"><i class="fa-regular fa-bell"></i></button>
+                 </div>
+                 
+                 <div class="flex items-center justify-between py-4 border-b border-white/5 hover:bg-white/5 px-4 transition-colors">
+                     <div class="flex items-center gap-4">
+                         <span class="font-anime text-xl text-ani-cyan">20:30</span>
+                         <div>
+                             <h4 class="font-bold text-white">Spy x Family Sec. 2</h4>
+                             <p class="text-xs text-gray-500">Episode 12</p>
+                         </div>
+                     </div>
+                     <button class="text-gray-400 hover:text-white"><i class="fa-regular fa-bell"></i></button>
+                 </div>
+                 
+                 <div class="flex items-center justify-between py-4 hover:bg-white/5 px-4 transition-colors">
+                     <div class="flex items-center gap-4">
+                         <span class="font-anime text-xl text-ani-pink opacity-50">23:00</span>
+                         <div>
+                             <h4 class="font-bold text-gray-400">Bleach: TYBW</h4>
+                             <p class="text-xs text-gray-600">Episode 26 (SELESAI)</p>
+                         </div>
+                     </div>
+                 </div>
             </div>
+        </div>
+    </section>
 
-            <div class="text-center md:text-right text-gray-600">
-                <p>&copy; 2024 AniWorld Inc.</p>
-                <div class="flex gap-4 justify-center md:justify-end mt-2">
-                    <a href="#" class="hover:text-white">Privacy</a>
-                    <a href="#" class="hover:text-white">Terms</a>
-                    <a href="#" class="hover:text-white">DMCA</a>
+    <!-- 6. NEWSLETTER / JOIN (Manga CTA) -->
+    <section class="py-24 bg-ani-purple relative overflow-hidden flex justify-center items-center">
+        <!-- Dramatic angular background cuts -->
+        <div class="absolute inset-0 bg-ani-pink transform rotate-12 origin-bottom-right scale-150 z-0 opacity-20"></div>
+        <div class="absolute -right-20 -top-20 text-[20rem] font-black text-black/10 font-jp leading-none z-0">参加</div>
+        
+        <div class="relative z-10 w-full max-w-3xl mx-auto px-4 text-center">
+            <h2 class="text-5xl md:text-6xl font-anime font-black text-white italic mb-6 shadow-black drop-shadow-lg">
+                GABUNG KE KLAN.
+            </h2>
+            <p class="text-white/80 font-medium mb-10 max-w-xl mx-auto">
+                Dapatkan notifikasi chapter manga terbaru, jadwal rilis streaming, dan merchandise eksklusif khusus member.
+            </p>
+            
+            <form class="flex flex-col sm:flex-row gap-4 justify-center">
+                <input type="email" placeholder="Masukkan Email Kamu..." class="px-6 py-4 bg-black/60 text-white border-2 border-white/30 focus:border-white focus:outline-none w-full sm:w-96 font-body backdrop-blur-sm placeholder-gray-400">
+                <button type="submit" class="px-8 py-4 bg-white text-ani-purple font-bold italic tracking-widest hover:bg-black hover:text-white transition-colors uppercase shadow-[6px_6px_0px_rgba(0,0,0,0.5)] active:shadow-none active:translate-x-[6px] active:translate-y-[6px]">
+                    SUBSCRIBE
+                </button>
+            </form>
+            <p class="text-xs text-white/50 mt-4">*Kami tidak akan membagikan datamu ke Akatsuki.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black pt-16 pb-8 border-t-8 border-ani-cyan relative overflow-hidden">
+        <div class="absolute bottom-0 left-0 w-full h-full halftone opacity-10 pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <span class="font-anime text-3xl font-black italic tracking-widest text-white mb-4 block">
+                        ANI<span class="text-ani-pink">WORLD</span>
+                    </span>
+                    <p class="text-gray-400 font-light mb-6 max-w-sm">
+                        Platform streaming anime dan baca manga terlegal paling update di dimensi ini.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-ani-pink transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-ani-purple transition-colors"><i class="fa-brands fa-discord"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-ani-cyan transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
                 </div>
+                
+                <div>
+                     <h4 class="text-white font-bold tracking-widest uppercase mb-4 text-sm">Kategori</h4>
+                     <ul class="space-y-2 text-gray-400 text-sm">
+                         <li><a href="#" class="hover:text-ani-cyan transition-colors">Streaming</a></li>
+                         <li><a href="#" class="hover:text-ani-cyan transition-colors">Baca Manga</a></li>
+                         <li><a href="#" class="hover:text-ani-cyan transition-colors">Berita</a></li>
+                         <li><a href="#" class="hover:text-ani-cyan transition-colors">Komunitas</a></li>
+                     </ul>
+                </div>
+                
+                <div>
+                     <h4 class="text-white font-bold tracking-widest uppercase mb-4 text-sm">Legal</h4>
+                     <ul class="space-y-2 text-gray-400 text-sm">
+                         <li><a href="#" class="hover:text-ani-pink transition-colors">DMCA</a></li>
+                         <li><a href="#" class="hover:text-ani-pink transition-colors">Privacy Policy</a></li>
+                         <li><a href="#" class="hover:text-ani-pink transition-colors">Terms of Service</a></li>
+                     </ul>
+                </div>
+            </div>
+            
+            <div class="text-center pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+                <p>&copy; 2024 ANI-WORLD. All rights reserved.</p>
+                <p class="mt-2 md:mt-0 font-jp">メイド・ウィズ・ラブ</p> <!-- Made with love -->
             </div>
         </div>
     </footer>
 
-    <script>
-        // --- Three.js Sakura Particles (Falling Cherry Blossoms) ---
-        const initThreeJS = () => {
-            const canvas = document.querySelector('#webgl-canvas');
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-            
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+    <!-- Copy Source Code Button (Anime Style) -->
+    <button onclick="copySourceCode(this)" class="fixed bottom-28 right-8 z-[9999] group flex items-center justify-center p-4 bg-ani-cyan text-black border-2 border-black transition-all duration-300 transform -skew-x-12 shadow-[6px_6px_0px_#FF0080] hover:shadow-[8px_8px_0px_#7928CA] active:shadow-none active:translate-x-[6px] active:translate-y-[6px]">
+        <div class="flex items-center gap-3 font-anime text-sm italic tracking-widest uppercase">
+            <i class="fa-regular fa-copy text-xl"></i>
+            <span>SALIN KODE</span>
+        </div>
+    </button>
 
-            // Create Sakura Particles
-            const particlesGeometry = new THREE.BufferGeometry();
-            const particlesCount = 300; // Number of petals
-            
-            const posArray = new Float32Array(particlesCount * 3);
-            const rotArray = new Float32Array(particlesCount * 3); // Rotation speed
-            
-            for(let i = 0; i < particlesCount * 3; i+=3) {
-                posArray[i] = (Math.random() - 0.5) * 15; // x
-                posArray[i+1] = (Math.random() - 0.5) * 15 + 5; // y (start higher)
-                posArray[i+2] = (Math.random() - 0.5) * 10; // z
-                
-                rotArray[i] = Math.random() * 0.02; // Random rotation speed
-            }
-            
-            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            
-            // Texture for Sakura (Using a simple circle with pink color for now)
-            // Ideally use a textureLoader.load('sakura.png')
-            const material = new THREE.PointsMaterial({
-                size: 0.1,
-                color: 0xFFB7C5, // Sakura Pink
-                transparent: true,
-                opacity: 0.8,
-                map: null // Default square/circle
-            });
-            
-            // To make them look like petals, we might need Sprites or just simple colored points for performance
-            const particlesMesh = new THREE.Points(particlesGeometry, material);
-            scene.add(particlesMesh);
-            
-            camera.position.z = 5;
+    <!-- Manga Panel Back Button -->
+    <a href="../../index.html" class="fixed bottom-8 right-8 z-[9999] group flex flex-row-reverse items-center justify-start h-14 w-14 hover:w-44 bg-white text-ani-bg border-2 border-white transition-all duration-300 ease-out transform -skew-x-12 shadow-[6px_6px_0px_#FF0080] hover:shadow-[8px_8px_0px_#00DFD8] active:shadow-none active:translate-x-[6px] active:translate-y-[6px]" aria-label="Back to Hub">
+        
+        <!-- Icon Block (Fixed Right) -->
+        <div class="w-14 h-full shrink-0 flex items-center justify-center bg-white group-hover:bg-ani-cyan transition-colors duration-300 relative z-10 border-l-2 border-transparent group-hover:border-black transform skew-x-12">
+            <i class="fa-solid fa-arrow-left text-xl transform group-hover:-translate-x-1 transition-transform duration-300 group-hover:text-black"></i>
+        </div>
 
-            // Animation Loop
-            const animate = () => {
-                requestAnimationFrame(animate);
-                
-                const positions = particlesGeometry.attributes.position.array;
-                
-                for(let i = 0; i < particlesCount * 3; i+=3) {
-                    // Fall down
-                    positions[i+1] -= 0.01;
-                    
-                    // Sway left/right (Wind effect)
-                    positions[i] += Math.sin(Date.now() * 0.001 + positions[i+1]) * 0.005;
-                    
-                    // Reset if too low
-                    if (positions[i+1] < -5) {
-                        positions[i+1] = 5;
-                        positions[i] = (Math.random() - 0.5) * 15;
-                    }
-                }
-                
-                particlesGeometry.attributes.position.needsUpdate = true;
-                
-                // Rotate entire system slightly
-                particlesMesh.rotation.y += 0.001;
-                particlesMesh.rotation.z += 0.0005;
-
-                renderer.render(scene, camera);
-            };
-            
-            animate();
-
-            // Resize
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-        };
-
-        initThreeJS();
-
-        // --- GSAP Animations ---
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Pop-up Reveal for Cards
-        gsap.utils.toArray('.anime-card').forEach((card, i) => {
-            gsap.from(card, {
-                scrollTrigger: {
-                    trigger: card,
-                    start: "top 85%",
-                },
-                y: 50,
-                opacity: 0,
-                scale: 0.8,
-                duration: 0.6,
-                delay: i * 0.1,
-                ease: "back.out(1.7)"
-            });
-        });
-
-        // Title Animation
-        gsap.utils.toArray('h2').forEach(title => {
-            gsap.from(title, {
-                scrollTrigger: {
-                    trigger: title,
-                    start: "top 80%",
-                },
-                x: -50,
-                opacity: 0,
-                duration: 0.8,
-                ease: "power2.out"
-            });
-        });
-
-    </script>
-            <!-- Back to Hub Bubble -->
-    <a href="../../index.html" class="fixed bottom-6 right-6 w-14 h-14 bg-white text-[#d4af37] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 hover:-translate-y-1 transition-all z-[9999] border-2 border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.4)] group">
-        <i class="fa-solid fa-house text-xl group-hover:text-yellow-600 transition-colors"></i>
+        <!-- Sliding Text Block -->
+        <div class="h-full flex-grow flex items-center justify-center overflow-hidden bg-ani-bg border-r-2 border-transparent group-hover:border-black transition-colors duration-300">
+            <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 whitespace-nowrap px-3 font-anime font-black text-lg italic tracking-widest text-white transform skew-x-12">
+                BACK
+            </span>
+        </div>
+        
     </a>
+
+    <!-- Scripts Implementation -->
+    <script>
+        // 1. Initialize Lenis for Smooth Scrolling
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // easeOutExpo
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+            infinite: false,
+        })
+
+        // Use requestAnimationFrame to continuously update the scroll
+        function raf(time) {
+            lenis.raf(time)
+            requestAnimationFrame(raf)
+        }
+        requestAnimationFrame(raf)
+
+        // Sync Lenis scroll with GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update)
+        gsap.ticker.add((time)=>{
+            lenis.raf(time * 1000)
+        })
+        gsap.ticker.lagSmoothing(0, 0)
+
+        // 2. Swiper JS Initialization for Trending Carousel
+        const trendingSwiper = new Swiper('.trendingSwiper', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            loop: true,
+            autoplay: {
+                delay: 3500,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+                dynamicBullets: true,
+            },
+            navigation: {
+                nextEl: '.trending-next',
+                prevEl: '.trending-prev',
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                },
+                1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                },
+            }
+        });
+
+        // GSAP Animations
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Hero Section Parallax Panels
+            const panels = document.querySelectorAll('.manga-panel');
+            if(panels.length > 0) {
+                gsap.fromTo(panels, 
+                    { opacity: 0, y: 100, scale: 0.9, rotationX: 20 },
+                    {
+                        opacity: 1, y: 0, scale: 1, rotationX: 0,
+                        stagger: 0.2, duration: 1, ease: 'back.out(1.5)',
+                        scrollTrigger: {
+                            trigger: '#hero',
+                            start: 'top center',
+                        }
+                    }
+                );
+
+                // Add parallax mouse move effect to panels if on desktop
+                if(window.innerWidth > 1024) {
+                    const heroSec = document.getElementById('hero');
+                    heroSec.addEventListener('mousemove', (e) => {
+                        const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+                        const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+                        
+                        panels.forEach((panel, idx) => {
+                            const speed = (idx + 1) * 0.5;
+                            panel.style.transform = `rotateY(${xAxis * speed}deg) rotateX(${yAxis * speed}deg) translateY(${yAxis * speed * 2}px)`;
+                        });
+                    });
+                    
+                    heroSec.addEventListener('mouseleave', () => {
+                        panels.forEach((panel) => {
+                            panel.style.transform = `rotateY(0deg) rotateX(0deg) translateY(0px)`;
+                        });
+                    });
+                }
+            }
+
+            // Anime Cards Stagger Reveal
+            const animeCards = gsap.utils.toArray('.anime-card');
+            animeCards.forEach((card) => {
+                gsap.fromTo(card, 
+                    { opacity: 0, y: 50 },
+                    {
+                        opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: card,
+                            start: 'top 85%',
+                        }
+                    }
+                );
+            });
+
+            // Mobile Menu Toggle
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            const icon = btn.querySelector('i');
+
+            if (btn && menu) {
+                btn.addEventListener('click', () => {
+                    menu.classList.toggle('hidden');
+                    // Toggle Icon
+                    if(menu.classList.contains('hidden')) {
+                        icon.classList.remove('fa-xmark');
+                        icon.classList.add('fa-bars');
+                    } else {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-xmark');
+                    }
+                });
+            }
+
+            // Navbar Background Change on Scroll
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('bg-ani-panel/95', 'shadow-lg');
+                    navbar.classList.remove('bg-black/40');
+                } else {
+                    navbar.classList.remove('bg-ani-panel/95', 'shadow-lg');
+                    navbar.classList.add('bg-black/40');
+                }
+            });
+            
+            // Character split pane logic
+            const charNavBtn = document.querySelectorAll('.active-char, .w-full.flex.items-center.p-4');
+            const rightPane = document.querySelector('#characters .w-full.lg\\:w-2\\/3');
+            
+            // Getting the placeholder element
+            const rightPanePlaceholder = rightPane.querySelector('.char-main-img-placeholder');
+            const rightPaneTitle = rightPane.querySelector('h3');
+            // Background text H2
+            const rightPaneBgText = rightPane.querySelector('h2.absolute');
+            
+            const rightPaneSubTitle = rightPane.querySelector('.text-ani-cyan.font-bold, .text-ani-pink.font-bold, .text-ani-purple.font-bold');
+            const rightPaneQuote = rightPane.querySelector('p.text-gray-400');
+            const statsBars = rightPane.querySelectorAll('.bg-white\\/10 > div');
+            const nameBadge = rightPane.querySelector('.bg-ani-pink span, .bg-ani-cyan span, .bg-ani-purple span');
+
+            const characterData = {
+                "RYOMEN SUKUNA": {
+                    bgText: "呪いの王",
+                    subtitle: "Jujutsu Kaisen",
+                    badge: "Raja Kutukan",
+                    quote: '"Cahaya bulan seolah menerangi malam ini... tapi aku lah kutukan seutuhnya."',
+                    stats: ['98%', '90%', '85%'],
+                    color: 'text-ani-pink',
+                    bgColor: 'bg-ani-pink'
+                },
+                "TANJIRO KAMADO": {
+                    bgText: "鬼殺隊",
+                    subtitle: "Demon Slayer",
+                    badge: "Pembasmi Iblis",
+                    quote: '"Aku tidak akan menyerah! Aku tidak peduli betapa sulitnya itu!"',
+                    stats: ['75%', '85%', '80%'],
+                    color: 'text-ani-cyan',
+                    bgColor: 'bg-ani-cyan'
+                },
+                "MAKIMA": {
+                    bgText: "支配の悪魔",
+                    subtitle: "Chainsaw Man",
+                    badge: "Iblis Pengendali",
+                    quote: '"Anjing yang nakal harus dihukum kan?"',
+                    stats: ['95%', '90%', '99%'],
+                    color: 'text-ani-purple',
+                    bgColor: 'bg-ani-purple'
+                }
+            };
+
+            if(charNavBtn && rightPanePlaceholder) {
+                charNavBtn.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        // Remove active class from all
+                        charNavBtn.forEach(b => {
+                            b.classList.remove('active-char', 'border-ani-pink', 'border-ani-cyan', 'border-ani-purple', 'bg-white/5');
+                            b.classList.add('border-transparent');
+                            const thumb = b.querySelector('.char-thumb-placeholder');
+                            if(thumb) {
+                                thumb.classList.add('grayscale', 'opacity-50', 'text-gray-500', 'border-transparent');
+                                thumb.classList.remove('text-ani-pink', 'text-ani-cyan', 'text-ani-purple');
+                            }
+                            const name = b.querySelector('.font-bold:nth-child(2) > div:first-child') || b.querySelector('.font-bold');
+                            // Ensure we reset text to gray for everything
+                            const allTitles = b.querySelectorAll('.font-bold, .group-hover\\:text-ani-pink, .group-hover\\:text-ani-cyan, .group-hover\\:text-ani-purple');
+                            allTitles.forEach(t => {
+                                if(t.parentElement.classList.contains('ml-4')) {
+                                   t.classList.remove('text-white');
+                                   t.classList.add('text-gray-400');
+                                }
+                            });
+                        });
+                        
+                        // Add active class to clicked
+                        btn.classList.add('active-char', 'bg-white/5');
+                        btn.classList.remove('border-transparent');
+                        const activeName = btn.querySelector('.ml-4 .font-bold').innerText.trim();
+                        const data = characterData[activeName.toUpperCase()];
+                        
+                        if(data) {
+                            btn.classList.add(`border-l-4`, data.bgColor.replace('bg-', 'border-'));
+                            const btnThumb = btn.querySelector('.char-thumb-placeholder');
+                            btnThumb.classList.remove('grayscale', 'opacity-50', 'text-gray-500', 'border-transparent');
+                            btnThumb.classList.add('border-2', data.bgColor.replace('bg-', 'border-'), data.color);
+                            
+                            const btnName = btn.querySelector('.ml-4 .font-bold');
+                            btnName.classList.remove('text-gray-400');
+                            btnName.classList.add('text-white');
+
+                            // Update Content dynamically based on rightPane
+                            if(rightPaneTitle) rightPaneTitle.innerText = activeName;
+                            if(rightPaneSubTitle) {
+                                rightPaneSubTitle.innerText = data.subtitle;
+                                rightPaneSubTitle.className = `font-bold tracking-widest text-sm mb-6 pb-6 border-b border-white/10 uppercase ${data.color}`;
+                            }
+                            
+                            if(nameBadge) {
+                                nameBadge.innerText = data.badge;
+                                nameBadge.parentElement.className = `inline-block px-3 py-1 text-black font-black text-xs font-jp uppercase transform -skew-x-12 mb-4 ${data.bgColor}`;
+                            }
+
+                            if(rightPaneQuote) rightPaneQuote.innerText = data.quote;
+                            
+                            // Fake visual update
+                            gsap.fromTo(rightPanePlaceholder, {opacity: 0, x: 50}, {opacity: 0.9, x:0, duration: 0.5});
+                            
+                            if(rightPaneBgText) rightPaneBgText.innerText = data.bgText;
+                            
+                            // Animate Stats
+                            if(statsBars.length > 0) {
+                                statsBars.forEach((bar, idx) => {
+                                    gsap.fromTo(bar, {width: 0}, {width: data.stats[idx], duration: 1, ease: "power2.out", delay: 0.2});
+                                    bar.className = `h-full ${data.bgColor}`; // Use bg-color instead of border
+                                });
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Anime Grid Filtering
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const animeItems = document.querySelectorAll('#seasonal .grid > div:not(:last-child)'); // exclude "LIHAT SEMUA"
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Reset active state
+                    filterBtns.forEach(b => {
+                        b.classList.remove('active', 'bg-white', 'text-black');
+                        b.classList.add('bg-transparent', 'text-white', 'border', 'border-white/20');
+                    });
+                    
+                    // Set active
+                    btn.classList.add('active', 'bg-white', 'text-black');
+                    btn.classList.remove('bg-transparent', 'text-white', 'border', 'border-white/20');
+                    
+                    const filterValue = btn.innerText.trim().toUpperCase();
+                    
+                    animeItems.forEach(item => {
+                        const badgeInfo = item.querySelector('.text-\\[10px\\]');
+                        if(!badgeInfo) return;
+                        const category = badgeInfo.innerText.trim().toUpperCase();
+                        
+                        if(filterValue === 'ALL' || category === filterValue) {
+                            gsap.to(item, {scale: 1, opacity: 1, display: 'block', duration: 0.3});
+                        } else {
+                            gsap.to(item, {scale: 0.8, opacity: 0, display: 'none', duration: 0.3});
+                        }
+                    });
+                });
+            });
+
+            // Schedule Timeline Logic
+            const scheduleBtns = document.querySelectorAll('#schedule button');
+            const scheduleContainer = document.querySelector('#schedule .max-w-3xl');
+            
+            const scheduleData = {
+                "HARI INI": [
+                    { time: "18:00", title: "One Piece", eps: "Episode 1098", color: "text-ani-cyan" },
+                    { time: "20:30", title: "Spy x Family Sec. 2", eps: "Episode 12", color: "text-ani-cyan" },
+                    { time: "23:00", title: "Bleach: TYBW", eps: "Episode 26 (SELESAI)", color: "text-ani-pink opacity-50", inactive: true }
+                ],
+                "Senin": [
+                    { time: "19:00", title: "Vinland Saga Season 2", eps: "Episode 24", color: "text-ani-cyan" }
+                ],
+                "Selasa": [
+                    { time: "21:00", title: "Chainsaw Man", eps: "Episode 12", color: "text-ani-cyan" },
+                    { time: "22:30", title: "Golden Kamuy 4th Season", eps: "Episode 13", color: "text-ani-cyan" }
+                ],
+                "Rabu": [
+                    { time: "20:00", title: "Oshi no Ko", eps: "Episode 1", color: "text-ani-cyan" }
+                ],
+                "Kamis": [
+                    { time: "18:30", title: "Dr. Stone: New World", eps: "Episode 1", color: "text-ani-cyan" },
+                    { time: "21:15", title: "Jujutsu Kaisen Season 2", eps: "Episode 1", color: "text-ani-cyan" }
+                ],
+                "Jumat": [
+                    { time: "19:30", title: "Sousou no Frieren", eps: "Episode 1", color: "text-ani-cyan" }
+                ]
+            };
+
+            scheduleBtns.forEach(btn => {
+                if(btn.querySelector('i')) return; // Skip bell icons
+                
+                btn.addEventListener('click', (e) => {
+                    // Reset buttons
+                    scheduleBtns.forEach(b => {
+                        if(b.querySelector('i')) return;
+                        b.className = "text-gray-500 hover:text-white transition-colors";
+                    });
+                    
+                    btn.className = "bg-ani-pink text-white px-6 py-2 rounded-full font-bold text-sm transition-colors";
+                    
+                    const day = btn.innerText.trim();
+                    const items = scheduleData[day] || [];
+                    
+                    // Smoothly fade out current items
+                    gsap.to(scheduleContainer.children, {
+                        opacity: 0, 
+                        y: 10, 
+                        duration: 0.2, 
+                        stagger: 0.05,
+                        onComplete: () => {
+                            scheduleContainer.innerHTML = '';
+                            
+                            items.forEach((item, index) => {
+                                const el = document.createElement('div');
+                                el.className = `flex items-center justify-between py-4 border-b border-white/5 hover:bg-white/5 px-4 transition-colors opacity-0 translate-y-4`;
+                                el.innerHTML = `
+                                     <div class="flex items-center gap-4">
+                                         <span class="font-anime text-xl ${item.color}">${item.time}</span>
+                                         <div>
+                                             <h4 class="${item.inactive ? 'font-bold text-gray-400' : 'font-bold text-white'}">${item.title}</h4>
+                                             <p class="text-xs ${item.inactive ? 'text-gray-600' : 'text-gray-500'}">${item.eps}</p>
+                                         </div>
+                                     </div>
+                                     ${!item.inactive ? '<button class="text-gray-400 hover:text-white transition-colors"><i class="fa-regular fa-bell"></i></button>' : ''}
+                                `;
+                                scheduleContainer.appendChild(el);
+                            });
+                            
+                            // Fade in new items
+                            gsap.to(scheduleContainer.children, {
+                                opacity: 1, 
+                                y: 0, 
+                                duration: 0.3, 
+                                stagger: 0.1, 
+                                ease: "power2.out"
+                            });
+                        }
+                    });
+                });
+            });
+
+            // Newsletter Form Submit
+            const form = document.querySelector('form');
+            if(form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const input = form.querySelector('input');
+                    const btn = form.querySelector('button');
+                    
+                    if(input.value) {
+                        const originalText = btn.innerText;
+                        btn.innerText = "BERHASIL GABUNG!";
+                        btn.classList.replace('bg-white', 'bg-ani-cyan');
+                        btn.classList.replace('text-ani-purple', 'text-black');
+                        input.value = '';
+                        
+                        setTimeout(() => {
+                            btn.innerText = originalText;
+                            btn.classList.replace('bg-ani-cyan', 'bg-white');
+                            btn.classList.replace('text-black', 'text-ani-purple');
+                        }, 3000);
+                    }
+                });
+            }
+
+            // Global Copy Script
+            window.copySourceCode = function(btn) {
+                const htmlContent = document.documentElement.outerHTML;
+                navigator.clipboard.writeText(htmlContent).then(() => {
+                    const originalContent = btn.innerHTML;
+                    
+                    btn.innerHTML = `
+                        <div class="flex items-center gap-3 font-anime text-sm italic tracking-widest text-ani-cyan">
+                            <i class="fa-solid fa-check"></i>
+                            <span>GRABBED!</span>
+                        </div>
+                    `;
+                    btn.classList.add('bg-white', 'text-ani-bg');
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalContent;
+                        btn.classList.remove('bg-white', 'text-ani-bg');
+                    }, 2000);
+                });
+            }
+
+        });
+    </script>
 </body>
 </html>
-
-

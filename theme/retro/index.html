@@ -83,6 +83,77 @@
             height: 16px;
             box-shadow: inset 1px 1px #dfdfdf, inset -1px -1px #000000, inset 2px 2px #ffffff, inset -2px -2px #808080;
         }
+
+        /* Essential Window Management */
+        .os-window {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+        }
+        .os-window.hidden-window {
+            display: none !important;
+        }
+        .os-window.maximized {
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: calc(100vh - 40px) !important;
+            z-index: 999 !important;
+        }
+        .os-window-header {
+            cursor: grab;
+            user-select: none;
+        }
+        .os-window-header:active {
+            cursor: grabbing;
+        }
+        
+        /* Smart Image Fallback */
+        .img-fallback-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #c0c0c0; /* win-gray */
+            width: 100%;
+            height: 100%;
+            border: 2px solid;
+            border-color: #dfdfdf #000000 #000000 #dfdfdf; /* inner win out shadow */
+        }
+        .img-fallback-icon {
+            font-size: 2rem;
+            color: #808080;
+            margin-bottom: 0.25rem;
+        }
+        .img-fallback-label {
+            font-size: 0.65rem;
+            color: #000000;
+            font-family: 'Press Start 2P', monospace;
+            text-align: center;
+        }
+
+        /* Minesweeper Cells */
+        .mine-cell {
+            width: 24px;
+            height: 24px;
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: white gray gray white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .mine-cell.revealed {
+            border: 1px solid gray;
+            background-color: #c0c0c0;
+        }
+        .mine-cell.flagged {
+            color: red;
+        }
     </style>
 </head>
 <body class="font-mono text-black h-screen overflow-hidden flex flex-col cursor-retro">
@@ -90,42 +161,48 @@
     <!-- CRT Overlay -->
     <div class="scanlines"></div>
 
-    <!-- DESKTOP AREA (Scrollable) -->
-    <main class="flex-1 p-4 overflow-y-auto relative scroll-smooth" id="desktop">
+    <!-- DESKTOP AREA -->
+    <main class="flex-1 relative overflow-hidden w-full h-full" id="desktop">
         
-        <!-- Desktop Icons (Fixed Position relative to scroll container) -->
-        <div class="fixed top-4 left-4 flex flex-col gap-6 z-0 md:flex hidden">
-            <div class="flex flex-col items-center gap-1 group cursor-pointer w-20">
+        <!-- Desktop Icons (Absolute Position to Desktop) -->
+        <div class="absolute top-4 left-4 flex flex-col gap-6 z-0 hidden md:flex" id="desktop-icons">
+            <div class="desktop-icon flex flex-col items-center gap-1 group cursor-pointer w-20" data-target="home">
                 <div class="w-12 h-12 flex items-center justify-center text-3xl text-white drop-shadow-md">
                     <i class="fa-solid fa-computer"></i>
                 </div>
                 <span class="text-white bg-win-blue/0 group-hover:bg-win-blue px-1 text-sm text-center font-bold">My PC</span>
             </div>
-            <a href="#about" class="flex flex-col items-center gap-1 group cursor-pointer w-20">
+            <div class="desktop-icon flex flex-col items-center gap-1 group cursor-pointer w-20" data-target="about">
                 <div class="w-12 h-12 flex items-center justify-center text-3xl text-white drop-shadow-md">
                     <i class="fa-solid fa-file-lines"></i>
                 </div>
                 <span class="text-white bg-win-blue/0 group-hover:bg-win-blue px-1 text-sm text-center font-bold">ReadMe.txt</span>
-            </a>
-            <a href="#projects" class="flex flex-col items-center gap-1 group cursor-pointer w-20">
+            </div>
+            <div class="desktop-icon flex flex-col items-center gap-1 group cursor-pointer w-20" data-target="projects">
                 <div class="w-12 h-12 flex items-center justify-center text-3xl text-yellow-400 drop-shadow-md">
                     <i class="fa-solid fa-folder-closed"></i>
                 </div>
                 <span class="text-white bg-win-blue/0 group-hover:bg-win-blue px-1 text-sm text-center font-bold">Projects</span>
-            </a>
-            <a href="#contact" class="flex flex-col items-center gap-1 group cursor-pointer w-20">
+            </div>
+            <div class="desktop-icon flex flex-col items-center gap-1 group cursor-pointer w-20" data-target="contact">
                 <div class="w-12 h-12 flex items-center justify-center text-3xl text-white drop-shadow-md">
                     <i class="fa-solid fa-envelope"></i>
                 </div>
                 <span class="text-white bg-win-blue/0 group-hover:bg-win-blue px-1 text-sm text-center font-bold">Mail</span>
-            </a>
+            </div>
+            <div class="desktop-icon flex flex-col items-center gap-1 group cursor-pointer w-20" data-target="minigame">
+                <div class="w-12 h-12 flex items-center justify-center text-3xl text-red-500 drop-shadow-md">
+                    <i class="fa-solid fa-bomb"></i>
+                </div>
+                <span class="text-white bg-win-blue/0 group-hover:bg-win-blue px-1 text-sm text-center font-bold">MINES.EXE</span>
+            </div>
         </div>
 
-        <!-- WINAMP WIDGET (Fixed Top Right) -->
-        <div class="fixed top-4 right-4 z-50 w-64 hidden lg:block">
+        <!-- WINAMP WIDGET -->
+        <div id="winamp" class="os-window bg-win-gray shadow-win-out p-1 absolute z-50 w-64 hidden lg:block" style="top: 20px; right: 20px;">
             <div class="bg-[#292929] border-2 border-gray-400 p-1 shadow-win-out">
                 <!-- Title Bar -->
-                <div class="bg-[#000080] h-4 mb-1 flex justify-between items-center px-1 cursor-move">
+                <div class="os-window-header bg-[#000080] h-4 mb-1 flex justify-between items-center px-1">
                     <span class="text-[10px] text-white font-pixel">WINAMP</span>
                     <div class="flex gap-[2px]">
                         <div class="w-2 h-2 bg-gray-300"></div>
@@ -153,28 +230,28 @@
                 </div>
             </div>
         </div>
-
-        <div class="flex flex-col gap-12 pb-20 md:pl-24 max-w-5xl mx-auto">
             
             <!-- SECTION 1: WELCOME (Hero) -->
-            <div id="home" class="bg-win-gray shadow-win-out p-1 relative z-10 w-full animate-fade-in-up">
-                <div class="bg-win-blue text-white px-2 py-1 flex justify-between items-center mb-1">
+            <div id="home" class="os-window bg-win-gray shadow-win-out p-1 absolute z-[60] w-[90%] md:w-[600px] animate-fade-in-up" style="top: 10%; left: 5%;">
+                <div class="os-window-header bg-win-blue text-white px-2 py-1 flex justify-between items-center mb-1">
                     <div class="flex items-center gap-2">
                         <i class="fa-brands fa-windows"></i>
                         <span class="font-bold tracking-wider">Welcome.exe</span>
                     </div>
-                    <div class="flex gap-1">
-                        <button class="w-5 h-5 bg-win-gray shadow-win-out flex items-center justify-center text-xs font-bold active:shadow-win-in border-none">X</button>
+                    <div class="flex gap-[2px]">
+                        <button class="win-minimize w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in">_</button>
+                        <button class="win-maximize w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in">□</button>
+                        <button class="win-close w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in font-bold">X</button>
                     </div>
                 </div>
                 
                 <!-- Menu Bar -->
                 <div class="flex gap-4 px-2 mb-2 text-sm border-b border-white shadow-[0_1px_0_#808080]">
-                    <span class="underline">F</span>ile
-                    <span class="underline">H</span>elp
+                    <span class="underline hover:bg-win-blue hover:text-white px-1">F</span>ile
+                    <span class="underline hover:bg-win-blue hover:text-white px-1">H</span>elp
                 </div>
 
-                <div class="bg-white border-2 border-win-dark shadow-win-in p-6">
+                <div class="bg-white border-2 border-win-dark shadow-win-in p-6 flex-grow">
                     <div class="flex flex-col md:flex-row gap-6 items-center">
                         <div class="border-2 border-win-dark shadow-win-in p-1 bg-win-gray">
                             <img src="https://placehold.co/200x200/000080/FFFFFF/png?text=ADMIN" alt="Profile" class="border border-win-dark">
@@ -186,9 +263,9 @@
                                 Full-Stack Developer & Retro Enthusiast.
                             </p>
                             <div class="flex flex-wrap gap-4 justify-center md:justify-start">
-                                <a href="#projects" class="bg-win-gray shadow-win-out px-4 py-2 text-lg font-bold win-btn active:translate-y-px border-none flex items-center gap-2 text-black no-underline">
+                                <button class="bg-win-gray shadow-win-out px-4 py-2 text-lg font-bold win-btn active:translate-y-px border-none flex items-center gap-2 text-black no-underline open-window-btn" data-target="projects">
                                     <i class="fa-solid fa-rocket"></i> START_TOUR
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -201,20 +278,24 @@
             </div>
 
             <!-- SECTION 2: ABOUT ME (Notepad Style) -->
-            <div id="about" class="bg-win-gray shadow-win-out p-1 relative z-10 w-full md:w-3/4 self-end">
-                <div class="bg-gradient-to-r from-blue-800 to-blue-600 text-white px-2 py-1 flex justify-between items-center mb-1">
+            <div id="about" class="os-window bg-win-gray shadow-win-out p-1 absolute z-50 w-[90%] md:w-[500px] hidden-window" style="top: 15%; left: 15%;">
+                <div class="os-window-header bg-gradient-to-r from-blue-800 to-blue-600 text-white px-2 py-1 flex justify-between items-center mb-1">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-file-lines"></i>
                         <span class="font-bold tracking-wider">about_me.txt - Notepad</span>
                     </div>
-                    <button class="w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black">X</button>
+                    <div class="flex gap-[2px]">
+                        <button class="win-minimize w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in">_</button>
+                        <button class="win-maximize w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in">□</button>
+                        <button class="win-close w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in font-bold">X</button>
+                    </div>
                 </div>
                 
-                <div class="flex gap-4 px-2 mb-1 text-sm">
+                <div class="flex gap-4 px-2 mb-1 text-sm border-b border-transparent">
                     <span class="underline">F</span>ile <span class="underline">E</span>dit <span class="underline">S</span>earch <span class="underline">H</span>elp
                 </div>
 
-                <div class="bg-white border-2 border-win-dark shadow-win-in p-4 h-64 overflow-y-auto font-mono text-lg">
+                <div class="bg-white border-2 border-win-dark shadow-win-in p-4 h-64 overflow-y-auto font-mono text-lg flex-grow flex flex-col cursor-text">
                     <p>Halo! Nama saya [Nama Anda].</p>
                     <br>
                     <p>Saya adalah pengembang web yang memiliki passion pada desain antarmuka yang unik dan pengalaman pengguna yang memorable. Saya percaya bahwa web tidak harus membosankan.</p>
@@ -222,78 +303,112 @@
                     <p>Masa kecil saya dihabiskan dengan komputer beige, floppy disk, dan suara modem dial-up. Estetika ini selalu memiliki tempat khusus di hati saya.</p>
                     <br>
                     <p>Saat ini saya fokus membangun aplikasi modern menggunakan teknologi terkini seperti React dan Tailwind, tapi dengan jiwa "jadul".</p>
-                    <p class="animate-pulse">_</p>
+                    <p class="mt-auto pointer-events-none animate-pulse">_</p>
                 </div>
             </div>
 
             <!-- SECTION 3: SKILLS (System Properties Style) -->
-            <div id="skills" class="bg-win-gray shadow-win-out p-1 relative z-10 w-full md:w-2/3 mx-auto">
-                <div class="bg-win-blue text-white px-2 py-1 flex justify-between items-center mb-1">
+            <div id="skills" class="os-window bg-win-gray shadow-win-out p-1 absolute z-40 w-[90%] md:w-[500px] hidden-window" style="top: 20%; left: 20%;">
+                <div class="os-window-header bg-win-blue text-white px-2 py-1 flex justify-between items-center mb-1">
                     <span class="font-bold tracking-wider">System Properties</span>
-                    <button class="w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black">X</button>
+                    <div class="flex gap-[2px]">
+                        <button class="win-minimize w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in">_</button>
+                        <button class="win-maximize w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in">□</button>
+                        <button class="win-close w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in font-bold">X</button>
+                    </div>
                 </div>
                 
                 <!-- Tabs -->
-                <div class="flex px-2 pt-2 gap-1 relative top-[2px] z-10">
-                    <div class="bg-win-gray px-3 py-1 border-t-2 border-l-2 border-white border-r-2 border-r-black text-sm relative -bottom-[2px] pb-2 z-20 font-bold">General</div>
-                    <div class="bg-win-gray px-3 py-1 border-t-2 border-l-2 border-white border-r-2 border-r-black text-sm border-b border-b-black text-gray-600">Hardware</div>
-                    <div class="bg-win-gray px-3 py-1 border-t-2 border-l-2 border-white border-r-2 border-r-black text-sm border-b border-b-black text-gray-600">Advanced</div>
+                <div class="flex px-2 pt-2 gap-1 relative top-[2px] z-10" id="sys-tabs-header">
+                    <div class="system-tab-btn active bg-win-gray px-3 py-1 border-t-2 border-l-2 border-white border-r-2 border-r-black text-sm relative -bottom-[2px] pb-2 z-20 font-bold cursor-pointer" data-target="tab-general">General</div>
+                    <div class="system-tab-btn bg-win-gray px-3 py-1 border-t-2 border-l-2 border-white border-r-2 border-r-black text-sm border-b border-b-black text-gray-600 cursor-pointer hover:bg-gray-300" data-target="tab-hardware">Hardware</div>
+                    <div class="system-tab-btn bg-win-gray px-3 py-1 border-t-2 border-l-2 border-white border-r-2 border-r-black text-sm border-b border-b-black text-gray-600 cursor-pointer hover:bg-gray-300" data-target="tab-advanced">Advanced</div>
                 </div>
 
-                <div class="bg-win-gray border-2 border-white border-b-black border-r-black p-4 m-2 mt-0 shadow-win-out">
-                    <div class="flex gap-6 items-start">
-                        <div class="text-center">
-                            <i class="fa-brands fa-windows text-4xl text-win-teal mb-2"></i>
-                            <div class="text-xs">DevOS 98</div>
-                        </div>
-                        <div class="flex-grow space-y-4">
-                            <fieldset class="border-2 border-white border-b-gray-500 border-r-gray-500 p-2">
-                                <legend class="px-1 text-sm">System:</legend>
-                                <ul class="text-sm space-y-2">
-                                    <li class="flex items-center gap-2">
-                                        <span class="w-24">Frontend:</span> 
-                                        <div class="h-4 bg-white border border-gray-600 w-full relative">
-                                            <div class="absolute top-0 left-0 h-full bg-win-blue w-[90%]"></div>
-                                        </div>
-                                        <span>90%</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <span class="w-24">Backend:</span> 
-                                        <div class="h-4 bg-white border border-gray-600 w-full relative">
-                                            <div class="absolute top-0 left-0 h-full bg-win-blue w-[75%]"></div>
-                                        </div>
-                                        <span>75%</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <span class="w-24">Design:</span> 
-                                        <div class="h-4 bg-white border border-gray-600 w-full relative">
-                                            <div class="absolute top-0 left-0 h-full bg-win-blue w-[85%]"></div>
-                                        </div>
-                                        <span>85%</span>
-                                    </li>
-                                </ul>
-                            </fieldset>
-                            <div class="text-sm">
-                                Installed Components:<br>
-                                React.js, TailwindCSS, Node.js, SQL, Git
+                <div class="bg-win-gray border-2 border-white border-b-black border-r-black p-4 m-2 mt-0 shadow-win-out relative z-10" style="min-height: 220px;">
+                    <!-- General Tab -->
+                    <div id="tab-general" class="system-tab-content block animate-fade-in-up">
+                        <div class="flex gap-6 items-start">
+                            <div class="text-center">
+                                <i class="fa-brands fa-windows text-4xl text-win-teal mb-2"></i>
+                                <div class="text-[10px] font-bold">DevOS 98</div>
+                            </div>
+                            <div class="flex-grow space-y-4">
+                                <fieldset class="border-2 border-white border-b-gray-500 border-r-gray-500 p-2">
+                                    <legend class="px-1 text-sm">System Levels:</legend>
+                                    <ul class="text-xs space-y-3 font-bold">
+                                        <li class="flex items-center gap-2">
+                                            <span class="w-20">Frontend:</span> 
+                                            <div class="h-3 bg-white border border-gray-600 w-full relative">
+                                                <div class="absolute top-0 left-0 h-full bg-win-blue w-[90%] block"></div>
+                                            </div>
+                                            <span>90%</span>
+                                        </li>
+                                        <li class="flex items-center gap-2">
+                                            <span class="w-20">Backend:</span> 
+                                            <div class="h-3 bg-white border border-gray-600 w-full relative">
+                                                <div class="absolute top-0 left-0 h-full bg-win-blue w-[75%] block"></div>
+                                            </div>
+                                            <span>75%</span>
+                                        </li>
+                                        <li class="flex items-center gap-2">
+                                            <span class="w-20">Design:</span> 
+                                            <div class="h-3 bg-white border border-gray-600 w-full relative">
+                                                <div class="absolute top-0 left-0 h-full bg-win-blue w-[85%] block"></div>
+                                            </div>
+                                            <span>85%</span>
+                                        </li>
+                                    </ul>
+                                </fieldset>
                             </div>
                         </div>
                     </div>
-                    <div class="flex justify-end gap-2 mt-4">
-                        <button class="w-20 py-1 bg-win-gray shadow-win-out active:shadow-win-in border-none font-bold text-sm">OK</button>
-                        <button class="w-20 py-1 bg-win-gray shadow-win-out active:shadow-win-in border-none font-bold text-sm">Cancel</button>
+
+                    <!-- Hardware Tab -->
+                    <div id="tab-hardware" class="system-tab-content hidden animate-fade-in-up">
+                        <div class="flex gap-4 items-start pb-2">
+                            <i class="fa-solid fa-microchip text-4xl text-gray-500 mt-2"></i>
+                            <div class="text-sm space-y-2 flex-grow">
+                                <p class="font-bold border-b border-gray-400 pb-1">Device Manager</p>
+                                <ul class="list-disc pl-4 space-y-1 text-xs">
+                                    <li><strong class="text-win-blue">Brain:</strong> Intel Core Developer Unit</li>
+                                    <li><strong class="text-win-blue">Memory:</strong> 64GB DDR4 (High limit)</li>
+                                    <li><strong class="text-win-blue">Vision:</strong> RTX Neural Imager</li>
+                                    <li><strong class="text-win-blue">Interface:</strong> Mech-KB (90+ WPM)</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Advanced Tab -->
+                    <div id="tab-advanced" class="system-tab-content hidden animate-fade-in-up">
+                        <div class="flex gap-4 items-start pb-2">
+                            <i class="fa-solid fa-wrench text-3xl text-gray-500 mt-2"></i>
+                            <div class="text-sm space-y-2 flex-grow">
+                                <p class="font-bold border-b border-gray-400 pb-1">Performance Details</p>
+                                <p class="text-[10px] text-gray-600 font-bold mb-1">Installed Libraries & Frameworks:</p>
+                                <div class="bg-white border-2 border-gray-600 shadow-win-in p-2 text-[10px] h-20 overflow-y-auto w-full leading-relaxed font-mono">
+                                    React.js, Vue.js, Angular, Svelte<br>TailwindCSS, Bootstrap, GSAP, Three.js<br>Node.js, Express, Nest.js<br>MongoDB, PostgreSQL, MySQL<br>Git, GitHub, Docker, AWS
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 px-2 pb-2">
+                    <button class="win-close w-20 py-1 bg-win-gray shadow-win-out active:shadow-win-in border-none font-bold text-sm">OK</button>
+                    <button class="win-close w-20 py-1 bg-win-gray shadow-win-out active:shadow-win-in border-none font-bold text-sm">Cancel</button>
                 </div>
             </div>
 
             <!-- SECTION 4: PROJECTS (File Explorer Style) -->
-            <div id="projects" class="bg-win-gray shadow-win-out p-1 relative z-10 w-full">
-                <div class="bg-win-dark text-white px-2 py-1 flex justify-between items-center mb-1">
+            <div id="projects" class="os-window bg-win-gray shadow-win-out p-1 absolute z-30 w-[95%] md:w-[800px] hidden-window" style="top: 5%; left: 10%;">
+                <div class="os-window-header bg-win-dark text-white px-2 py-1 flex justify-between items-center mb-1">
                     <span class="font-bold tracking-wider">C:\Users\Admin\Projects</span>
-                    <div class="flex gap-1">
-                         <button class="w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black">_</button>
-                         <button class="w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black">□</button>
-                         <button class="w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black">X</button>
+                    <div class="flex gap-[2px]">
+                        <button class="win-minimize w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in">_</button>
+                        <button class="win-maximize w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in">□</button>
+                        <button class="win-close w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in font-bold">X</button>
                     </div>
                 </div>
                 
@@ -303,41 +418,41 @@
                     <div class="bg-white border shadow-win-in flex-grow px-1 text-sm">C:\Projects\Web_Development</div>
                 </div>
 
-                <div class="bg-white border-2 border-win-dark shadow-win-in p-4 h-[500px] overflow-y-auto">
+                <div class="bg-white border-2 border-win-dark shadow-win-in p-4 h-[400px] overflow-y-auto">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <!-- Project Item 1 -->
-                        <div class="flex flex-col items-center gap-2 group cursor-pointer hover:bg-blue-100 p-2 border border-transparent hover:border-blue-300 hover:border-dashed">
+                        <div class="flex flex-col items-center gap-2 group cursor-pointer hover:bg-blue-100 p-2 border border-transparent hover:border-blue-300 hover:border-dashed" onclick="showRetroAlert('Loading GAME_V1.EXE... Please wait.', 'File Execution', 'info')">
                             <div class="w-full h-32 bg-gray-200 border-2 border-win-out flex items-center justify-center relative overflow-hidden">
-                                <i class="fa-solid fa-gamepad text-6xl text-purple-600"></i>
-                                <div class="absolute bottom-0 w-full bg-win-blue text-white text-xs text-center py-1">GAME_V1.EXE</div>
+                                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=400" alt="Retro Platformer" class="smart-img w-full h-full object-cover" data-fallback-icon="fa-gamepad" data-fallback-label="GAME_IMG">
+                                <div class="absolute bottom-0 w-full bg-win-blue/80 text-white text-[10px] text-center py-[2px] backdrop-blur-sm">GAME_V1.EXE</div>
                             </div>
-                            <div class="text-center">
+                            <div class="text-center mt-1">
                                 <h3 class="font-bold text-sm">Retro Platformer</h3>
-                                <p class="text-xs text-gray-500">Javascript Game</p>
+                                <p class="text-[10px] text-gray-500">Javascript Game</p>
                             </div>
                         </div>
 
                         <!-- Project Item 2 -->
-                        <div class="flex flex-col items-center gap-2 group cursor-pointer hover:bg-blue-100 p-2 border border-transparent hover:border-blue-300 hover:border-dashed">
+                        <div class="flex flex-col items-center gap-2 group cursor-pointer hover:bg-blue-100 p-2 border border-transparent hover:border-blue-300 hover:border-dashed" onclick="showRetroAlert('Opening SHOP.HTML via default web browser.', 'File Execution', 'info')">
                              <div class="w-full h-32 bg-gray-200 border-2 border-win-out flex items-center justify-center relative overflow-hidden">
-                                <i class="fa-solid fa-cart-shopping text-6xl text-green-600"></i>
-                                <div class="absolute bottom-0 w-full bg-win-blue text-white text-xs text-center py-1">SHOP.HTML</div>
+                                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&q=80&w=400" alt="E-Commerce" class="smart-img w-full h-full object-cover" data-fallback-icon="fa-cart-shopping" data-fallback-label="SHOP_IMG">
+                                <div class="absolute bottom-0 w-full bg-win-blue/80 text-white text-[10px] text-center py-[2px] backdrop-blur-sm">SHOP.HTML</div>
                             </div>
-                            <div class="text-center">
+                            <div class="text-center mt-1">
                                 <h3 class="font-bold text-sm">E-Commerce</h3>
-                                <p class="text-xs text-gray-500">React + Firebase</p>
+                                <p class="text-[10px] text-gray-500">React + Firebase</p>
                             </div>
                         </div>
 
-                         <!-- Project Item 3 -->
-                        <div class="flex flex-col items-center gap-2 group cursor-pointer hover:bg-blue-100 p-2 border border-transparent hover:border-blue-300 hover:border-dashed">
+                        <!-- Project Item 3 -->
+                        <div class="flex flex-col items-center gap-2 group cursor-pointer hover:bg-blue-100 p-2 border border-transparent hover:border-blue-300 hover:border-dashed" onclick="showRetroAlert('Opening ART.BMP in Image Viewer.', 'File Execution', 'info')">
                              <div class="w-full h-32 bg-gray-200 border-2 border-win-out flex items-center justify-center relative overflow-hidden">
-                                <i class="fa-solid fa-palette text-6xl text-pink-600"></i>
-                                <div class="absolute bottom-0 w-full bg-win-blue text-white text-xs text-center py-1">ART.BMP</div>
+                                <img src="https://images.unsplash.com/photo-1561214115-f2f134cc4912?auto=format&fit=crop&q=80&w=400" alt="Design System" class="smart-img w-full h-full object-cover" data-fallback-icon="fa-palette" data-fallback-label="ART_IMG">
+                                <div class="absolute bottom-0 w-full bg-win-blue/80 text-white text-[10px] text-center py-[2px] backdrop-blur-sm">ART.BMP</div>
                             </div>
-                            <div class="text-center">
+                            <div class="text-center mt-1">
                                 <h3 class="font-bold text-sm">Design System</h3>
-                                <p class="text-xs text-gray-500">Figma / CSS</p>
+                                <p class="text-[10px] text-gray-500">Figma / CSS</p>
                             </div>
                         </div>
                     </div>
@@ -348,18 +463,22 @@
             </div>
 
             <!-- SECTION 5: CONTACT (Outlook Express Style) -->
-            <div id="contact" class="bg-win-gray shadow-win-out p-1 relative z-10 w-full md:w-3/4">
-                <div class="bg-gradient-to-r from-cyan-800 to-blue-800 text-white px-2 py-1 flex justify-between items-center mb-1">
+            <div id="contact" class="os-window bg-win-gray shadow-win-out p-1 absolute z-20 w-[90%] md:w-[600px] hidden-window" style="top: 25%; left: 25%;">
+                <div class="os-window-header bg-gradient-to-r from-cyan-800 to-blue-800 text-white px-2 py-1 flex justify-between items-center mb-1">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-envelope-open-text"></i>
                         <span class="font-bold tracking-wider">New Message - Outlook Express</span>
                     </div>
-                    <button class="w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black">X</button>
+                    <div class="flex gap-[2px]">
+                        <button class="win-minimize w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in">_</button>
+                        <button class="win-maximize w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in">□</button>
+                        <button class="win-close w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in font-bold">X</button>
+                    </div>
                 </div>
 
                 <!-- Toolbar -->
                 <div class="flex gap-2 p-2 border-b border-gray-400 mb-2">
-                    <button class="flex flex-col items-center px-2 py-1 hover:bg-gray-300 border border-transparent hover:border-white hover:shadow-win-out active:shadow-win-in active:translate-y-px">
+                    <button id="contact-send-btn" class="flex flex-col items-center px-2 py-1 hover:bg-gray-300 border border-transparent hover:border-white hover:shadow-win-out active:shadow-win-in active:translate-y-px">
                         <i class="fa-solid fa-paper-plane text-xl mb-1"></i>
                         <span class="text-xs">Send</span>
                     </button>
@@ -376,68 +495,113 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <label class="w-16 text-right text-sm">From:</label>
-                        <input type="text" placeholder="your@email.com" class="flex-grow border shadow-win-in px-2 py-1 text-sm focus:outline-none focus:bg-white bg-white">
+                        <input id="contact-from" type="email" placeholder="your@email.com" class="flex-grow border shadow-win-in px-2 py-1 text-sm focus:outline-none focus:bg-white bg-white">
                     </div>
                     <div class="flex items-center gap-2">
                         <label class="w-16 text-right text-sm">Subject:</label>
-                        <input type="text" placeholder="Project Inquiry..." class="flex-grow border shadow-win-in px-2 py-1 text-sm focus:outline-none focus:bg-white bg-white">
+                        <input id="contact-subject" type="text" placeholder="Project Inquiry..." class="flex-grow border shadow-win-in px-2 py-1 text-sm focus:outline-none focus:bg-white bg-white">
                     </div>
                     <div class="mt-2">
-                        <textarea class="w-full h-40 border shadow-win-in p-2 text-sm font-mono focus:outline-none resize-none" placeholder="Type your message here..."></textarea>
+                        <textarea id="contact-msg" class="w-full h-40 border shadow-win-in p-2 text-sm font-mono focus:outline-none resize-none" placeholder="Type your message here..."></textarea>
                     </div>
                 </div>
             </div>
 
-        </div> <!-- End Container -->
+            <!-- TRANSMITTING DIALOG (Hidden initially) -->
+            <div id="contact-dialog" class="os-window bg-win-gray shadow-win-out p-1 absolute z-[9999] w-[300px] hidden-window" style="top: 40%; left: 50%; transform: translate(-50%, -50%);">
+                <div class="os-window-header bg-win-blue text-white px-2 py-1 flex justify-between items-center mb-1">
+                    <span class="font-bold tracking-wider text-xs">Sending Message...</span>
+                </div>
+                <div class="bg-win-gray p-4 flex flex-col items-center gap-4">
+                    <i class="fa-solid fa-earth-americas text-4xl text-win-blue animate-pulse"></i>
+                    <p class="text-xs text-center font-bold" id="contact-dialog-text">Connecting to server...</p>
+                    <div class="w-full h-4 border shadow-win-in bg-white relative">
+                        <div id="contact-progress" class="h-full bg-win-blue w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RETRO ALERT DIALOG (Hidden initially) -->
+            <div id="retro-alert-dialog" class="os-window bg-win-gray shadow-win-out p-1 absolute z-[10000] w-[90%] md:w-[350px] hidden-window" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                <div class="os-window-header bg-win-blue text-white px-2 py-1 flex justify-between items-center mb-1">
+                    <span class="font-bold tracking-wider text-xs" id="retro-alert-title">Application Error</span>
+                    <div class="flex gap-[2px]">
+                        <button class="win-close w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in font-bold bg-gray-300" onclick="closeRetroAlert()">X</button>
+                    </div>
+                </div>
+                <div class="bg-win-gray p-4 flex gap-4 items-start">
+                    <i id="retro-alert-icon" class="fa-solid fa-circle-exclamation text-3xl text-yellow-500 mt-1"></i>
+                    <p class="text-sm font-bold leading-relaxed whitespace-pre-wrap flex-1" id="retro-alert-text">Error message here.</p>
+                </div>
+                <div class="flex justify-center pb-2">
+                    <button class="w-20 py-1 bg-win-gray shadow-win-out active:shadow-win-in border-none font-bold text-sm" onclick="closeRetroAlert()">OK</button>
+                </div>
+            </div>
+
+            <!-- SECTION 6: MINESWEEPER -->
+            <div id="minigame" class="os-window bg-win-gray shadow-win-out p-1 absolute z-40 w-fit hidden-window" style="top: 15%; left: 40%;">
+                <div class="os-window-header bg-win-blue text-white px-2 py-1 flex justify-between items-center mb-1">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-bomb"></i>
+                        <span class="font-bold tracking-wider">Minesweeper</span>
+                    </div>
+                    <div class="flex gap-[2px]">
+                        <button class="win-minimize w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in">_</button>
+                        <button class="win-close w-4 h-4 bg-win-gray shadow-win-out flex items-center justify-center text-[10px] text-black active:shadow-win-in font-bold">X</button>
+                    </div>
+                </div>
+                <div class="bg-win-gray border-2 border-white border-b-black border-r-black p-2 mt-1 flex flex-col gap-2">
+                    <div class="flex justify-between items-center bg-gray-300 shadow-win-in p-1 font-pixel text-red-600 border-2 border-gray-500">
+                        <div id="mines-count" class="bg-black px-1 pb-1 pt-2 w-[40px] text-center leading-none">010</div>
+                        <button id="mines-reset" class="w-8 h-8 flex items-center justify-center bg-win-gray shadow-win-out active:shadow-win-in text-black border-none text-sm leading-none pt-[2px]">🙂</button>
+                        <div id="mines-timer" class="bg-black px-1 pb-1 pt-2 w-[40px] text-center leading-none">000</div>
+                    </div>
+                    <!-- 9x9 Grid -->
+                    <div id="mines-grid" class="bg-gray-400 border-2 border-gray-600 border-r-white border-b-white grid grid-cols-9 gap-[1px] p-[1px] w-fit mx-auto shadow-win-in">
+                        <!-- JS injected -->
+                    </div>
+                </div>
+            </div>
 
     </main>
 
     <!-- TASKBAR -->
-    <footer class="h-10 bg-win-gray border-t-2 border-white flex items-center px-1 shadow-win-out z-50 fixed bottom-0 left-0 w-full">
-        <div class="relative group">
-            <button class="flex items-center gap-1 bg-win-gray shadow-win-out px-2 py-1 active:shadow-win-in font-bold mr-2 win-btn hover:bg-gray-300">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Windows_logo_and_wordmark_-_1995-2001.svg/1200px-Windows_logo_and_wordmark_-_1995-2001.svg.png" class="h-5 w-auto" alt="win-logo">
-                <span class="mt-1">Start</span>
+    <footer class="h-10 bg-win-gray border-t-2 border-white flex items-center px-1 shadow-win-out z-[9999] fixed bottom-0 left-0 w-full select-none" id="taskbar">
+        <div class="relative">
+            <button id="start-btn" class="flex items-center gap-1 bg-win-gray shadow-win-out px-2 py-1 active:shadow-win-in font-bold mr-2 win-btn hover:bg-gray-300">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAFVBMVEUAAAAAAAD/AAAA/wAAAP///wD///+oQXrmAAAAAXRSTlMAQObYZgAAAAFiS0dEBmFmuH0AAAAHdElNRQfiBhoAOBwkIrLGAAAAWUlEQVQI102Oyw2AQAhE2Q54fu4rHRgbWBMa8GD/rQjrxjgX3gQyg8hfBR2ToGAmdkQVjIPwA2rgxhxQjZSIGQsX0mLl3AHNXxB3TlZ6YD/OQI2W9NlYvg8eYH4JE04wi3cAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDYtMjZUMDA6NTY6MjgtMDQ6MDCN82qqAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTA2LTI2VDAwOjU2OjI4LTA0OjAw/K7SFgAAAABJRU5ErkJggg==" class="h-4 w-4" alt="win-logo" style="image-rendering: auto;">
+                <span class="mt-[2px]">Start</span>
             </button>
-            <!-- Start Menu Popup (Simple CSS Hover) -->
-            <div class="absolute bottom-10 left-0 bg-win-gray shadow-win-out border-2 border-win-light w-48 hidden group-hover:block pl-6 py-1">
+            <!-- Start Menu Popup -->
+            <div id="start-menu" class="absolute bottom-[42px] left-0 bg-win-gray shadow-win-out border-2 border-win-light w-48 hidden pl-6 py-1 z-[10000]">
                 <div class="absolute left-0 bottom-0 w-6 h-full bg-win-blue flex items-end">
                     <span class="text-white -rotate-90 text-lg font-bold mb-4 whitespace-nowrap">WINDOWS 95</span>
                 </div>
-                <div class="hover:bg-win-blue hover:text-white px-2 py-1 cursor-pointer flex items-center gap-2 text-sm"><i class="fa-solid fa-folder-tree"></i> Programs</div>
-                <div class="hover:bg-win-blue hover:text-white px-2 py-1 cursor-pointer flex items-center gap-2 text-sm"><i class="fa-solid fa-file"></i> Documents</div>
-                <div class="hover:bg-win-blue hover:text-white px-2 py-1 cursor-pointer flex items-center gap-2 text-sm"><i class="fa-solid fa-gear"></i> Settings</div>
+                <div class="hover:bg-win-blue hover:text-white px-2 py-1 cursor-pointer flex items-center gap-2 text-sm open-window-btn" data-target="projects"><i class="fa-solid fa-folder-tree"></i> Programs</div>
+                <div class="hover:bg-win-blue hover:text-white px-2 py-1 cursor-pointer flex items-center gap-2 text-sm open-window-btn" data-target="about"><i class="fa-solid fa-file"></i> Documents</div>
+                <div class="hover:bg-win-blue hover:text-white px-2 py-1 cursor-pointer flex items-center gap-2 text-sm open-window-btn" data-target="skills"><i class="fa-solid fa-gear"></i> Settings</div>
                 <div class="border-t border-gray-500 my-1"></div>
-                <div class="hover:bg-win-blue hover:text-white px-2 py-1 cursor-pointer flex items-center gap-2 text-sm"><i class="fa-solid fa-power-off"></i> Shut Down...</div>
+                <div class="hover:bg-win-blue hover:text-white px-2 py-1 cursor-pointer flex items-center gap-2 text-sm" onclick="showRetroAlert('It is now safe to turn off your computer.', 'Shut Down', 'info')"><i class="fa-solid fa-power-off"></i> Shut Down...</div>
             </div>
         </div>
         
         <div class="w-[2px] h-6 bg-gray-400 mx-1 border-r border-white"></div>
         
         <!-- Active Window Tabs -->
-        <div class="hidden md:flex gap-1">
-            <div class="bg-gray-300 shadow-win-in px-3 py-1 flex items-center gap-2 w-32 text-xs font-bold cursor-default truncate">
-                <i class="fa-brands fa-windows"></i> Welcome...
-            </div>
-            <div class="bg-win-gray shadow-win-out px-3 py-1 flex items-center gap-2 w-32 text-xs cursor-pointer truncate active:shadow-win-in">
-                <i class="fa-solid fa-file-lines"></i> about_me...
-            </div>
-             <div class="bg-win-gray shadow-win-out px-3 py-1 flex items-center gap-2 w-32 text-xs cursor-pointer truncate active:shadow-win-in">
-                <i class="fa-solid fa-envelope"></i> Outlook...
-            </div>
+        <div id="taskbar-tabs" class="flex flex-1 gap-1 overflow-x-hidden px-1 h-full items-center">
+            <!-- Injected via JS -->
         </div>
 
-        <div class="flex-grow"></div>
-
         <!-- System Tray -->
-        <div class="bg-win-gray shadow-win-in px-3 py-1 flex items-center gap-3 text-sm border-2 border-win-dark border-b-white border-r-white">
+        <div class="bg-win-gray shadow-win-in px-3 py-1 flex items-center gap-3 text-sm border-2 border-win-dark border-b-white border-r-white min-w-fit ml-2 h-7 mt-0.5">
             <i class="fa-solid fa-volume-high text-xs cursor-pointer"></i>
-            <span id="clock" class="font-pixel text-xs">12:00 PM</span>
+            <span id="clock" class="font-pixel text-[10px] mt-1">12:00 PM</span>
         </div>
     </footer>
 
+    <!-- OS Logic Script -->
     <script>
-        // Update Clock
+        // --- 1. System Clock ---
         function updateClock() {
             const now = new Date();
             let hours = now.getHours();
@@ -446,15 +610,527 @@
             hours = hours % 12;
             hours = hours ? hours : 12; 
             minutes = minutes < 10 ? '0'+minutes : minutes;
-            const strTime = hours + ':' + minutes + ' ' + ampm;
-            document.getElementById('clock').innerText = strTime;
+            document.getElementById('clock').innerText = `${hours}:${minutes} ${ampm}`;
         }
         setInterval(updateClock, 1000);
         updateClock();
+
+        // --- Retro Alert System ---
+        function showRetroAlert(message, title = "Message", type = "info") {
+            const dialog = document.getElementById('retro-alert-dialog');
+            const titleEl = document.getElementById('retro-alert-title');
+            const textEl = document.getElementById('retro-alert-text');
+            const iconEl = document.getElementById('retro-alert-icon');
+            
+            titleEl.innerText = title;
+            textEl.innerText = message;
+            
+            iconEl.className = "";
+            if (type === "error") {
+                iconEl.className = "fa-solid fa-circle-xmark text-4xl text-red-600 mt-1";
+            } else if (type === "warning") {
+                iconEl.className = "fa-solid fa-triangle-exclamation text-4xl text-yellow-500 mt-1";
+            } else { // info
+                iconEl.className = "fa-solid fa-circle-info text-4xl text-blue-600 mt-1";
+            }
+            
+            dialog.classList.remove('hidden-window');
+            dialog.style.transform = "translate(-50%, -50%) !important";
+            bringToFront(dialog);
+            
+            // Close start menu if open
+            const startMenu = document.getElementById('start-menu');
+            const startBtn = document.getElementById('start-btn');
+            if(startMenu && !startMenu.classList.contains('hidden')) {
+                startMenu.classList.add('hidden');
+                startBtn.classList.remove('shadow-win-in', 'bg-gray-300');
+                startBtn.classList.add('shadow-win-out');
+            }
+        }
+
+        function closeRetroAlert() {
+            document.getElementById('retro-alert-dialog').classList.add('hidden-window');
+            updateTaskbar();
+        }
+
+        // --- 2. Window Management System ---
+        let highestZIndex = 100;
+        const windows = document.querySelectorAll('.os-window');
+        const taskbarTabsContainer = document.getElementById('taskbar-tabs');
+
+        function bringToFront(win) {
+            highestZIndex++;
+            win.style.zIndex = highestZIndex;
+            updateTaskbar(); // Update active state rendering
+        }
+
+        // Initialize Windows
+        windows.forEach(win => {
+            const header = win.querySelector('.os-window-header');
+            if (!header) return;
+
+            // Bring to front on click anywhere inside
+            win.addEventListener('mousedown', () => bringToFront(win));
+            win.addEventListener('touchstart', () => bringToFront(win), {passive: true});
+
+            // --- Draggable Logic ---
+            let isDragging = false, startX, startY, initialLeft, initialTop;
+
+            const dragStart = (e) => {
+                if (e.target.tagName === 'BUTTON' || win.classList.contains('maximized')) return;
+                isDragging = true;
+                const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+                
+                startX = clientX;
+                startY = clientY;
+                
+                const rect = win.getBoundingClientRect();
+                initialLeft = rect.left;
+                initialTop = rect.top;
+
+                // Disable transitions during drag for responsiveness
+                win.style.transition = 'none';
+            };
+
+            const dragMove = (e) => {
+                if (!isDragging) return;
+                e.preventDefault(); // Prevent scrolling on mobile while dragging
+                const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+                
+                const dx = clientX - startX;
+                const dy = clientY - startY;
+                
+                let newTop = initialTop + dy;
+                // Don't drag above desktop (into void)
+                if (newTop < 0) newTop = 0;
+
+                win.style.left = `${initialLeft + dx}px`;
+                win.style.top = `${newTop}px`;
+            };
+
+            const dragEnd = () => {
+                isDragging = false;
+            };
+
+            header.addEventListener('mousedown', dragStart);
+            document.addEventListener('mousemove', dragMove);
+            document.addEventListener('mouseup', dragEnd);
+
+            header.addEventListener('touchstart', dragStart, {passive: false});
+            document.addEventListener('touchmove', dragMove, {passive: false});
+            document.addEventListener('touchend', dragEnd);
+
+            // --- Control Buttons ---
+            const btnClose = win.querySelector('.win-close');
+            const btnMin = win.querySelector('.win-minimize');
+            const btnMax = win.querySelector('.win-maximize');
+
+            if (btnClose) btnClose.addEventListener('click', () => { win.classList.add('hidden-window'); updateTaskbar(); });
+            if (btnMin) btnMin.addEventListener('click', () => { win.classList.add('hidden-window'); updateTaskbar(); });
+            if (btnMax) btnMax.addEventListener('click', () => { 
+                win.classList.toggle('maximized'); 
+                bringToFront(win);
+            });
+        });
+
+        // --- 3. Taskbar Logic ---
+        function updateTaskbar() {
+            taskbarTabsContainer.innerHTML = ''; // Clear tabs
+            
+            // Find window with highest active z-Index
+            let activeWin = null;
+            let maxZ = -1;
+
+            windows.forEach(win => {
+                if (!win.classList.contains('hidden-window')) {
+                    if (win.style.zIndex && parseInt(win.style.zIndex) > maxZ) {
+                        maxZ = parseInt(win.style.zIndex);
+                        activeWin = win;
+                    }
+                }
+            });
+
+            windows.forEach(win => {
+                if (win.classList.contains('hidden-window')) return;
+                
+                // Get Window Title from Header
+                const titleElement = win.querySelector('.os-window-header span') || win.querySelector('.os-window-header div');
+                let title = titleElement ? titleElement.innerText : 'Application';
+                if(win.id === 'winamp') title = "WINAMP";
+                
+                // Truncate title
+                if (title.length > 12) title = title.substring(0, 10) + '...';
+
+                const isActive = (win === activeWin);
+                
+                const tab = document.createElement('div');
+                tab.className = `px-3 h-7 flex items-center gap-2 w-32 text-xs cursor-pointer truncate select-none border border-transparent 
+                ${isActive ? 'bg-gray-300 shadow-win-in font-bold border-dotted border-black/50' : 'bg-win-gray shadow-win-out hover:bg-gray-300 active:shadow-win-in'}`;
+                
+                // Icon estimation based on ID mostly
+                let iconClass = "fa-brands fa-windows";
+                if(win.id === 'about') iconClass = "fa-solid fa-file-lines";
+                if(win.id === 'projects') iconClass = "fa-solid fa-folder-closed text-yellow-500";
+                if(win.id === 'contact') iconClass = "fa-solid fa-envelope";
+                if(win.id === 'skills') iconClass = "fa-solid fa-gear";
+                if(win.id === 'winamp') iconClass = "fa-solid fa-music";
+                
+                tab.innerHTML = `<i class="${iconClass}"></i> ${title}`;
+                
+                tab.addEventListener('click', () => {
+                    if (isActive) {
+                        win.classList.add('hidden-window'); // Minimize if active
+                    } else {
+                        bringToFront(win); // Focus if inactive
+                    }
+                    updateTaskbar();
+                });
+
+                taskbarTabsContainer.appendChild(tab);
+            });
+        }
+
+        // --- 4. Start Menu & Triggers ---
+        const startBtn = document.getElementById('start-btn');
+        const startMenu = document.getElementById('start-menu');
+
+        startBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            startMenu.classList.toggle('hidden');
+            if(!startMenu.classList.contains('hidden')) {
+                startBtn.classList.add('shadow-win-in', 'bg-gray-300');
+                startBtn.classList.remove('shadow-win-out');
+            } else {
+                startBtn.classList.remove('shadow-win-in', 'bg-gray-300');
+                startBtn.classList.add('shadow-win-out');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!startMenu.contains(e.target) && e.target !== startBtn) {
+                startMenu.classList.add('hidden');
+                startBtn.classList.remove('shadow-win-in', 'bg-gray-300');
+                startBtn.classList.add('shadow-win-out');
+            }
+        });
+
+        // Desktop Icons and UI Buttons that open windows
+        document.querySelectorAll('.desktop-icon, .open-window-btn').forEach(el => {
+            // Desktop icons use double-click, others use single click usually, but we'll bind both for robustness/mobile
+            const targetId = el.getAttribute('data-target');
+            const targetWin = document.getElementById(targetId);
+            
+            if (!targetWin) return;
+
+            const openWin = (e) => {
+                e.preventDefault();
+                targetWin.classList.remove('hidden-window');
+                bringToFront(targetWin);
+                startMenu.classList.add('hidden'); // Ensure start menu closes
+                startBtn.classList.remove('shadow-win-in', 'bg-gray-300');
+                startBtn.classList.add('shadow-win-out');
+            };
+
+            if(el.classList.contains('desktop-icon')) {
+                el.addEventListener('dblclick', openWin);
+                // Simple touch mimic for mobile double-tap vs single tap is tricky, so we'll just bind single tap for mobile icons
+                let lastTap = 0;
+                el.addEventListener('touchend', (e) => {
+                    let currentTime = new Date().getTime();
+                    let tapLength = currentTime - lastTap;
+                    if (tapLength < 500 && tapLength > 0) {
+                        openWin(e);
+                    }
+                    lastTap = currentTime;
+                });
+            } else {
+                el.addEventListener('click', openWin);
+            }
+        });
+
+        // --- 5. System Properties Tabs ---
+        const sysTabs = document.querySelectorAll('.system-tab-btn');
+        const sysContents = document.querySelectorAll('.system-tab-content');
+
+        sysTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active classes
+                sysTabs.forEach(t => {
+                    t.classList.remove('active', 'border-b-transparent', 'z-20', '-bottom-[2px]', 'pb-2', 'font-bold');
+                    t.classList.add('border-b', 'border-b-black', 'text-gray-600', 'hover:bg-gray-300');
+                });
+                
+                // Add active classes to clicked tab
+                tab.classList.add('active', 'border-b-transparent', 'z-20', '-bottom-[2px]', 'pb-2', 'font-bold');
+                tab.classList.remove('border-b', 'border-b-black', 'text-gray-600', 'hover:bg-gray-300');
+
+                // Toggle contents
+                const targetId = tab.getAttribute('data-target');
+                sysContents.forEach(content => {
+                    if (content.id === targetId) {
+                        content.classList.remove('hidden');
+                        content.classList.add('block');
+                    } else {
+                        content.classList.add('hidden');
+                        content.classList.remove('block');
+                    }
+                });
+            });
+        });
+
+        // --- 6. Smart Image Fallback ---
+        document.querySelectorAll('img.smart-img').forEach(img => {
+            img.addEventListener('error', function() {
+                const iconClass = this.getAttribute('data-fallback-icon') || 'fa-image';
+                const labelText = this.getAttribute('data-fallback-label') || 'IMAGE_UNAVAILABLE';
+                
+                const fallbackDiv = document.createElement('div');
+                fallbackDiv.className = 'img-fallback-container';
+                fallbackDiv.innerHTML = `
+                    <i class="fa-solid ${iconClass} img-fallback-icon"></i>
+                    <span class="img-fallback-label">${labelText}</span>
+                `;
+                
+                if (this.parentNode) {
+                    this.parentNode.replaceChild(fallbackDiv, this);
+                }
+            });
+            // Force error if src is missing or empty
+            if (!this.src || this.src.trim() === '' || this.src === window.location.href) {
+                this.dispatchEvent(new Event('error'));
+            }
+        });
+
+        // --- 7. Contact Form Logic ---
+        const btnSend = document.getElementById('contact-send-btn');
+        const ctcFrom = document.getElementById('contact-from');
+        const ctcSubject = document.getElementById('contact-subject');
+        const ctcMsg = document.getElementById('contact-msg');
+        const ctcDialog = document.getElementById('contact-dialog');
+        const ctcProgress = document.getElementById('contact-progress');
+        const ctcDialogText = document.getElementById('contact-dialog-text');
+
+        if(btnSend) {
+            btnSend.addEventListener('click', () => {
+                if(!ctcFrom.value || !ctcSubject.value || !ctcMsg.value) {
+                    showRetroAlert('Error: Please fill in all fields before sending.', 'Outlook Express', 'error');
+                    return;
+                }
+                
+                // Show dialog
+                ctcDialog.classList.remove('hidden-window');
+                ctcDialog.style.transform = "translate(-50%, -50%) !important";
+                bringToFront(ctcDialog);
+                
+                ctcProgress.style.width = '0%';
+                ctcDialogText.innerText = 'Connecting to server...';
+                
+                setTimeout(() => {
+                    ctcProgress.style.width = '50%';
+                    ctcDialogText.innerText = 'Transmitting data...';
+                }, 800);
+
+                setTimeout(() => {
+                    ctcProgress.style.width = '100%';
+                    ctcDialogText.innerText = 'Message sent successfully!';
+                }, 2000);
+
+                setTimeout(() => {
+                    ctcDialog.classList.add('hidden-window');
+                    ctcFrom.value = '';
+                    ctcSubject.value = '';
+                    ctcMsg.value = '';
+                    // Clean up classes 
+                    document.getElementById('contact').classList.add('hidden-window');
+                    updateTaskbar();
+                }, 3000);
+            });
+        }
+
+        // --- 8. Minesweeper Mini-Game ---
+        const gridElement = document.getElementById('mines-grid');
+        const minesCountText = document.getElementById('mines-count');
+        const minesResetBtn = document.getElementById('mines-reset');
+        
+        let board = [], rows = 9, cols = 9, mineCount = 10, gameOver = false, minesLeft;
+
+        function initMines() {
+            if(!gridElement) return;
+            gridElement.innerHTML = '';
+            board = [];
+            gameOver = false;
+            minesLeft = mineCount;
+            minesCountText.innerText = minesLeft.toString().padStart(3, '0');
+            minesResetBtn.innerText = '🙂';
+
+            // Create board structure
+            for(let r=0; r<rows; r++) {
+                let row = [];
+                for(let c=0; c<cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'mine-cell';
+                    cell.dataset.r = r;
+                    cell.dataset.c = c;
+                    cell.addEventListener('mousedown', handleMineClick);
+                    cell.addEventListener('contextmenu', (e) => { e.preventDefault(); handleMineRightClick(r,c,cell); });
+                    gridElement.appendChild(cell);
+                    row.push({ isMine: false, revealed: false, flagged: false, r: r, c: c, element: cell });
+                }
+                board.push(row);
+            }
+
+            // Scatter mines
+            let minesPlaced = 0;
+            while(minesPlaced < mineCount) {
+                let r = Math.floor(Math.random() * rows);
+                let c = Math.floor(Math.random() * cols);
+                if(!board[r][c].isMine) {
+                    board[r][c].isMine = true;
+                    minesPlaced++;
+                }
+            }
+        }
+
+        function countMines(r, c) {
+            let count = 0;
+            for(let dr=-1; dr<=1; dr++){
+                for(let dc=-1; dc<=1; dc++){
+                    if(r+dr>=0 && r+dr<rows && c+dc>=0 && c+dc<cols && board[r+dr][c+dc].isMine) count++;
+                }
+            }
+            return count;
+        }
+
+        function revealMineCell(r, c) {
+            if(r<0 || r>=rows || c<0 || c>=cols || board[r][c].revealed || board[r][c].flagged || gameOver) return;
+            board[r][c].revealed = true;
+            let cell = board[r][c].element;
+            cell.classList.add('revealed');
+            
+            if(board[r][c].isMine) {
+                cell.innerText = '💣';
+                cell.style.backgroundColor = 'red';
+                gameOver = true;
+                minesResetBtn.innerText = '😵';
+                revealAllMines();
+                return;
+            }
+
+            let count = countMines(r, c);
+            if(count > 0) {
+                cell.innerText = count;
+                const colors = ['','blue','green','red','darkblue','darkred','teal','black','gray'];
+                cell.style.color = colors[count];
+            } else {
+                for(let dr=-1; dr<=1; dr++) for(let dc=-1; dc<=1; dc++) revealMineCell(r+dr, c+dc);
+            }
+            checkMineWin();
+        }
+
+        function handleMineRightClick(r, c, cell) {
+            if(gameOver || board[r][c].revealed) return;
+            if(!board[r][c].flagged) {
+                board[r][c].flagged = true;
+                cell.innerText = '🚩';
+                cell.classList.add('flagged');
+                minesLeft--;
+            } else {
+                board[r][c].flagged = false;
+                cell.innerText = '';
+                cell.classList.remove('flagged');
+                minesLeft++;
+            }
+            minesCountText.innerText = Math.max(0,minesLeft).toString().padStart(3, '0');
+        }
+
+        function handleMineClick(e) {
+            if(gameOver) return;
+            if(e.button === 0) { // Left click
+                let r = parseInt(e.target.dataset.r);
+                let c = parseInt(e.target.dataset.c);
+                revealMineCell(r, c);
+            }
+        }
+
+        function revealAllMines() {
+            board.forEach(r => r.forEach(c => {
+                if(c.isMine && !c.flagged) {
+                    c.element.innerText = '💣';
+                    c.element.classList.add('revealed');
+                }
+                if(!c.isMine && c.flagged) {
+                    c.element.innerText = '❌';
+                }
+            }));
+        }
+
+        function checkMineWin() {
+            let win = true;
+            for(let r=0; r<rows; r++){
+                for(let c=0; c<cols; c++){
+                    if(!board[r][c].isMine && !board[r][c].revealed) win = false;
+                }
+            }
+            if(win) {
+                gameOver = true;
+                minesResetBtn.innerText = '😎';
+            }
+        }
+
+        if(minesResetBtn) {
+            minesResetBtn.addEventListener('click', initMines);
+            initMines();
+        }
+
+        // Init initial Taskbar state
+        updateTaskbar();
+
+        // Global Copy Script (Simulation Style)
+        window.copySourceCode = function(btn) {
+            const htmlContent = document.documentElement.outerHTML;
+            navigator.clipboard.writeText(htmlContent).then(() => {
+                const originalContent = btn.innerHTML;
+                
+                btn.innerHTML = `
+                    <div class="flex items-center gap-2 font-pixel text-[10px] text-black">
+                        <i class="fa-solid fa-check text-win-blue"></i>
+                        <span>GRABBED!</span>
+                    </div>
+                `;
+                btn.classList.add('shadow-win-in', 'bg-gray-300');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.remove('shadow-win-in', 'bg-gray-300');
+                }, 2000);
+            });
+        }
     </script>
-            <!-- Back to Hub Bubble -->
-    <a href="../../index.html" class="fixed bottom-6 right-6 w-14 h-14 bg-white text-[#d4af37] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 hover:-translate-y-1 transition-all z-[9999] border-2 border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.4)] group">
-        <i class="fa-solid fa-house text-xl group-hover:text-yellow-600 transition-colors"></i>
+    <!-- Copy Source Code Button (Retro Style) -->
+    <button onclick="copySourceCode(this)" class="fixed bottom-28 right-6 z-[9999] group flex items-center justify-center p-2 bg-win-gray shadow-win-out active:shadow-win-in border-none win-btn">
+        <div class="flex items-center gap-3 font-pixel text-[10px] text-black px-2">
+            <i class="fa-regular fa-copy text-sm"></i>
+            <span>COPY_SRC.EXE</span>
+        </div>
+    </button>
+
+    <!-- Classic Win95 "Shut Down" Expanding Button -->
+    <a href="../../index.html" class="fixed bottom-16 right-6 z-[9999] group flex flex-row-reverse items-stretch h-10 w-10 hover:w-40 bg-win-gray shadow-win-out overflow-hidden transition-all duration-[250ms] ease-out p-[2px] active:shadow-win-in cursor-pointer select-none" aria-label="Return to Hub">
+        
+        <!-- Icon Block (Fixed Right) -->
+        <div class="w-9 shrink-0 flex items-center justify-center bg-win-gray border-l border-transparent group-hover:border-win-dark relative z-10 transition-colors group-active:translate-x-[1px] group-active:translate-y-[1px]">
+            <i class="fa-solid fa-power-off text-sm text-black group-hover:text-red-700 transition-colors drop-shadow-[1px_1px_0_white]"></i>
+        </div>
+
+        <!-- Sliding Text Block -->
+        <div class="flex-grow flex items-center justify-center bg-win-gray overflow-hidden group-active:translate-x-[1px] group-active:translate-y-[1px]">
+            <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-100 whitespace-nowrap px-2 font-pixel text-[10px] text-black tracking-wider mt-[2px] drop-shadow-[1px_1px_0_white]">
+                SHUT DOWN
+            </span>
+        </div>
+        
     </a>
 </body>
 </html>

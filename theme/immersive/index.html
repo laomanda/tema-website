@@ -15,6 +15,12 @@
     <!-- Three.js for 3D Elements -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
+    <!-- Lenis for Smooth Scrolling -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+
+    <!-- VanillaTilt for 3D Cards -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -32,8 +38,11 @@
                     colors: {
                         'neon-cyan': '#00f3ff',
                         'neon-purple': '#bc13fe',
-                        'dark-bg': '#050505',
-                        'glass': 'rgba(255, 255, 255, 0.05)',
+                        'neon-blue': '#2b00ff',
+                        'dark-bg': '#030303',
+                        'obsidian': '#080808',
+                        'glass': 'rgba(255, 255, 255, 0.03)',
+                        'glass-border': 'rgba(255, 255, 255, 0.08)',
                     },
                     cursor: {
                         'none': 'none',
@@ -45,7 +54,7 @@
 
     <style>
         body {
-            background-color: #050505;
+            background-color: #030303;
             color: white;
             overflow-x: hidden;
             cursor: none; /* Hide default cursor */
@@ -53,18 +62,25 @@
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #000;
+            background: #030303;
         }
         ::-webkit-scrollbar-thumb {
-            background: #333;
+            background: #1a1a1a;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
             background: #00f3ff;
         }
+
+        /* Lenis Smooth Scroll CSS */
+        html.lenis { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
+        .lenis.lenis-scrolling iframe { pointer-events: none; }
 
         /* Noise Overlay */
         .noise {
@@ -72,7 +88,7 @@
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
             z-index: 9000;
-            opacity: 0.05;
+            opacity: 0.04;
             background: url('https://grainy-gradients.vercel.app/noise.svg');
         }
 
@@ -88,15 +104,17 @@
             pointer-events: none;
         }
         .cursor-dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background-color: #00f3ff;
+            box-shadow: 0 0 10px #00f3ff;
+            transition: width 0.2s, height 0.2s;
         }
         .cursor-outline {
-            width: 40px;
-            height: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            transition: width 0.2s, height 0.2s, background-color 0.2s;
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(0, 243, 255, 0.4);
+            transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
         }
 
         /* Glitch Effect */
@@ -111,17 +129,17 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #050505;
+            background: transparent;
         }
         .glitch-wrapper::before {
             left: 2px;
-            text-shadow: -1px 0 #00f3ff;
+            text-shadow: -2px 0 #00f3ff;
             clip: rect(44px, 450px, 56px, 0);
             animation: glitch-anim 5s infinite linear alternate-reverse;
         }
         .glitch-wrapper::after {
             left: -2px;
-            text-shadow: -1px 0 #bc13fe;
+            text-shadow: -2px 0 #bc13fe;
             clip: rect(44px, 450px, 56px, 0);
             animation: glitch-anim2 5s infinite linear alternate-reverse;
         }
@@ -144,16 +162,103 @@
 
         /* Glass Card */
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.5s ease;
+            background: rgba(8, 8, 8, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
         .glass-card:hover {
-            border-color: #00f3ff;
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
+            border-color: rgba(0, 243, 255, 0.3);
+            background: rgba(20, 20, 20, 0.6);
+            /* Transform handled by VanillaTilt mostly, but backup UI states here */
+            box-shadow: 0 10px 40px rgba(0, 243, 255, 0.1), inset 0 0 0 1px rgba(0,243,255,0.1);
+        }
+
+        /* Image Placeholder Fallback */
+        .img-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 0.75rem;
+            font-family: 'Space Grotesk', sans-serif;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.7rem;
+            font-weight: 500;
+            background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+            border: 1px dashed rgba(0,243,255,0.2);
+        }
+        .img-placeholder i {
+            font-size: 2rem;
+            color: #00f3ff;
+            opacity: 0.5;
+        }
+
+        /* Marquee Animation */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            display: flex;
+            width: 100%;
+        }
+        .marquee-content {
+            display: inline-flex;
+            animation: marquee-scroll 30s linear infinite;
+        }
+        .marquee-content:hover {
+            animation-play-state: paused;
+        }
+        @keyframes marquee-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); } /* Scrolls exactly half of the double content */
+        }
+        
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255,255,255,0.1);
+            transition: .4s;
+            border-radius: 34px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #00f3ff;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00f3ff;
+        }
+        input:checked + .toggle-slider {
+            background-color: rgba(188, 19, 254, 0.2);
+            border-color: rgba(188, 19, 254, 0.5);
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+            background-color: #bc13fe;
+            box-shadow: 0 0 10px #bc13fe;
         }
     </style>
 </head>
@@ -182,41 +287,90 @@
     <canvas id="webgl-canvas" class="fixed top-0 left-0 w-full h-full z-[-1] opacity-60 pointer-events-none"></canvas>
 
     <!-- Navigation -->
-    <nav class="fixed top-0 left-0 w-full z-50 p-6 flex justify-between items-center mix-blend-difference">
-        <a href="#" class="text-2xl font-display font-bold tracking-tighter">AETHER<span class="text-neon-cyan">.</span>IO</a>
-        <div class="hidden md:flex gap-8 text-sm uppercase tracking-widest font-bold">
-            <a href="#about" class="hover:text-neon-cyan transition-colors link-hover">Tentang</a>
-            <a href="#works" class="hover:text-neon-cyan transition-colors link-hover">Karya</a>
-            <a href="#services" class="hover:text-neon-cyan transition-colors link-hover">Layanan</a>
-            <a href="#contact" class="hover:text-neon-cyan transition-colors link-hover">Kontak</a>
+    <nav class="fixed top-0 left-0 w-full z-[100] px-6 py-4 flex justify-between items-center bg-black/40 backdrop-blur-md border-b border-white/5 transition-all duration-300" id="main-nav">
+        <a href="#" class="text-2xl font-display font-bold tracking-tighter flex items-center gap-2 link-hover">
+            <div class="w-2 h-2 bg-neon-cyan rounded-full animate-pulse"></div>
+            AETHER<span class="text-neon-cyan font-mono text-sm ml-1">.SYS</span>
+        </a>
+        <div class="hidden md:flex gap-8 text-xs uppercase tracking-widest font-mono">
+            <a href="#about" class="hover:text-neon-cyan transition-colors link-hover opacity-70 hover:opacity-100">About</a>
+            <a href="#works" class="hover:text-neon-cyan transition-colors link-hover opacity-70 hover:opacity-100">Archive</a>
+            <a href="#services" class="hover:text-neon-cyan transition-colors link-hover opacity-70 hover:opacity-100">Capabilities</a>
+            <a href="#pricing" class="hover:text-neon-cyan transition-colors link-hover opacity-70 hover:opacity-100">Plans</a>
+            <a href="#contact" class="hover:text-neon-purple transition-colors link-hover opacity-70 hover:opacity-100">Terminal</a>
         </div>
-        <button class="md:hidden text-2xl link-hover"><i class="fa-solid fa-bars"></i></button>
+        <button class="hidden md:block px-6 py-2 border border-neon-cyan/50 text-neon-cyan text-xs font-mono tracking-widest hover:bg-neon-cyan hover:text-black transition-colors link-hover">
+            INITIATE
+        </button>
+        <button id="mobile-menu-btn" class="md:hidden text-2xl link-hover text-neon-cyan transition-transform"><i class="fa-solid fa-bars"></i></button>
     </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="hidden fixed inset-0 bg-black/95 backdrop-blur-xl z-[90] flex-col items-center justify-center gap-8 shadow-2xl transition-opacity opacity-0 duration-300">
+        <a href="#about" class="mobile-nav-link text-2xl font-display font-light text-white hover:text-neon-cyan transition-colors tracking-widest uppercase">About</a>
+        <a href="#works" class="mobile-nav-link text-2xl font-display font-light text-white hover:text-neon-cyan transition-colors tracking-widest uppercase">Archive</a>
+        <a href="#services" class="mobile-nav-link text-2xl font-display font-light text-white hover:text-neon-cyan transition-colors tracking-widest uppercase">Capabilities</a>
+        <a href="#pricing" class="mobile-nav-link text-2xl font-display font-light text-white hover:text-neon-cyan transition-colors tracking-widest uppercase">Plans</a>
+        <a href="#contact" class="mobile-nav-link text-2xl font-display font-light text-white hover:text-neon-purple transition-colors tracking-widest uppercase">Terminal</a>
+    </div>
 
     <!-- 1. HERO SECTION -->
     <section class="h-screen flex items-center justify-center relative overflow-hidden" id="hero">
-        <div class="text-center z-10 px-4">
-            <p class="text-neon-cyan text-sm md:text-base uppercase tracking-[0.5em] mb-4 hero-anim">Digital Reality</p>
-            <h1 class="text-6xl md:text-9xl font-display font-bold leading-none mb-6 hero-anim glitch-wrapper" data-text="FUTURE">
-                FUTURE
+        <!-- Floating Glass Panel (Decorative) -->
+        <div class="absolute top-1/4 right-[-5%] w-64 glass-card p-6 border-r-0 border-neon-cyan/20 hidden lg:block hero-anim opacity-0 rotate-12 scale-110">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-2 h-2 rounded-full bg-neon-cyan animate-pulse"></div>
+                <span class="text-xs font-mono text-neon-cyan tracking-widest">SYSTEM OPTIMIZED</span>
+            </div>
+            <div class="space-y-2 font-mono text-xs text-gray-400">
+                <div class="flex justify-between"><span>CPU_LOAD</span><span class="text-white">12.4%</span></div>
+                <div class="flex justify-between"><span>MEM_ALLOC</span><span class="text-white">1024MB</span></div>
+                <div class="flex justify-between"><span>NET_LATENCY</span><span class="text-white">4ms</span></div>
+            </div>
+        </div>
+
+        <div class="text-center z-10 px-4 max-w-5xl mx-auto">
+            <div class="inline-flex items-center gap-2 mb-6 hero-anim px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
+                <span class="w-1.5 h-1.5 rounded-full bg-neon-purple animate-ping"></span>
+                <span class="text-white/70 text-xs font-mono tracking-[0.2em] uppercase">Digital Reality v2.0</span>
+            </div>
+            
+            <h1 class="text-5xl md:text-8xl lg:text-9xl font-display font-bold leading-[0.9] mb-4 hero-anim glitch-wrapper" data-text="AETHER">
+                AETHER
             </h1>
-            <h1 class="text-6xl md:text-9xl font-display font-bold leading-none mb-12 hero-anim text-stroke text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600">
-                IS HERE
+            <h1 class="text-5xl md:text-8xl lg:text-9xl font-display font-light leading-[0.9] mb-10 hero-anim text-transparent bg-clip-text bg-gradient-to-b from-white via-white/80 to-transparent">
+                EXPERIENCE
             </h1>
-            <div class="hero-anim">
-                <a href="#about" class="group relative px-8 py-4 bg-transparent border border-neon-cyan text-neon-cyan font-bold uppercase tracking-widest overflow-hidden inline-block link-hover">
-                    <span class="relative z-10 group-hover:text-black transition-colors duration-300">Jelajahi</span>
+            
+            <p class="text-gray-400 font-mono text-sm md:text-base max-w-xl mx-auto mb-12 hero-anim leading-relaxed">
+                Pioneering the next generation of spatial computing and deep-tech immersive web environments for forward-thinking brands.
+            </p>
+
+            <div class="hero-anim flex flex-col sm:flex-row gap-6 justify-center items-center">
+                <a href="#about" class="group relative px-8 py-4 bg-white text-black font-display font-bold uppercase tracking-widest overflow-hidden inline-flex items-center gap-3 link-hover hover:scale-105 transition-transform">
+                    <span class="relative z-10 group-hover:text-white transition-colors duration-300">EXPLORE</span>
+                    <i class="fa-solid fa-arrow-right relative z-10 group-hover:text-white transition-colors duration-300 group-hover:translate-x-1"></i>
                     <div class="absolute inset-0 bg-neon-cyan transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out"></div>
+                </a>
+                
+                <a href="#works" class="group flex items-center gap-3 text-sm font-mono tracking-widest text-white/50 hover:text-white transition-colors link-hover">
+                    <span class="w-8 h-[1px] bg-white/30 group-hover:bg-neon-cyan group-hover:w-12 transition-all"></span>
+                    VIEW ARCHIVE
                 </a>
             </div>
         </div>
         
-        <div class="absolute bottom-10 left-10 text-xs font-mono text-gray-500 hidden md:block">
+        <div class="absolute bottom-10 left-10 text-xs font-mono text-white/30 hidden md:block">
             COORDINATES: 35.6895° N, 139.6917° E<br>
-            SYSTEM: ONLINE
+            AETHER INTERACTIVE // TOKYO, JP
         </div>
-        <div class="absolute bottom-10 right-10 flex gap-4 text-gray-500">
-            <span class="animate-bounce">SCROLL DOWN</span>
+        
+        <!-- Animated Mouse Scroll -->
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
+            <div class="w-[1px] h-12 bg-gradient-to-b from-white/50 to-transparent overflow-hidden object-left-top">
+                <div class="w-full h-full bg-neon-cyan transform -translate-y-full animate-[scrollDown_2s_ease-in-out_infinite]"></div>
+            </div>
+            <span class="text-[10px] font-mono tracking-[0.3em] uppercase">SCROLL</span>
         </div>
     </section>
 
@@ -225,12 +379,13 @@
         <div class="max-w-6xl mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
                 <div class="md:col-span-4">
-                    <h2 class="text-neon-purple text-sm uppercase tracking-[0.3em] mb-4">Manifesto</h2>
-                    <div class="w-full h-[1px] bg-gray-800"></div>
+                    <h2 class="text-neon-purple text-sm font-mono tracking-[0.3em] mb-4">MANIFESTO <span class="text-white/30">// 01</span></h2>
+                    <div class="w-full h-[1px] bg-gradient-to-r from-neon-purple to-transparent"></div>
                 </div>
                 <div class="md:col-span-8">
-                    <p class="reveal-text text-3xl md:text-5xl font-light leading-snug">
-                        Kami tidak hanya membuat website. <span class="text-neon-cyan font-bold">Kami menciptakan portal.</span> Sebuah jembatan antara imajinasi dan realitas digital. Di dunia yang penuh kebisingan, kami menghadirkan sinyal yang jernih, tajam, dan imersif.
+                    <!-- Text wrapped in spans for JS to split and animate -->
+                    <p class="reveal-text text-3xl md:text-5xl font-light leading-snug text-white/20">
+                        Kami tidak hanya membuat website. <span class="font-bold text-white">Kami menciptakan portal.</span> Sebuah jembatan antara imajinasi dan realitas digital. Di dunia yang penuh kebisingan, kami menghadirkan sinyal yang jernih, tajam, dan imersif.
                     </p>
                     <div class="grid grid-cols-2 gap-8 mt-16">
                         <div class="glass-card p-6 rounded-lg">
@@ -265,12 +420,16 @@
                         <p class="text-xl text-gray-400 mb-8 max-w-md">Platform NFT futuristik dengan galeri VR terintegrasi.</p>
                         <button class="link-hover text-neon-cyan uppercase tracking-widest border-b border-neon-cyan pb-1">Lihat Proyek</button>
                     </div>
-                    <div class="order-1 md:order-2 h-[400px] md:h-[600px] bg-gray-800 rounded-lg overflow-hidden glass-card group">
+                    <div class="order-1 md:order-2 h-[400px] md:h-[600px] bg-obsidian rounded-lg overflow-hidden glass-card group relative border-neon-cyan/20">
                          <div class="w-full h-full bg-black flex items-center justify-center relative overflow-hidden">
-                            <!-- Neon Grid CSS -->
-                            <div class="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,243,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,243,255,0.1)_1px,transparent_1px)] bg-[size:40px_40px] [transform:perspective(500px)_rotateX(60deg)] origin-bottom opacity-50"></div>
-                            <div class="relative w-48 h-48 border-4 border-neon-cyan shadow-[0_0_30px_#00f3ff] flex items-center justify-center group-hover:rotate-45 transition-transform duration-700">
-                                <div class="w-32 h-32 border-2 border-white "></div>
+                            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop" alt="Project Neon Genesis VR" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60 mix-blend-luminosity group-hover:mix-blend-normal group-hover:opacity-100">
+                            <!-- Overlay UI -->
+                            <div class="absolute inset-0 border-[1px] border-white/10 m-4 pointer-events-none flex flex-col justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                <div class="flex justify-between w-full">
+                                    <span class="text-neon-cyan font-mono text-[10px] tracking-widest bg-black/50 px-2 py-1 backdrop-blur-sm">LIVE</span>
+                                    <i class="fa-solid fa-expand text-white"></i>
+                                </div>
+                                <div class="w-full h-[1px] bg-gradient-to-r from-neon-cyan to-transparent"></div>
                             </div>
                         </div>
                     </div>
@@ -287,16 +446,17 @@
                         <p class="text-xl text-gray-400 mb-8 max-w-md">Interface robotik untuk sistem keamanan AI Enterprise.</p>
                         <button class="link-hover text-neon-purple uppercase tracking-widest border-b border-neon-purple pb-1">Lihat Proyek</button>
                     </div>
-                    <div class="order-1 md:order-2 h-[400px] md:h-[600px] bg-gray-800 rounded-lg overflow-hidden glass-card group">
+                    <div class="order-1 md:order-2 h-[400px] md:h-[600px] bg-obsidian rounded-lg overflow-hidden glass-card group relative border-neon-purple/20">
                         <div class="w-full h-full bg-black flex items-center justify-center relative overflow-hidden">
-                            <!-- HUD CSS -->
-                            <div class="w-64 h-64 rounded-full border border-neon-purple/50 flex items-center justify-center relative shadow-[0_0_20px_#bc13fe]">
-                                 <div class="absolute inset-0 border-t-2 border-neon-purple animate-spin [animation-duration:3s]"></div>
-                                 <div class="w-48 h-48 rounded-full border border-dashed border-white/30 animate-pulse"></div>
-                                 <div class="w-32 h-32 rounded-full border border-neon-purple/30"></div>
-                                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-mono text-neon-purple text-xs tracking-widest">SYSTEM_LOCKED</div>
+                            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670&auto=format&fit=crop" alt="Project Cyber Dynamics Security" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60 mix-blend-luminosity group-hover:mix-blend-normal group-hover:opacity-100">
+                            <!-- Overlay UI -->
+                            <div class="absolute inset-0 border-[1px] border-white/10 m-4 pointer-events-none flex flex-col justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                <div class="flex justify-between w-full">
+                                    <span class="text-neon-purple font-mono text-[10px] tracking-widest bg-black/50 px-2 py-1 backdrop-blur-sm">PROTOTYPE</span>
+                                    <i class="fa-solid fa-expand text-white"></i>
+                                </div>
+                                <div class="w-full h-[1px] bg-gradient-to-r from-neon-purple to-transparent"></div>
                             </div>
-                            <div class="absolute bottom-4 left-4 font-mono text-xs text-neon-purple typewriter">Target Acquired...</div>
                         </div>
                     </div>
                 </div>
@@ -312,13 +472,17 @@
                         <p class="text-xl text-gray-400 mb-8 max-w-md">Visualisasi arsitektur imajiner dalam metaverse.</p>
                         <button class="link-hover text-neon-cyan uppercase tracking-widest border-b border-neon-cyan pb-1">Lihat Proyek</button>
                     </div>
-                    <div class="order-1 md:order-2 h-[400px] md:h-[600px] bg-gray-800 rounded-lg overflow-hidden glass-card group">
+                    <div class="order-1 md:order-2 h-[400px] md:h-[600px] bg-obsidian rounded-lg overflow-hidden glass-card group relative border-white/20">
                         <div class="w-full h-full bg-black flex items-center justify-center relative overflow-hidden">
-                             <!-- Abstract Geo CSS -->
-                             <div class="absolute w-[200%] h-[200%] bg-[repeating-linear-gradient(90deg,transparent,transparent_50px,rgba(255,255,255,0.02)_50px,rgba(255,255,255,0.02)_51px)] transform rotate-45 group-hover:rotate-90 transition-transform duration-1000"></div>
-                             <div class="w-0 h-0 border-l-[60px] border-l-transparent border-b-[100px] border-b-white/80 border-r-[60px] border-r-transparent filter blur-md animate-pulse"></div>
-                             <div class="w-0 h-0 border-l-[60px] border-l-transparent border-b-[100px] border-b-white border-r-[60px] border-r-transparent absolute mix-blend-overlay"></div>
-                             <div class="absolute text-8xl font-display text-white opacity-5 select-none group-hover:opacity-20 transition-opacity">VOID</div>
+                            <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=2664&auto=format&fit=crop" alt="Project Void Architect" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60 mix-blend-luminosity group-hover:mix-blend-normal group-hover:opacity-100">
+                            <!-- Overlay UI -->
+                            <div class="absolute inset-0 border-[1px] border-white/10 m-4 pointer-events-none flex flex-col justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                <div class="flex justify-between w-full">
+                                    <span class="text-white font-mono text-[10px] tracking-widest bg-black/50 px-2 py-1 backdrop-blur-sm">CONCEPT</span>
+                                    <i class="fa-solid fa-expand text-white"></i>
+                                </div>
+                                <div class="w-full h-[1px] bg-gradient-to-r from-white/50 to-transparent"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -336,42 +500,136 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Card 1 -->
-                <div class="glass-card p-10 rounded-2xl relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-6 text-neon-cyan text-4xl opacity-50">01</div>
+                <div class="glass-card p-10 rounded-2xl relative overflow-hidden group" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2">
+                    <div class="absolute top-0 right-0 p-6 text-neon-cyan text-4xl opacity-50 font-mono tracking-widest">01</div>
                     <i class="fa-solid fa-cube text-5xl text-white mb-8 group-hover:text-neon-cyan transition-colors"></i>
                     <h3 class="text-2xl font-bold mb-4">Immersive Web</h3>
-                    <p class="text-gray-400 leading-relaxed">
+                    <p class="text-gray-400 leading-relaxed text-sm">
                         Pengembangan website dengan WebGL, Three.js, dan shader kustom untuk pengalaman visual yang mendalam.
                     </p>
-                    <div class="mt-8 h-1 w-full bg-gray-800 rounded-full overflow-hidden">
+                    <div class="mt-8 h-1 w-full bg-white/10 rounded-full overflow-hidden">
                         <div class="h-full bg-neon-cyan w-0 group-hover:w-full transition-all duration-700 ease-out"></div>
                     </div>
                 </div>
 
                 <!-- Card 2 -->
-                <div class="glass-card p-10 rounded-2xl relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-6 text-neon-purple text-4xl opacity-50">02</div>
+                <div class="glass-card p-10 rounded-2xl relative overflow-hidden group" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2">
+                    <div class="absolute top-0 right-0 p-6 text-neon-purple text-4xl opacity-50 font-mono tracking-widest">02</div>
                     <i class="fa-solid fa-mobile-screen text-5xl text-white mb-8 group-hover:text-neon-purple transition-colors"></i>
                     <h3 class="text-2xl font-bold mb-4">Interactive UI</h3>
-                    <p class="text-gray-400 leading-relaxed">
+                    <p class="text-gray-400 leading-relaxed text-sm">
                         Desain antarmuka yang responsif terhadap gerakan mikro, gesture, dan interaksi pengguna yang kompleks.
                     </p>
-                    <div class="mt-8 h-1 w-full bg-gray-800 rounded-full overflow-hidden">
+                    <div class="mt-8 h-1 w-full bg-white/10 rounded-full overflow-hidden">
                         <div class="h-full bg-neon-purple w-0 group-hover:w-full transition-all duration-700 ease-out"></div>
                     </div>
                 </div>
 
                 <!-- Card 3 -->
-                <div class="glass-card p-10 rounded-2xl relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-6 text-white text-4xl opacity-50">03</div>
-                    <i class="fa-solid fa-wand-magic-sparkles text-5xl text-white mb-8 group-hover:text-neon-cyan transition-colors"></i>
+                <div class="glass-card p-10 rounded-2xl relative overflow-hidden group" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2">
+                    <div class="absolute top-0 right-0 p-6 text-white text-4xl opacity-50 font-mono tracking-widest">03</div>
+                    <i class="fa-solid fa-wand-magic-sparkles text-5xl text-white mb-8 group-hover:text-white transition-colors"></i>
                     <h3 class="text-2xl font-bold mb-4">Motion Identity</h3>
-                    <p class="text-gray-400 leading-relaxed">
+                    <p class="text-gray-400 leading-relaxed text-sm">
                         Membangun identitas brand melalui gerakan, animasi logo, dan transisi kinetik yang unik.
                     </p>
-                    <div class="mt-8 h-1 w-full bg-gray-800 rounded-full overflow-hidden">
+                    <div class="mt-8 h-1 w-full bg-white/10 rounded-full overflow-hidden">
                         <div class="h-full bg-white w-0 group-hover:w-full transition-all duration-700 ease-out"></div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4.5 TECH STACK MARQUEE -->
+    <section class="py-12 bg-black border-y border-white/5 relative z-10 overflow-hidden">
+        <div class="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-black to-transparent z-10 pointer-events-none"></div>
+        <div class="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-black to-transparent z-10 pointer-events-none"></div>
+        
+        <div class="marquee-container">
+            <!-- Content duplicated twice for seamless loop -->
+            <div class="marquee-content gap-16 md:gap-32 items-center px-16">
+                <!-- Set 1 -->
+                <div class="flex items-center gap-4 text-white/40 hover:text-white transition-colors"><i class="fa-brands fa-react text-4xl"></i><span class="font-display font-bold tracking-widest text-xl">REACT</span></div>
+                <div class="flex items-center gap-4 text-white/40 hover:text-neon-cyan transition-colors"><i class="fa-solid fa-cube text-4xl"></i><span class="font-display font-bold tracking-widest text-xl">THREE.JS</span></div>
+                <div class="flex items-center gap-4 text-white/40 hover:text-white transition-colors"><i class="fa-brands fa-vuejs text-4xl"></i><span class="font-display font-bold tracking-widest text-xl">VUE</span></div>
+                <div class="flex items-center gap-4 text-white/40 hover:text-neon-purple transition-colors"><i class="fa-solid fa-bolt text-4xl"></i><span class="font-display font-bold tracking-widest text-xl">GSAP</span></div>
+                <div class="flex items-center gap-4 text-white/40 hover:text-white transition-colors"><i class="fa-brands fa-node-js text-4xl"></i><span class="font-display font-bold tracking-widest text-xl">NODE.JS</span></div>
+                <div class="flex items-center gap-4 text-white/40 hover:text-neon-cyan transition-colors"><i class="fa-solid fa-database text-4xl"></i><span class="font-display font-bold tracking-widest text-xl">WEBGL</span></div>
+                <!-- Set 2 (Identical) -->
+                <div class="flex items-center gap-4 text-white/40 hover:text-white transition-colors"><i class="fa-brands fa-react text-4xl"></i><span class="font-display font-bold tracking-widest text-xl">REACT</span></div>
+                <div class="flex items-center gap-4 text-white/40 hover:text-neon-cyan transition-colors"><i class="fa-solid fa-cube text-4xl"></i><span class="font-display font-bold tracking-widest text-xl">THREE.JS</span></div>
+                <div class="flex items-center gap-4 text-white/40 hover:text-white transition-colors"><i class="fa-brands fa-vuejs text-4xl"></i><span class="font-display font-bold tracking-widest text-xl">VUE</span></div>
+                <div class="flex items-center gap-4 text-white/40 hover:text-neon-purple transition-colors"><i class="fa-solid fa-bolt text-4xl"></i><span class="font-display font-bold tracking-widest text-xl">GSAP</span></div>
+                <div class="flex items-center gap-4 text-white/40 hover:text-white transition-colors"><i class="fa-brands fa-node-js text-4xl"></i><span class="font-display font-bold tracking-widest text-xl">NODE.JS</span></div>
+                <div class="flex items-center gap-4 text-white/40 hover:text-neon-cyan transition-colors"><i class="fa-solid fa-database text-4xl"></i><span class="font-display font-bold tracking-widest text-xl">WEBGL</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4.6 INTERACTIVE PRICING -->
+    <section id="pricing" class="py-32 bg-dark-bg relative z-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl md:text-7xl font-display mb-4">DEPLOYMENT PLANS</h2>
+                <p class="text-gray-400 text-lg uppercase tracking-widest mb-10">Scalable Architecture</p>
+                
+                <!-- Toggle -->
+                <div class="flex items-center justify-center gap-4 font-mono text-sm">
+                    <span id="label-monthly" class="text-white transition-colors">MONTHLY</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="pricing-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span id="label-annual" class="text-gray-500 transition-colors">ANNUAL <span class="text-neon-cyan ml-1 bg-neon-cyan/10 px-2 py-0.5 rounded">-20%</span></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-center">
+                <!-- Plan 1 -->
+                <div class="glass-card p-8 rounded-2xl border-white/5 relative group transition-transform hover:-translate-y-2">
+                    <h3 class="text-xl font-mono tracking-widest text-gray-400 mb-2">STARTER</h3>
+                    <div class="flex items-baseline gap-2 mb-6">
+                        <span class="text-5xl font-display font-bold text-white">$<span class="price-val" data-monthly="299" data-annual="240">299</span></span>
+                        <span class="text-gray-500 text-sm font-mono billing-period">/MO</span>
+                    </div>
+                    <ul class="space-y-4 mb-8 text-sm text-gray-400">
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-neon-cyan mt-1"></i> SPA React/Vue Framework</li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-neon-cyan mt-1"></i> Basic GSAP Animations</li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-neon-cyan mt-1"></i> standard CMS Integration</li>
+                    </ul>
+                    <button class="w-full py-3 border border-white/20 text-white hover:bg-white hover:text-black transition-colors font-mono tracking-widest text-sm uppercase">Initialize</button>
+                </div>
+
+                <!-- Plan 2 (Pro) -->
+                <div class="glass-card p-10 rounded-2xl border-neon-cyan shadow-[0_0_30px_rgba(0,243,255,0.15)] relative group transform md:scale-105 z-10 transition-transform hover:scale-110">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-neon-cyan text-black font-bold text-xs px-4 py-1 rounded-b-lg tracking-widest uppercase">Recommended</div>
+                    <h3 class="text-xl font-mono tracking-widest text-neon-cyan mb-2">IMMERSIVE</h3>
+                    <div class="flex items-baseline gap-2 mb-6">
+                        <span class="text-6xl font-display font-bold text-white">$<span class="price-val" data-monthly="799" data-annual="640">799</span></span>
+                        <span class="text-gray-500 text-sm font-mono billing-period">/MO</span>
+                    </div>
+                    <ul class="space-y-4 mb-8 text-sm text-gray-300">
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-neon-cyan mt-1"></i> Dedicated Three.js Environment</li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-neon-cyan mt-1"></i> Complex ScrollTrigger Flows</li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-neon-cyan mt-1"></i> Advanced Shader Programming</li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-neon-cyan mt-1"></i> Global CDN & Edge Deployment</li>
+                    </ul>
+                    <button class="w-full py-4 bg-neon-cyan text-black font-bold hover:bg-white transition-colors font-mono tracking-widest text-sm uppercase">Initialize</button>
+                </div>
+
+                <!-- Plan 3 -->
+                <div class="glass-card p-8 rounded-2xl border-white/5 relative group transition-transform hover:-translate-y-2">
+                    <h3 class="text-xl font-mono tracking-widest text-neon-purple mb-2">ENTERPRISE</h3>
+                    <div class="flex items-baseline gap-2 mb-6">
+                        <span class="text-5xl font-display font-bold text-white">Custom</span>
+                    </div>
+                    <ul class="space-y-4 mb-8 text-sm text-gray-400">
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-neon-purple mt-1"></i> Full Spatial Computing UI</li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-neon-purple mt-1"></i> AR/VR Headset Support</li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-neon-purple mt-1"></i> Dedicated 24/7 DevOps</li>
+                    </ul>
+                    <button class="w-full py-3 border border-white/20 text-white hover:border-neon-purple hover:text-neon-purple transition-colors font-mono tracking-widest text-sm uppercase">Contact Command</button>
                 </div>
             </div>
         </div>
@@ -423,23 +681,38 @@
                 Siap untuk melampaui batas standar? Mari diskusikan visi Anda.
             </p>
 
-            <form class="glass-card p-8 md:p-12 rounded-3xl text-left max-w-2xl mx-auto">
-                <div class="mb-6 relative group">
-                    <input type="text" id="name" required class="w-full bg-transparent border-b border-gray-700 py-4 text-white focus:outline-none focus:border-neon-cyan transition-colors peer">
-                    <label for="name" class="absolute left-0 top-4 text-gray-500 transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-neon-cyan peer-valid:-top-4 peer-valid:text-xs">NAMA ANDA</label>
+            <form id="terminal-form" class="bg-[#050505] border border-gray-800 p-8 md:p-10 rounded-lg text-left max-w-2xl mx-auto shadow-[0_0_50px_rgba(0,0,0,1)] relative overflow-hidden font-mono group">
+                <!-- Terminal Header -->
+                <div class="absolute top-0 left-0 w-full bg-gray-900 border-b border-gray-800 px-4 py-2 flex items-center justify-between">
+                    <div class="flex gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500/20 border border-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500/20 border border-green-500"></div>
+                    </div>
+                    <span class="text-[10px] text-gray-500 tracking-widest">AETHER_CMD_v2.0</span>
                 </div>
-                <div class="mb-6 relative group">
-                    <input type="email" id="email" required class="w-full bg-transparent border-b border-gray-700 py-4 text-white focus:outline-none focus:border-neon-purple transition-colors peer">
-                    <label for="email" class="absolute left-0 top-4 text-gray-500 transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-neon-purple peer-valid:-top-4 peer-valid:text-xs">EMAIL</label>
-                </div>
-                <div class="mb-12 relative group">
-                    <textarea id="message" rows="1" required class="w-full bg-transparent border-b border-gray-700 py-4 text-white focus:outline-none focus:border-white transition-colors peer resize-none"></textarea>
-                    <label for="message" class="absolute left-0 top-4 text-gray-500 transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-white peer-valid:-top-4 peer-valid:text-xs">IDE ANDA</label>
+
+                <div class="mt-8 space-y-6">
+                    <div>
+                        <label for="name" class="block text-neon-cyan text-xs mb-2">> // ENTER_IDENTIFIER</label>
+                        <input type="text" id="name" required class="w-full bg-transparent border border-gray-800 focus:border-neon-cyan px-4 py-3 text-white focus:outline-none transition-colors terminal-input" placeholder="Name or Alias">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-neon-purple text-xs mb-2">> // ENTER_COMMS_CHANNEL</label>
+                        <input type="email" id="email" required class="w-full bg-transparent border border-gray-800 focus:border-neon-purple px-4 py-3 text-white focus:outline-none transition-colors terminal-input" placeholder="Email Address">
+                    </div>
+                    <div>
+                        <label for="message" class="block text-white text-xs mb-2">> // ENTER_DIRECTIVE</label>
+                        <textarea id="message" rows="3" required class="w-full bg-transparent border border-gray-800 focus:border-white px-4 py-3 text-white focus:outline-none transition-colors terminal-input resize-none" placeholder="Describe your vision..."></textarea>
+                    </div>
                 </div>
                 
-                <button type="button" class="group w-full py-6 bg-white text-black font-display font-bold text-xl uppercase tracking-widest hover:bg-neon-cyan hover:scale-[1.02] transition-all duration-300 link-hover">
-                    Kirim Transmisi
-                </button>
+                <div class="mt-8 flex items-center justify-between">
+                    <span id="form-status" class="text-xs text-gray-500 animate-pulse hidden">TRANSMITTING...</span>
+                    <button type="button" id="submit-btn" class="ml-auto px-8 py-3 bg-white text-black font-display font-bold text-sm uppercase tracking-widest hover:bg-neon-cyan hover:shadow-[0_0_20px_rgba(0,243,255,0.5)] transition-all duration-300 link-hover">
+                        EXECUTE
+                    </button>
+                </div>
             </form>
 
             <div class="mt-16 flex justify-center gap-12 font-display text-sm">
@@ -517,18 +790,34 @@
         gsap.registerPlugin(ScrollTrigger);
 
         // Text Reveal in About
-        const textWords = document.querySelector('.reveal-text');
-        // Simple opacity fade for text
-        gsap.from(textWords, {
+        const revealText = document.querySelector('.reveal-text');
+        // Split text into words for animation
+        const splitText = revealText.innerHTML.split(/(<[^>]*>|\s+)/).filter(Boolean);
+        revealText.innerHTML = '';
+        splitText.forEach(part => {
+            if(part.startsWith('<') || !part.trim()) {
+                revealText.innerHTML += part;
+            } else {
+                const words = part.split(' ');
+                words.forEach(word => {
+                    if(word) revealText.innerHTML += `<span class="inline-block opacity-20 filter blur-sm translate-y-2 transition-all duration-500">${word}</span> `;
+                });
+            }
+        });
+
+        // Scrub animation for the words
+        gsap.to(revealText.querySelectorAll('span.inline-block'), {
             scrollTrigger: {
                 trigger: "#about",
-                start: "top 80%",
-                end: "bottom 80%",
+                start: "top 60%",
+                end: "center 40%",
                 scrub: 1
             },
-            opacity: 0.2,
-            y: 50,
-            duration: 1
+            opacity: 1,
+            filter: "blur(0px)",
+            y: 0,
+            color: "#ffffff",
+            stagger: 0.1
         });
 
         // Horizontal Scroll
@@ -570,31 +859,26 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
 
-            // Create Particles
-            const particlesGeometry = new THREE.BufferGeometry();
-            const particlesCount = 2000; // Adjust for performance
+            // Create Wave Terrain Geometry
+            const geometry = new THREE.PlaneGeometry(30, 30, 100, 100);
             
-            const posArray = new Float32Array(particlesCount * 3);
-            
-            for(let i = 0; i < particlesCount * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 15; // Spread
-            }
-            
-            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            
-            // Material
+            // Material - deep tech cyan to purple tint
             const material = new THREE.PointsMaterial({
-                size: 0.02,
+                size: 0.03,
                 color: 0x00f3ff,
                 transparent: true,
-                opacity: 0.8,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending
             });
             
             // Mesh
-            const particlesMesh = new THREE.Points(particlesGeometry, material);
+            const particlesMesh = new THREE.Points(geometry, material);
+            // Rotate to lay flat like a terrain
+            particlesMesh.rotation.x = -Math.PI / 2.5;
             scene.add(particlesMesh);
             
-            camera.position.z = 3;
+            camera.position.z = 5;
+            camera.position.y = 1;
 
             // Mouse Interaction
             let mouseX = 0;
@@ -611,21 +895,36 @@
             });
 
             const clock = new THREE.Clock();
+            const positionAttribute = geometry.getAttribute('position');
+            const vertex = new THREE.Vector3();
 
             const animate = () => {
-                targetX = mouseX * 0.001;
-                targetY = mouseY * 0.001;
+                targetX = mouseX * 0.0005;
+                targetY = mouseY * 0.0005;
 
                 const elapsedTime = clock.getElapsedTime();
 
-                // Rotate entire system slowly
-                particlesMesh.rotation.y = .1 * elapsedTime;
-                particlesMesh.rotation.x += .05 * (targetY - particlesMesh.rotation.x);
-                particlesMesh.rotation.y += .05 * (targetX - particlesMesh.rotation.y);
+                // Mouse interaction - subtle tilt
+                particlesMesh.rotation.y += .02 * (targetX - particlesMesh.rotation.y);
+                particlesMesh.rotation.x += .02 * (targetY - particlesMesh.rotation.x) - 0.002;
 
-                // Wave effect on particles
-                // Note: Modifying buffer geometry in loop is expensive, keeping it simple rotation for performance
-                
+                // Animate Waves
+                for (let i = 0; i < positionAttribute.count; i++) {
+                    vertex.fromBufferAttribute(positionAttribute, i);
+                    // Create flowing wave formula based on x, y, and elapsed time
+                    const waveX1 = 0.5 * Math.sin(vertex.x * 0.4 + elapsedTime * 0.8);
+                    const waveX2 = 0.25 * Math.sin(vertex.x * 0.6 + elapsedTime * 1.2);
+                    const waveY1 = 0.5 * Math.sin(vertex.y * 0.4 + elapsedTime * 0.8);
+                    
+                    vertex.z = waveX1 + waveX2 + waveY1;
+                    positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
+                }
+                positionAttribute.needsUpdate = true;
+
+                // Color tinting subtle pulse
+                const hue = (Math.sin(elapsedTime * 0.2) + 1) * 0.1 + 0.55; // Floats around cyan to light blue/purple
+                material.color.setHSL(hue, 1, 0.5);
+
                 renderer.render(scene, camera);
                 requestAnimationFrame(animate);
             };
@@ -642,10 +941,250 @@
 
         initThreeJS();
 
+        // --- 5. Lenis Smooth Scrolling ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/brs54l4xou
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+            infinite: false,
+        });
+
+        // Integrate Lenis with GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+
+        gsap.ticker.lagSmoothing(0);
+
+        // --- 6. Auto Image Placeholder System ---
+        function handleImageError(img) {
+            const alt = (img.alt || '').toLowerCase();
+            const parent = img.parentElement;
+            
+            // Determine icon & label based on alt text
+            let icon = 'fa-solid fa-image';
+            let label = 'IMAGE MISSING';
+            
+            if (alt.includes('project') || alt.includes('work') || alt.includes('portfolio')) {
+                icon = 'fa-solid fa-laptop-code'; label = 'SYSTEM.PROJECT_FILE_MISSING';
+            } else if (alt.includes('hero') || alt.includes('background')) {
+                icon = 'fa-solid fa-vr-cardboard'; label = 'ENVIRONMENT_NOT_FOUND';
+            } else if (alt.includes('team') || alt.includes('person') || alt.includes('profile')) {
+                icon = 'fa-solid fa-user-astronaut'; label = 'USER_DATA_CORRUPT';
+            }
+            
+            // Create placeholder div
+            const placeholder = document.createElement('div');
+            placeholder.className = 'img-placeholder';
+            placeholder.innerHTML = '<i class="' + icon + '"></i><span>' + label + '</span>';
+            
+            // Copy sizing classes from img
+            const imgClasses = img.className.split(' ');
+            imgClasses.forEach(cls => {
+                if (cls && !cls.includes('hover') && !cls.includes('group') && !cls.includes('transition') && !cls.includes('duration') && !cls.includes('scale')) {
+                    placeholder.classList.add(cls);
+                }
+            });
+            
+            // Ensure it fills the container
+            placeholder.style.width = '100%';
+            placeholder.style.height = '100%';
+            if (parent && getComputedStyle(parent).position !== 'static' && img.classList.contains('absolute')) {
+                placeholder.classList.add('absolute', 'inset-0');
+            }
+            
+            img.replaceWith(placeholder);
+        }
+        
+        // Attach onerror to all images on page
+        document.querySelectorAll('img').forEach(img => {
+            img.onerror = function() { handleImageError(this); };
+            // If image already failed before JS loaded
+            if (img.complete && img.naturalWidth === 0 && img.src) {
+                handleImageError(img);
+            }
+        });
+
+        // --- 7. Pricing Toggle Logic ---
+        const pricingToggle = document.getElementById('pricing-toggle');
+        const priceVals = document.querySelectorAll('.price-val');
+        const billingPeriods = document.querySelectorAll('.billing-period');
+        const labelMonthly = document.getElementById('label-monthly');
+        const labelAnnual = document.getElementById('label-annual');
+
+        if (pricingToggle) {
+            pricingToggle.addEventListener('change', (e) => {
+                const isAnnual = e.target.checked;
+                
+                // Update labels
+                if (isAnnual) {
+                    labelMonthly.classList.replace('text-white', 'text-gray-500');
+                    labelAnnual.classList.replace('text-gray-500', 'text-white');
+                } else {
+                    labelMonthly.classList.replace('text-gray-500', 'text-white');
+                    labelAnnual.classList.replace('text-white', 'text-gray-500');
+                }
+
+                // Update prices with a quick fade animation using GSAP
+                gsap.to(priceVals, {
+                    opacity: 0,
+                    y: -10,
+                    duration: 0.2,
+                    onComplete: () => {
+                        priceVals.forEach(val => {
+                            val.innerText = isAnnual ? val.dataset.annual : val.dataset.monthly;
+                        });
+                        billingPeriods.forEach(period => {
+                            period.innerText = isAnnual ? '/YR' : '/MO';
+                        });
+                        gsap.to(priceVals, { opacity: 1, y: 0, duration: 0.2 });
+                    }
+                });
+            });
+        }
+
+        // --- 8. Terminal Form Validation ---
+        const submitBtn = document.getElementById('submit-btn');
+        const formStatus = document.getElementById('form-status');
+        const terminalForm = document.getElementById('terminal-form');
+
+        if (submitBtn && terminalForm) {
+            submitBtn.addEventListener('click', () => {
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const message = document.getElementById('message').value;
+
+                if (!name || !email || !message) {
+                    formStatus.innerText = "ERROR: MISSING_PARAMETERS";
+                    formStatus.classList.replace('text-gray-500', 'text-red-500');
+                    formStatus.classList.remove('hidden');
+                    return;
+                }
+
+                if (!email.includes('@')) {
+                    formStatus.innerText = "ERROR: INVALID_COMMS_CHANNEL";
+                    formStatus.classList.replace('text-gray-500', 'text-red-500');
+                    formStatus.classList.remove('hidden');
+                    return;
+                }
+
+                // Simulate transmission
+                submitBtn.disabled = true;
+                submitBtn.innerText = "EXECUTING...";
+                formStatus.innerText = "TRANSMITTING DATA PACKETS...";
+                formStatus.classList.replace('text-red-500', 'text-neon-cyan');
+                if (formStatus.classList.contains('text-green-500')) {
+                    formStatus.classList.replace('text-green-500', 'text-neon-cyan');
+                }
+                formStatus.classList.remove('hidden');
+
+                setTimeout(() => {
+                    formStatus.innerText = "SUCCESS: DIRECTIVE_RECEIVED";
+                    formStatus.classList.replace('text-neon-cyan', 'text-green-500');
+                    submitBtn.innerText = "DONE";
+                    terminalForm.reset();
+                    
+                    setTimeout(() => {
+                        formStatus.classList.add('hidden');
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = "EXECUTE";
+                    }, 3000);
+                }, 2000);
+            });
+        }
+
+        // Mobile Menu Toggle
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const icon = mobileBtn ? mobileBtn.querySelector('i') : null;
+
+        if (mobileBtn && mobileMenu) {
+            function toggleMenu() {
+                const isOpen = !mobileMenu.classList.contains('hidden');
+                if (isOpen) {
+                    mobileMenu.classList.remove('opacity-100');
+                    mobileMenu.classList.add('opacity-0');
+                    icon.classList.remove('fa-xmark');
+                    icon.classList.add('fa-bars');
+                    setTimeout(() => {
+                        mobileMenu.classList.add('hidden');
+                        mobileMenu.classList.remove('flex');
+                    }, 300);
+                } else {
+                    mobileMenu.classList.remove('hidden');
+                    mobileMenu.classList.add('flex');
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-xmark');
+                    void mobileMenu.offsetWidth;
+                    mobileMenu.classList.remove('opacity-0');
+                    mobileMenu.classList.add('opacity-100');
+                }
+            }
+            mobileBtn.addEventListener('click', toggleMenu);
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.addEventListener('click', toggleMenu);
+            });
+        }
+
+        // Global Copy Script
+        window.copySourceCode = function(btn) {
+            const htmlContent = document.documentElement.outerHTML;
+            navigator.clipboard.writeText(htmlContent).then(() => {
+                const originalContent = btn.innerHTML;
+                
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3 font-mono text-[10px] tracking-[0.2em] text-neon-cyan uppercase">
+                        <span class="w-2 h-2 rounded-full bg-neon-cyan animate-ping"></span>
+                        <span>Captured</span>
+                    </div>
+                `;
+                btn.classList.add('border-neon-cyan');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.remove('border-neon-cyan');
+                }, 2000);
+            });
+        }
     </script>
-            <!-- Back to Hub Bubble -->
-    <a href="../../index.html" class="fixed bottom-6 right-6 w-14 h-14 bg-white text-[#d4af37] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 hover:-translate-y-1 transition-all z-[9999] border-2 border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.4)] group">
-        <i class="fa-solid fa-house text-xl group-hover:text-yellow-600 transition-colors"></i>
+    <!-- Copy Source Code Button (Spatial Style) -->
+    <button onclick="copySourceCode(this)" class="fixed bottom-28 right-8 z-[9999] group flex items-center justify-center p-4 bg-black/40 backdrop-blur-xl border border-white/10 rounded-full shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:border-white/30 transition-all active:scale-95 link-hover">
+        <div class="flex items-center gap-3 font-mono text-[10px] tracking-[0.2em] text-white/70 group-hover:text-neon-cyan uppercase transition-colors">
+            <i class="fa-regular fa-copy text-sm"></i>
+            <span>Extract Source</span>
+        </div>
+    </button>
+
+    <!-- Ultra-Luxurious Spatial Back Button (3M: Mewah, Mahal, Manja) -->
+    <a href="../../index.html" class="fixed bottom-8 right-8 z-[9999] group flex flex-row-reverse items-center justify-start h-16 w-16 hover:w-[280px] bg-black/40 backdrop-blur-xl border border-white/10 hover:border-neon-cyan/50 rounded-full overflow-hidden transition-all duration-[800ms] ease-[cubic-bezier(0.25,1,0.25,1)] shadow-[0_0_30px_rgba(0,0,0,0.5)] hover:shadow-[0_0_40px_rgba(0,243,255,0.3)] hover:bg-black/80" aria-label="Return to Hub">
+        
+        <!-- Premium Icon Core (Fixed Right) -->
+        <div class="w-16 h-full shrink-0 flex items-center justify-center relative z-20 rounded-full bg-gradient-to-br from-white/5 to-white/0 border border-white/5 group-hover:bg-neon-cyan/10 transition-colors duration-500 shadow-inner">
+            <!-- Glowing core effect -->
+            <div class="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 bg-[radial-gradient(circle_at_center,rgba(0,243,255,0.4)_0%,transparent_70%)] transition-opacity duration-700 pointer-events-none"></div>
+            <!-- Dynamic orbital ring -->
+            <div class="absolute inset-[3px] rounded-full border border-white/20 border-r-transparent border-b-transparent opacity-50 group-hover:border-neon-cyan/70 group-hover:animate-[spin_3s_linear_infinite] transition-colors duration-500"></div>
+            <i class="fa-solid fa-arrow-left text-xl text-white/70 group-hover:text-neon-cyan transform group-hover:scale-110 group-hover:-translate-x-1 transition-all duration-500 relative z-10 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] group-hover:drop-shadow-[0_0_12px_rgba(0,243,255,0.8)]"></i>
+        </div>
+
+        <!-- Sliding Cinematic Text Panel (Flexible container preventing text wrap) -->
+        <div class="h-full flex-grow flex flex-col justify-center items-start pl-7 relative z-10 bg-transparent overflow-hidden border-r border-transparent group-hover:border-neon-cyan/20 transition-colors duration-500">
+            <!-- Subtle spatial grid background -->
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-30 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] transition-opacity duration-700 mix-blend-screen pointer-events-none"></div>
+            
+            <!-- Bottom label (Main Display) -->
+            <span class="opacity-0 group-hover:opacity-100 transition-all duration-[600ms] delay-[250ms] font-display text-[15px] tracking-[0.25em] text-white font-medium uppercase whitespace-nowrap transform translate-y-4 group-hover:translate-y-0 drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
+                BACK
+            </span>
+        </div>
+        
     </a>
 </body>
 </html>

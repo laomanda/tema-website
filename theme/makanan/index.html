@@ -3,173 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RASA // Authentic Culinary</title>
+    <title>RASA // Authentic Culinary Dashboard</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Fonts: Playfair Display (Elegant Headings) & Lato (Clean Body) -->
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        'sans': ['"Lato"', 'sans-serif'],
+                        'sans': ['"Outfit"', 'sans-serif'],
                         'serif': ['"Playfair Display"', 'serif'],
                     },
                     colors: {
-                        'brand-red': '#D9381E',
-                        'brand-gold': '#F2A900',
-                        'brand-dark': '#1A1A1A',
-                        'brand-cream': '#F9F7F2',
-                    },
-                    backgroundImage: {
-                        'pattern': "url('https://www.transparenttextures.com/patterns/food.png')",
+                        'brand-red': '#E63946',
+                        'brand-gold': '#F4A261',
+                        'brand-dark': '#1D3557',
+                        'brand-light': '#F1FAEE',
+                        'brand-accent': '#457B9D',
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Custom Styles */
-        body {
-            background-color: #F9F7F2;
-            color: #1A1A1A;
-        }
+        /* Base Styles */
+        body { background-color: #F1FAEE; color: #1D3557; overflow-x: hidden; }
 
-        .hide-scroll::-webkit-scrollbar {
-            display: none;
+        /* Custom Themed Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1D3557; }
+        ::-webkit-scrollbar-thumb { 
+            background: linear-gradient(180deg, #E63946, #F4A261); 
+            border-radius: 10px;
         }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #F4A261, #E63946); }
+        /* Firefox */
+        html { scrollbar-width: thin; scrollbar-color: #E63946 #1D3557; }
 
-        /* Image Hover Zoom */
-        .zoom-container {
-            overflow: hidden;
+        /* Scroll Progress Bar */
+        #scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, #E63946, #F4A261);
+            z-index: 9999;
+            transition: none;
+            box-shadow: 0 0 8px rgba(230,57,70,0.5);
         }
-        .zoom-img {
-            transition: transform 0.5s ease;
-        }
-        .group:hover .zoom-img {
-            transform: scale(1.1);
-        }
+        
+        /* Lenis Smooth Scroll Recommended Styles */
+        html.lenis { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
+        .lenis.lenis-scrolling iframe { pointer-events: none; }
 
-        /* Fade Up Animation */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease-out;
+        /* Hero Wave Separator */
+        .hero-wave { position: absolute; bottom: -2px; left: 0; width: 100%; overflow: hidden; line-height: 0; z-index: 5; }
+        .hero-wave svg { display: block; width: 100%; height: 80px; }
+        .hero-wave svg path { fill: #F1FAEE; }
+
+        /* Swiper Custom Pagination */
+        .swiper-pagination-bullet { background-color: #F4A261; opacity: 0.5; }
+        .swiper-pagination-bullet-active { opacity: 1; transform: scale(1.2); }
+
+        /* Hide Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Lightbox */
+        #lightbox { transition: opacity 0.3s ease; }
+        #lightbox.active { opacity: 1; pointer-events: auto; }
+
+        /* Image Placeholder Fallback */
+        .img-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 0.75rem;
+            font-family: 'Outfit', sans-serif;
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.7rem;
+            font-weight: 600;
         }
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
+        .img-placeholder i {
+            font-size: 2.5rem;
+            opacity: 0.6;
         }
+        .img-placeholder.ph-hero   { background: linear-gradient(135deg, #1D3557 0%, #457B9D 100%); }
+        .img-placeholder.ph-food   { background: linear-gradient(135deg, #E63946 0%, #F4A261 100%); }
+        .img-placeholder.ph-chef   { background: linear-gradient(135deg, #457B9D 0%, #1D3557 100%); }
+        .img-placeholder.ph-place  { background: linear-gradient(135deg, #1D3557 0%, #E63946 80%); }
+        .img-placeholder.ph-drink  { background: linear-gradient(135deg, #F4A261 0%, #E63946 100%); }
+        .img-placeholder.ph-dessert{ background: linear-gradient(135deg, #F4A261 0%, #457B9D 100%); }
     </style>
 </head>
-<body class="antialiased selection:bg-brand-red selection:text-white">
+<body class="antialiased font-sans selection:bg-brand-red selection:text-white">
+
+    <!-- Scroll Progress Bar -->
+    <div id="scroll-progress"></div>
 
     <!-- NAVBAR -->
-    <nav class="fixed w-full z-50 bg-brand-cream/95 backdrop-blur-md shadow-sm transition-all duration-300 py-4" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <!-- Logo -->
+    <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-lg border-b border-white/20 transition-all duration-500 py-4" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
             <a href="#" class="flex items-center gap-2 group">
-                <i class="fa-solid fa-utensils text-brand-red text-2xl group-hover:rotate-12 transition-transform"></i>
-                <span class="text-2xl font-serif font-bold tracking-wider">RASA.</span>
+                <div class="w-10 h-10 bg-brand-red rounded-full flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+                <span class="text-3xl font-serif font-bold tracking-tight text-brand-dark">RASA.</span>
             </a>
-
-            <!-- Desktop Links -->
-            <div class="hidden md:flex space-x-8 text-sm font-sans font-bold uppercase tracking-widest text-gray-600">
-                <a href="#home" class="hover:text-brand-red transition-colors">Beranda</a>
-                <a href="#story" class="hover:text-brand-red transition-colors">Cerita</a>
-                <a href="#menu" class="hover:text-brand-red transition-colors">Menu</a>
-                <a href="#gallery" class="hover:text-brand-red transition-colors">Galeri</a>
-                <a href="#reservation" class="px-6 py-2 bg-brand-red text-white rounded-full hover:bg-red-700 transition-colors shadow-lg">Reservasi</a>
+            <div class="hidden md:flex space-x-8 text-sm font-semibold uppercase tracking-wider text-brand-dark/70">
+                <a href="#home" class="nav-link hover:text-brand-red transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-brand-red hover:after:w-full after:transition-all">Home</a>
+                <a href="#about" class="nav-link hover:text-brand-red transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-brand-red hover:after:w-full after:transition-all">Story</a>
+                <a href="#menu" class="nav-link hover:text-brand-red transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-brand-red hover:after:w-full after:transition-all">Menu</a>
+                <a href="#gallery" class="nav-link hover:text-brand-red transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-brand-red hover:after:w-full after:transition-all">Gallery</a>
+                <a href="#reservation" class="px-6 py-2 bg-brand-dark text-white rounded-full hover:bg-brand-red transition-all shadow-md hover:shadow-xl transform hover:-translate-y-1">Book Table</a>
             </div>
-
-            <!-- Mobile Menu Icon -->
-            <button class="md:hidden text-2xl text-brand-dark">
-                <i class="fa-solid fa-bars"></i>
+            <button id="mobile-menu-btn" class="md:hidden text-2xl text-brand-dark focus:outline-none transition-transform">
+                <i class="fa-solid fa-bars-staggered"></i>
             </button>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-lg border-b border-gray-200 flex-col py-4 shadow-xl z-50 transition-opacity opacity-0 duration-300">
+            <a href="#home" class="mobile-nav-link block px-6 py-3 font-semibold uppercase tracking-wider text-brand-dark hover:text-brand-red hover:bg-gray-50 transition-colors">Home</a>
+            <a href="#about" class="mobile-nav-link block px-6 py-3 font-semibold uppercase tracking-wider text-brand-dark hover:text-brand-red hover:bg-gray-50 transition-colors">Story</a>
+            <a href="#menu" class="mobile-nav-link block px-6 py-3 font-semibold uppercase tracking-wider text-brand-dark hover:text-brand-red hover:bg-gray-50 transition-colors">Menu</a>
+            <a href="#gallery" class="mobile-nav-link block px-6 py-3 font-semibold uppercase tracking-wider text-brand-dark hover:text-brand-red hover:bg-gray-50 transition-colors">Gallery</a>
+            <div class="px-6 py-4">
+                <a href="#reservation" class="mobile-nav-link block w-full text-center py-3 bg-brand-dark text-white rounded-full font-bold uppercase tracking-wider shadow hover:bg-brand-red transition-all">Book Table</a>
+            </div>
         </div>
     </nav>
 
     <!-- 1. HERO SECTION -->
-    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <!-- Background Pattern -->
-        <div class="absolute inset-0 z-0 bg-brand-dark">
-            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/food.png')] opacity-10"></div>
-            <div class="absolute inset-0 bg-gradient-to-b from-black/70 to-transparent"></div>
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden bg-brand-dark">
+        <!-- Background Image -->
+        <div class="absolute inset-0 z-0 select-none pointer-events-none hero-bg">
+            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2674&auto=format&fit=crop" class="w-full h-full object-cover opacity-30" alt="Restaurant Background">
+            <div class="absolute inset-0 bg-gradient-to-b from-brand-dark/60 via-brand-dark/70 to-brand-dark"></div>
         </div>
 
-        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto text-white fade-up">
-            <div class="mb-4 flex justify-center">
-                <div class="w-16 h-[2px] bg-brand-gold"></div>
+        <!-- Hero Content -->
+        <div class="relative z-10 text-center px-6 max-w-4xl mx-auto text-white pt-28 pb-32">
+            <!-- Badge -->
+            <div class="mb-6 flex justify-center GSAP-reveal">
+                <span class="inline-flex items-center gap-2 px-5 py-2 border border-brand-gold/50 text-brand-gold text-xs font-bold uppercase tracking-[0.25em] rounded-full backdrop-blur-sm bg-brand-gold/5">
+                    <i class="fa-solid fa-fire text-[10px]"></i>
+                    Est. 1998 • Jakarta
+                </span>
             </div>
-            <p class="text-sm md:text-base font-sans uppercase tracking-[0.3em] mb-4 text-brand-gold font-bold">Cita Rasa Otentik Indonesia</p>
-            <h1 class="text-5xl md:text-7xl lg:text-8xl font-serif font-bold mb-8 leading-tight">
-                Rasakan Keajaiban <br>
-                <span class="italic font-light">dalam Setiap Suapan</span>
+
+            <!-- Heading -->
+            <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-bold mb-6 leading-[1.1] GSAP-reveal-text">
+                Culinary <br>
+                <span class="italic text-brand-gold font-light">Elegance.</span>
             </h1>
-            <p class="text-lg md:text-xl font-light mb-10 max-w-2xl mx-auto text-gray-200">
-                Kami menyajikan hidangan dengan bahan-bahan lokal tersegar, dimasak dengan penuh cinta dan tradisi yang diwariskan turun-temurun.
+
+            <!-- Subtitle -->
+            <p class="text-base sm:text-lg md:text-xl font-light mb-12 max-w-xl mx-auto text-white/70 leading-relaxed GSAP-reveal">
+                Where traditional Indonesian flavors meet modern gastronomy in a symphony of taste.
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="#menu" class="px-8 py-4 bg-brand-red text-white font-bold tracking-widest uppercase hover:bg-red-700 transition-all border border-transparent">
-                    Lihat Menu
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center GSAP-reveal">
+                <a href="#menu" class="px-8 py-4 bg-brand-red text-white font-bold tracking-wider uppercase text-sm rounded-full hover:bg-white hover:text-brand-red transition-all shadow-lg shadow-brand-red/30 transform hover:-translate-y-1">
+                    <i class="fa-solid fa-utensils mr-2"></i>Explore Menu
                 </a>
-                <a href="#reservation" class="px-8 py-4 bg-transparent border border-white text-white font-bold tracking-widest uppercase hover:bg-white hover:text-brand-dark transition-all">
-                    Book Table
+                <a href="#reservation" class="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold tracking-wider uppercase text-sm rounded-full hover:bg-white hover:text-brand-dark transition-all transform hover:-translate-y-1">
+                    <i class="fa-solid fa-calendar-check mr-2"></i>Reserve Table
                 </a>
             </div>
         </div>
-        
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-white">
-            <i class="fa-solid fa-chevron-down text-2xl"></i>
+
+        <!-- Wave Separator -->
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+                <path d="M0,40 C360,90 1080,0 1440,50 L1440,80 L0,80 Z"></path>
+            </svg>
         </div>
     </section>
 
-    <!-- 2. STORY / ABOUT US -->
-    <section id="story" class="py-24 bg-brand-cream relative">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-orange-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-        
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-                <div class="relative fade-up">
-                    <div class="absolute -top-4 -left-4 w-full h-full border-2 border-brand-gold z-0"></div>
-                    <div class="relative z-10 w-full h-[500px] bg-brand-cream border-2 border-brand-gold flex items-center justify-center shadow-xl overflow-hidden">
-                        <i class="fa-solid fa-utensils text-[15rem] text-brand-dark opacity-5 absolute -bottom-10 -right-10 transform rotate-12"></i>
-                         <div class="text-center z-10 p-10 border-4 border-brand-dark/10 rounded-full">
-                            <i class="fa-solid fa-fire-burner text-6xl text-brand-red mb-4"></i>
-                            <div class="font-serif italic text-brand-dark text-xl mt-2">Dapur Autentik</div>
-                        </div>
+    <!-- 2. BENTO CATEGORIES (NEW) -->
+    <section class="py-20 bg-brand-light relative z-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 h-[800px] md:h-[500px] GSAP-bento">
+                
+                <!-- Box 1 -->
+                <div class="md:col-span-2 md:row-span-2 relative rounded-3xl overflow-hidden group shadow-xl">
+                    <img src="https://images.unsplash.com/photo-1547496502-affa22d38842?q=80&w=2677&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Main Course">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-8 left-8">
+                        <span class="text-brand-gold font-bold uppercase tracking-wider text-sm mb-2 block">Dinner</span>
+                        <h3 class="text-4xl font-serif text-white font-bold">Main Courses</h3>
                     </div>
-                    <div class="absolute -bottom-10 -right-10 bg-white p-6 shadow-lg z-20 max-w-xs hidden md:block">
-                        <p class="font-serif italic text-xl text-brand-dark">"Memasak adalah seni mengubah bahan sederhana menjadi memori yang tak terlupakan."</p>
-                        <p class="text-xs font-bold uppercase mt-4 text-brand-red">— Chef Budi Santoso</p>
+                    <a href="#" class="absolute top-8 right-8 w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-brand-red">
+                        <i class="fa-solid fa-arrow-right -rotate-45"></i>
+                    </a>
+                </div>
+
+                <!-- Box 2 -->
+                <div class="md:col-span-1 md:row-span-1 relative rounded-3xl overflow-hidden group shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1495147466023-e6a920cdce53?q=80&w=2671&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Starters">
+                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <h3 class="text-2xl font-serif text-white font-bold">Starters</h3>
+                    </div>
+                </div>
+
+                <!-- Box 3 -->
+                <div class="md:col-span-1 md:row-span-1 relative rounded-3xl overflow-hidden group shadow-lg bg-brand-dark p-6 flex flex-col justify-between">
+                    <div class="text-brand-gold text-4xl mb-4"><i class="fa-solid fa-wine-glass"></i></div>
+                    <div>
+                        <span class="text-brand-light/70 text-sm uppercase tracking-wider">Bar</span>
+                        <h3 class="text-2xl font-serif text-white font-bold">Beverages & Mocktails</h3>
+                    </div>
+                    <a href="#" class="mt-4 text-brand-red font-bold text-sm uppercase tracking-wider hover:text-white transition-colors">View List &rarr;</a>
+                </div>
+
+                <!-- Box 4 -->
+                <div class="md:col-span-2 md:row-span-1 relative rounded-3xl overflow-hidden group shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1563805042-7684c8a9e9cb?q=80&w=2727&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Desserts">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-accent/90 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <span class="text-brand-light font-bold uppercase tracking-wider text-sm mb-1 block">Sweet</span>
+                        <h3 class="text-2xl font-serif text-white font-bold">Handcrafted Desserts</h3>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. ABOUT / STORY -->
+    <section id="about" class="py-24 bg-white relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 pt-16">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="relative GSAP-about-img">
+                    <div class="w-full h-[600px] rounded-[3rem] overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=2577&auto=format&fit=crop" class="w-full h-[120%] object-cover object-center transform -translate-y-10" id="parallax-img" alt="Chef Cooking">
+                    </div>
+                    <!-- Floating Badge -->
+                    <div class="absolute -bottom-8 -right-8 bg-brand-dark text-white p-8 rounded-full shadow-2xl w-48 h-48 flex flex-col items-center justify-center animate-[spin_20s_linear_infinite] group hover:[animation-play-state:paused] cursor-pointer">
+                        <div class="absolute inset-2 border border-brand-gold/50 rounded-full border-dashed"></div>
+                        <span class="text-3xl font-bold font-serif text-brand-gold group-hover:scale-110 transition-transform">25+</span>
+                        <span class="text-xs uppercase tracking-widest text-center mt-1">Years of<br>Excellence</span>
                     </div>
                 </div>
                 
-                <div class="fade-up delay-100">
-                    <h4 class="text-brand-red font-bold uppercase tracking-widest text-sm mb-2">Tentang Kami</h4>
-                    <h2 class="text-4xl md:text-5xl font-serif font-bold text-brand-dark mb-6">Warisan Rasa Sejak 1998</h2>
-                    <p class="text-gray-600 leading-relaxed mb-6 text-lg">
-                        Berawal dari sebuah kedai kecil di sudut kota Jakarta, RASA kini telah berkembang menjadi destinasi kuliner yang mengutamakan kualitas dan keaslian. Kami percaya bahwa makanan enak tidak perlu rumit, yang penting adalah keseimbangan bumbu dan kesegaran bahan.
+                <div class="GSAP-about-text">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-[2px] bg-brand-red"></div>
+                        <span class="text-brand-red font-bold uppercase tracking-widest text-sm">The Story</span>
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-serif font-bold text-brand-dark mb-6 leading-tight">Mastering the Art of Indonesian Spices.</h2>
+                    <p class="text-brand-dark/70 leading-relaxed mb-6 text-lg font-light">
+                        Founded in 1998, RASA began as a humble kitchen with a grand vision: to elevate authentic local recipes to a fine-dining standard. 
                     </p>
-                    <p class="text-gray-600 leading-relaxed mb-8">
-                        Setiap pagi, tim kami berbelanja langsung ke pasar tradisional untuk memastikan sayuran, daging, dan rempah-rempah terbaik tersaji di piring Anda.
+                    <p class="text-brand-dark/70 leading-relaxed mb-8 text-lg font-light">
+                        We don't just cook food; we craft memories. Our executive chefs handpick the freshest ingredients daily from local farms, ensuring each plate tells a story of tradition, passion, and unparalleled taste.
                     </p>
                     
-                    <div class="grid grid-cols-3 gap-8 text-center border-t border-gray-200 pt-8">
+                    <div class="flex gap-8 border-t border-gray-200 pt-8 mt-8">
                         <div>
-                            <i class="fa-solid fa-seedling text-3xl text-brand-gold mb-2"></i>
-                            <h5 class="font-bold text-sm uppercase">100% Segar</h5>
+                            <h4 class="text-4xl font-serif font-bold text-brand-dark mb-1">100%</h4>
+                            <p class="text-xs font-bold uppercase tracking-wider text-brand-accent">Organic</p>
                         </div>
+                        <div class="w-px bg-gray-200"></div>
                         <div>
-                            <i class="fa-solid fa-award text-3xl text-brand-gold mb-2"></i>
-                            <h5 class="font-bold text-sm uppercase">Award Winning</h5>
+                            <h4 class="text-4xl font-serif font-bold text-brand-dark mb-1">50+</h4>
+                            <p class="text-xs font-bold uppercase tracking-wider text-brand-accent">Menu Items</p>
                         </div>
+                        <div class="w-px bg-gray-200"></div>
                         <div>
-                            <i class="fa-solid fa-heart text-3xl text-brand-gold mb-2"></i>
-                            <h5 class="font-bold text-sm uppercase">Halal</h5>
+                            <h4 class="text-4xl font-serif font-bold text-brand-dark mb-1">3</h4>
+                            <p class="text-xs font-bold uppercase tracking-wider text-brand-accent">Michelin Stars</p>
                         </div>
                     </div>
                 </div>
@@ -177,289 +297,750 @@
         </div>
     </section>
 
-    <!-- 3. MENU HIGHLIGHTS -->
-    <section id="menu" class="py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 fade-up">
-                <span class="text-brand-red font-bold uppercase tracking-widest text-sm">Menu Favorit</span>
-                <h2 class="text-4xl md:text-5xl font-serif font-bold text-brand-dark mt-2">Pilihan Chef Hari Ini</h2>
-                <div class="w-24 h-[3px] bg-brand-gold mx-auto mt-6"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Menu Item 1 -->
-                <div class="group cursor-pointer fade-up">
-                    <div class="zoom-container rounded-t-2xl overflow-hidden h-64 relative bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition-colors">
-                        <i class="fa-solid fa-leaf text-6xl text-green-600 zoom-img group-hover:scale-110 transition-transform duration-500"></i>
-                        <div class="absolute top-4 right-4 bg-brand-red text-white font-bold px-3 py-1 rounded-full shadow-md">Rp 45k</div>
-                    </div>
-                    <div class="bg-brand-cream p-6 rounded-b-2xl border border-t-0 border-gray-100 hover:shadow-xl transition-shadow">
-                        <h3 class="text-2xl font-serif font-bold mb-2 group-hover:text-brand-red transition-colors">Healthy Bowl</h3>
-                        <p class="text-gray-500 text-sm mb-4">Campuran quinoa, alpukat, tomat ceri, dan dressing lemon vinaigrette yang menyegarkan.</p>
-                        <span class="text-xs font-bold uppercase text-brand-dark border-b border-brand-dark pb-1">Pesan Sekarang</span>
-                    </div>
+    <!-- 4. SIGNATURE MENU (SWIPER) -->
+    <section id="menu" class="py-24 bg-brand-light">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 GSAP-fade">
+                <div>
+                    <span class="text-brand-red font-bold uppercase tracking-widest text-sm mb-2 block">Our Masterpieces</span>
+                    <h2 class="text-4xl md:text-5xl font-serif font-bold text-brand-dark">Signature Dishes</h2>
                 </div>
-
-                <!-- Menu Item 2 -->
-                <div class="group cursor-pointer fade-up delay-100">
-                    <div class="zoom-container rounded-t-2xl overflow-hidden h-64 relative bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-colors">
-                        <i class="fa-solid fa-drumstick-bite text-6xl text-brand-red zoom-img group-hover:scale-110 transition-transform duration-500"></i>
-                        <div class="absolute top-4 right-4 bg-brand-red text-white font-bold px-3 py-1 rounded-full shadow-md">Rp 185k</div>
-                    </div>
-                    <div class="bg-brand-cream p-6 rounded-b-2xl border border-t-0 border-gray-100 hover:shadow-xl transition-shadow">
-                        <h3 class="text-2xl font-serif font-bold mb-2 group-hover:text-brand-red transition-colors">Wagyu Steak</h3>
-                        <p class="text-gray-500 text-sm mb-4">Daging Wagyu A5 pilihan dipanggang sempurna dengan saus mushroom dan kentang tumbuk.</p>
-                        <span class="text-xs font-bold uppercase text-brand-dark border-b border-brand-dark pb-1">Pesan Sekarang</span>
-                    </div>
-                </div>
-
-                <!-- Menu Item 3 -->
-                <div class="group cursor-pointer fade-up delay-200">
-                    <div class="zoom-container rounded-t-2xl overflow-hidden h-64 relative bg-yellow-50 flex items-center justify-center group-hover:bg-yellow-100 transition-colors">
-                        <i class="fa-solid fa-wheat-awn text-6xl text-yellow-600 zoom-img group-hover:scale-110 transition-transform duration-500"></i>
-                         <div class="absolute top-4 right-4 bg-brand-red text-white font-bold px-3 py-1 rounded-full shadow-md">Rp 85k</div>
-                    </div>
-                    <div class="bg-brand-cream p-6 rounded-b-2xl border border-t-0 border-gray-100 hover:shadow-xl transition-shadow">
-                        <h3 class="text-2xl font-serif font-bold mb-2 group-hover:text-brand-red transition-colors">Creamy Carbonara</h3>
-                        <p class="text-gray-500 text-sm mb-4">Pasta fettuccine buatan tangan dengan saus krim kental, daging asap, dan keju parmesan.</p>
-                        <span class="text-xs font-bold uppercase text-brand-dark border-b border-brand-dark pb-1">Pesan Sekarang</span>
-                    </div>
+                <div class="mt-6 md:mt-0 flex gap-4">
+                    <button class="swiper-button-prev-custom w-12 h-12 rounded-full border border-brand-dark flex items-center justify-center text-brand-dark hover:bg-brand-dark hover:text-white transition-colors">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <button class="swiper-button-next-custom w-12 h-12 rounded-full bg-brand-dark flex items-center justify-center text-white hover:bg-brand-red transition-colors">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
                 </div>
             </div>
 
-            <div class="mt-16 text-center">
-                <a href="#" class="inline-block px-10 py-4 border-2 border-brand-dark text-brand-dark font-bold uppercase tracking-widest hover:bg-brand-dark hover:text-white transition-all">
-                    Lihat Menu Lengkap
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- 4. SIGNATURE DISH (Featured) -->
-    <section class="py-24 bg-brand-dark text-white relative overflow-hidden">
-        <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div class="order-2 lg:order-1 fade-up">
-                    <span class="text-brand-gold font-bold uppercase tracking-widest text-sm mb-2 block">Signature Dish</span>
-                    <h2 class="text-4xl md:text-6xl font-serif font-bold mb-6">Nasi Goreng <br> <span class="text-brand-red italic">RASA Spesial</span></h2>
-                    <p class="text-gray-400 text-lg leading-relaxed mb-8">
-                        Hidangan ikonik kami yang telah memenangkan hati ribuan pelanggan. Nasi goreng dengan bumbu rahasia warisan keluarga, disajikan dengan sate ayam madura, telur mata sapi, dan kerupuk udang renyah.
-                    </p>
-                    <div class="flex items-center gap-6">
-                        <span class="text-3xl font-bold text-brand-gold">Rp 65.000</span>
-                        <button class="px-8 py-3 bg-white text-brand-dark font-bold rounded-full hover:bg-brand-gold transition-colors">
-                            Coba Sekarang
-                        </button>
+            <!-- Swiper -->
+            <div class="swiper menuSwiper !pb-16 GSAP-fade delay-200">
+                <div class="swiper-wrapper">
+                    
+                    <!-- Slide 1 -->
+                    <div class="swiper-slide">
+                        <div class="bg-white rounded-[2rem] p-4 shadow-xl group hover:-translate-y-2 transition-transform duration-300 border border-gray-100">
+                            <div class="relative rounded-[1.5rem] overflow-hidden aspect-[4/3] mb-6">
+                                <img src="https://images.unsplash.com/photo-1628294895950-9805252327bc?q=80&w=2670&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Nasi Goreng">
+                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full font-bold text-brand-dark">Rp 85k</div>
+                            </div>
+                            <div class="px-4 pb-4">
+                                <div class="flex text-brand-gold text-xs mb-3 gap-1">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                </div>
+                                <h3 class="text-2xl font-serif font-bold text-brand-dark mb-2">Wagyu Nasi Goreng</h3>
+                                <p class="text-brand-dark/60 text-sm mb-6 line-clamp-2">Authentic fried rice topped with seared A5 Wagyu beef, sunny-side-up egg, and our secret heritage sambal.</p>
+                                <button class="w-full py-3 border-2 border-brand-dark rounded-xl font-bold uppercase tracking-wider text-sm hover:bg-brand-dark hover:text-white transition-colors">Order Now</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="order-1 lg:order-2 relative fade-up">
-                    <!-- Rotating decorative element -->
-                    <div class="absolute inset-0 bg-brand-red/20 rounded-full blur-3xl animate-pulse"></div>
-                    <div class="relative z-10 w-full aspect-square rounded-full border-4 border-brand-gold shadow-2xl bg-brand-dark flex items-center justify-center rotate-3 hover:rotate-0 transition-transform duration-700 overflow-hidden group">
-                        <i class="fa-solid fa-fire-burner text-9xl text-brand-red group-hover:scale-110 transition-transform duration-500"></i>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+
+                    <!-- Slide 2 -->
+                    <div class="swiper-slide">
+                        <div class="bg-white rounded-[2rem] p-4 shadow-xl group hover:-translate-y-2 transition-transform duration-300 border border-gray-100">
+                            <div class="relative rounded-[1.5rem] overflow-hidden aspect-[4/3] mb-6">
+                                <img src="https://images.unsplash.com/photo-1559847844-5315695dadae?q=80&w=2658&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Salmon">
+                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full font-bold text-brand-dark">Rp 145k</div>
+                            </div>
+                            <div class="px-4 pb-4">
+                                <div class="flex text-brand-gold text-xs mb-3 gap-1">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                </div>
+                                <h3 class="text-2xl font-serif font-bold text-brand-dark mb-2">Pan-Seared Salmon</h3>
+                                <p class="text-brand-dark/60 text-sm mb-6 line-clamp-2">Norwegian salmon fillet with crisp skin, served over garlic butter asparagus and lemon dill puree.</p>
+                                <button class="w-full py-3 border-2 border-brand-dark rounded-xl font-bold uppercase tracking-wider text-sm hover:bg-brand-dark hover:text-white transition-colors">Order Now</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- 5. GALLERY / INSTAGRAM -->
-    <section id="gallery" class="py-24 bg-brand-cream">
-        <div class="max-w-screen-2xl mx-auto px-4">
-            <div class="text-center mb-12 fade-up">
-                <i class="fa-brands fa-instagram text-3xl text-brand-dark mb-4"></i>
-                <h2 class="text-3xl font-serif font-bold">@RasaCulinary</h2>
-                <p class="text-gray-500 mt-2">Bagikan momen bahagiamu bersama kami</p>
-            </div>
+                    <!-- Slide 3 -->
+                    <div class="swiper-slide">
+                        <div class="bg-white rounded-[2rem] p-4 shadow-xl group hover:-translate-y-2 transition-transform duration-300 border border-gray-100">
+                            <div class="relative rounded-[1.5rem] overflow-hidden aspect-[4/3] mb-6">
+                                <img src="https://images.unsplash.com/photo-1544025162-83507d47ec05?q=80&w=2670&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Dessert">
+                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full font-bold text-brand-dark">Rp 55k</div>
+                            </div>
+                            <div class="px-4 pb-4">
+                                <div class="flex text-brand-gold text-xs mb-3 gap-1">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                                </div>
+                                <h3 class="text-2xl font-serif font-bold text-brand-dark mb-2">Matcha Lava Cake</h3>
+                                <p class="text-brand-dark/60 text-sm mb-6 line-clamp-2">Warm chocolate cake with an oozing premium Kyoto matcha center, served with vanilla bean ice cream.</p>
+                                <button class="w-full py-3 border-2 border-brand-dark rounded-xl font-bold uppercase tracking-wider text-sm hover:bg-brand-dark hover:text-white transition-colors">Order Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 4 -->
+                    <div class="swiper-slide">
+                        <div class="bg-white rounded-[2rem] p-4 shadow-xl group hover:-translate-y-2 transition-transform duration-300 border border-gray-100">
+                            <div class="relative rounded-[1.5rem] overflow-hidden aspect-[4/3] mb-6">
+                                <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=2732&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Sate">
+                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full font-bold text-brand-dark">Rp 75k</div>
+                            </div>
+                            <div class="px-4 pb-4">
+                                <div class="flex text-brand-gold text-xs mb-3 gap-1">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                </div>
+                                <h3 class="text-2xl font-serif font-bold text-brand-dark mb-2">Sate Maranggi Grand</h3>
+                                <p class="text-brand-dark/60 text-sm mb-6 line-clamp-2">Marinated beef skewers grilled over charcoal, served with our signature sweet soy and chili salsa.</p>
+                                <button class="w-full py-3 border-2 border-brand-dark rounded-xl font-bold uppercase tracking-wider text-sm hover:bg-brand-dark hover:text-white transition-colors">Order Now</button>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
-                <div class="group relative overflow-hidden aspect-square fade-up bg-brand-cream border border-orange-100 flex items-center justify-center">
-                    <i class="fa-solid fa-heart text-4xl text-brand-red/20 group-hover:scale-125 transition-transform duration-500"></i>
                 </div>
-                <div class="group relative overflow-hidden aspect-square fade-up delay-75 bg-brand-dark border border-gray-800 flex items-center justify-center">
-                    <i class="fa-solid fa-star text-4xl text-brand-gold/20 group-hover:scale-125 transition-transform duration-500"></i>
-                </div>
-                <div class="group relative overflow-hidden aspect-square fade-up delay-150 bg-brand-red border border-red-700 flex items-center justify-center">
-                    <i class="fa-solid fa-utensils text-4xl text-white/20 group-hover:scale-125 transition-transform duration-500"></i>
-                </div>
-                <div class="group relative overflow-hidden aspect-square fade-up delay-200 bg-brand-gold border border-yellow-500 flex items-center justify-center">
-                    <i class="fa-solid fa-mug-hot text-4xl text-brand-dark/20 group-hover:scale-125 transition-transform duration-500"></i>
-                </div>
+                <!-- Pagination -->
+                <div class="swiper-pagination mt-8"></div>
             </div>
         </div>
     </section>
 
-    <!-- 6. TESTIMONIALS -->
-    <section class="py-24 bg-white border-t border-gray-100">
-        <div class="max-w-4xl mx-auto px-4 text-center fade-up">
-            <div class="text-brand-gold text-2xl mb-6">
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
+    <!-- 5. PROMO COUNTDOWN (NEW) -->
+    <section class="py-20 relative bg-brand-dark overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+        <div class="absolute right-0 top-0 w-1/2 h-full bg-brand-red skew-x-12 translate-x-32 hidden lg:block opacity-90"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+            <div class="lg:w-1/2 text-white GSAP-fade">
+                <span class="inline-block px-3 py-1 bg-brand-gold text-brand-dark font-bold text-xs uppercase tracking-widest rounded-full mb-4">Limited Offer</span>
+                <h2 class="text-4xl md:text-5xl font-serif font-bold mb-4">Weekend Fine-Dining <br> Tasting Menu</h2>
+                <p class="text-brand-light/70 mb-8 max-w-md">Experience our exclusive 7-course tasting menu curated by Chef Haris. Available only this weekend.</p>
+                
+                <!-- Countdown -->
+                <div class="flex gap-4">
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 min-w-[80px] text-center border border-white/20">
+                        <div class="text-3xl font-bold font-serif" id="cd-days">02</div>
+                        <div class="text-xs uppercase tracking-widest text-brand-gold mt-1">Days</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 min-w-[80px] text-center border border-white/20">
+                        <div class="text-3xl font-bold font-serif" id="cd-hours">14</div>
+                        <div class="text-xs uppercase tracking-widest text-brand-gold mt-1">Hours</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 min-w-[80px] text-center border border-white/20">
+                        <div class="text-3xl font-bold font-serif" id="cd-mins">45</div>
+                        <div class="text-xs uppercase tracking-widest text-brand-gold mt-1">Mins</div>
+                    </div>
+                    <div class="bg-brand-red rounded-xl p-4 min-w-[80px] text-center shadow-lg shadow-brand-red/50">
+                        <div class="text-3xl font-bold font-serif" id="cd-secs">30</div>
+                        <div class="text-xs uppercase tracking-widest text-white mt-1">Secs</div>
+                    </div>
+                </div>
             </div>
-            <h3 class="text-2xl md:text-4xl font-serif italic leading-relaxed text-brand-dark mb-8">
-                "Tempat terbaik untuk menikmati masakan Indonesia dengan sentuhan modern. Pelayanannya ramah dan suasananya sangat homey."
-            </h3>
-            <div class="flex items-center justify-center gap-4">
-                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="w-12 h-12 rounded-full border-2 border-brand-red">
-                <div class="text-left">
-                    <p class="font-bold text-sm uppercase tracking-widest">Siti Rahmawati</p>
-                    <p class="text-xs text-gray-500">Food Blogger</p>
+            
+            <div class="lg:w-1/3 text-center GSAP-fade delay-200">
+                <div class="bg-white p-8 rounded-3xl shadow-2xl relative">
+                    <div class="absolute -top-6 -right-6 w-20 h-20 bg-brand-gold rounded-full flex items-center justify-center text-brand-dark font-bold flex-col shadow-lg transform rotate-12">
+                        <span class="text-sm">Save</span>
+                        <span class="text-xl leading-none">30%</span>
+                    </div>
+                    <h3 class="text-2xl font-serif text-brand-dark font-bold mb-2">Tasting Menu</h3>
+                    <div class="text-brand-dark/50 line-through mb-1">Rp 1.500.000</div>
+                    <div class="text-4xl font-bold text-brand-red mb-6">Rp 1.050.000<span class="text-sm text-brand-dark/50 font-normal">/pax</span></div>
+                    <a href="#reservation" class="block w-full py-4 bg-brand-dark text-white font-bold uppercase tracking-widest rounded-xl hover:bg-brand-red transition-colors">Claim Offer</a>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- 6. GALLERY (MASONRY GRID) -->
+    <section id="gallery" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 GSAP-fade">
+                <i class="fa-brands fa-instagram text-4xl text-brand-accent mb-4"></i>
+                <h2 class="text-4xl font-serif font-bold text-brand-dark">@rasa_culinary</h2>
+                <p class="text-brand-dark/60 mt-2">Tag us to be featured on our wall of fame</p>
+            </div>
+
+            <!-- Masonry Grid -->
+            <div class="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+                <!-- Image 1 -->
+                <div class="break-inside-avoid group relative rounded-2xl overflow-hidden cursor-pointer min-h-[200px]" onclick="openLightbox('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2670&auto=format&fit=crop')">
+                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600&auto=format&fit=crop" class="w-full object-cover group-hover:scale-110 transition-transform duration-500" alt="Gallery">
+                    <div class="absolute inset-0 bg-brand-red/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <i class="fa-solid fa-expand text-white text-3xl"></i>
+                    </div>
+                </div>
+                <!-- Image 2 -->
+                <div class="break-inside-avoid group relative rounded-2xl overflow-hidden cursor-pointer min-h-[250px]" onclick="openLightbox('https://images.unsplash.com/photo-1473093295043-cdd812d0e608?q=80&w=2670&auto=format&fit=crop')">
+                    <img src="https://images.unsplash.com/photo-1473093295043-cdd812d0e608?q=80&w=600&auto=format&fit=crop" class="w-full object-cover group-hover:scale-110 transition-transform duration-500" alt="Gallery">
+                    <div class="absolute inset-0 bg-brand-dark/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <i class="fa-solid fa-expand text-white text-3xl"></i>
+                    </div>
+                </div>
+                <!-- Image 3 (Tall) -->
+                <div class="break-inside-avoid group relative rounded-2xl overflow-hidden cursor-pointer" onclick="openLightbox('https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2670&auto=format&fit=crop')">
+                    <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=600&auto=format&fit=crop" class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500" alt="Gallery">
+                    <div class="absolute inset-0 bg-brand-gold/90 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white p-6 text-center">
+                        <i class="fa-solid fa-quote-left text-4xl mb-4 opacity-50"></i>
+                         <p class="font-serif italic text-lg">"Best dining experience in town. Period."</p>
+                    </div>
+                </div>
+                <!-- Image 4 -->
+                <div class="break-inside-avoid group relative rounded-2xl overflow-hidden cursor-pointer min-h-[220px]" onclick="openLightbox('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2670&auto=format&fit=crop')">
+                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=600&auto=format&fit=crop" class="w-full object-cover group-hover:scale-110 transition-transform duration-500" alt="Gallery">
+                    <div class="absolute inset-0 bg-brand-accent/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <i class="fa-solid fa-expand text-white text-3xl"></i>
+                    </div>
+                </div>
+                 <!-- Image 5 -->
+                 <div class="break-inside-avoid group relative rounded-2xl overflow-hidden cursor-pointer min-h-[180px]" onclick="openLightbox('https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=2670&auto=format&fit=crop')">
+                    <img src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=600&auto=format&fit=crop" class="w-full object-cover group-hover:scale-110 transition-transform duration-500" alt="Gallery">
+                    <div class="absolute inset-0 bg-brand-dark/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <i class="fa-solid fa-expand text-white text-3xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <button class="px-8 py-3 rounded-full border-2 border-brand-dark font-bold text-sm uppercase tracking-widest hover:bg-brand-dark hover:text-white transition-colors">Load More</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox Overlay -->
+    <div id="lightbox" class="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center opacity-0 pointer-events-none backdrop-blur-md">
+        <button onclick="closeLightbox()" class="absolute top-6 right-6 text-white hover:text-brand-red text-4xl transition-colors">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <img id="lightbox-img" src="" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl scale-95 transition-transform duration-300" alt="Enlarged View">
+    </div>
 
     <!-- 7. RESERVATION FORM -->
-    <section id="reservation" class="py-24 bg-brand-dark relative">
-        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/food.png')] opacity-5"></div>
-        <div class="max-w-4xl mx-auto px-4 relative z-10">
-            <div class="bg-white p-8 md:p-12 rounded-xl shadow-2xl fade-up">
-                <div class="text-center mb-10">
-                    <span class="text-brand-red font-bold uppercase tracking-widest text-sm">Booking Online</span>
-                    <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-dark">Reservasi Meja</h2>
-                    <p class="text-gray-500 mt-2">Pastikan ketersediaan tempat untuk momen spesial Anda.</p>
+    <section id="reservation" class="py-24 bg-brand-light relative">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="bg-white rounded-[3rem] shadow-2xl overflow-hidden flex flex-col md:flex-row GSAP-fade">
+                <!-- Image Side -->
+                <div class="md:w-5/12 bg-brand-dark relative hidden md:block">
+                    <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2670&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-60" alt="Bar">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/50 to-transparent"></div>
+                    <div class="absolute bottom-12 left-10 right-10 text-white">
+                        <i class="fa-solid fa-glass-cheers text-4xl text-brand-gold mb-4"></i>
+                        <h3 class="text-3xl font-serif font-bold mb-2">Private Dining</h3>
+                        <p class="text-white/70 text-sm">Elevate your special occasions with our exclusive private dining rooms. Contact us directly for groups larger than 10.</p>
+                    </div>
                 </div>
 
-                <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-gray-500 mb-2">Nama</label>
-                        <input type="text" class="w-full bg-gray-50 border border-gray-200 p-3 rounded focus:outline-none focus:border-brand-red" placeholder="Nama Lengkap">
+                <!-- Form Side -->
+                <div class="md:w-7/12 p-10 lg:p-16 relative">
+                    <div id="form-success" class="absolute inset-0 bg-white z-10 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 text-center px-10">
+                        <div class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center text-4xl mb-6">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <h3 class="text-3xl font-serif font-bold text-brand-dark mb-2">Reservation Confirmed!</h3>
+                        <p class="text-gray-500">We've sent the details to your email. We look forward to serving you.</p>
+                        <button onclick="resetForm()" class="mt-8 px-8 py-3 bg-brand-dark text-white rounded-full font-bold uppercase tracking-widest text-sm hover:bg-brand-red transition-colors">Book Another</button>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-gray-500 mb-2">Nomor HP</label>
-                        <input type="tel" class="w-full bg-gray-50 border border-gray-200 p-3 rounded focus:outline-none focus:border-brand-red" placeholder="0812...">
+
+                    <div class="mb-8 block">
+                        <span class="text-brand-red font-bold uppercase tracking-widest text-xs mb-2 block">Book a Table</span>
+                        <h2 class="text-4xl font-serif font-bold text-brand-dark">Make a Reservation</h2>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-gray-500 mb-2">Tanggal</label>
-                        <input type="date" class="w-full bg-gray-50 border border-gray-200 p-3 rounded focus:outline-none focus:border-brand-red">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-gray-500 mb-2">Jumlah Orang</label>
-                        <select class="w-full bg-gray-50 border border-gray-200 p-3 rounded focus:outline-none focus:border-brand-red">
-                            <option>2 Orang</option>
-                            <option>4 Orang</option>
-                            <option>6+ Orang</option>
-                        </select>
-                    </div>
-                    <div class="md:col-span-2">
-                         <label class="block text-xs font-bold uppercase text-gray-500 mb-2">Pesan Khusus</label>
-                        <textarea rows="3" class="w-full bg-gray-50 border border-gray-200 p-3 rounded focus:outline-none focus:border-brand-red" placeholder="Ulang tahun, alergi, dll..."></textarea>
-                    </div>
-                    <div class="md:col-span-2 text-center mt-4">
-                        <button type="button" class="w-full md:w-auto px-12 py-4 bg-brand-red text-white font-bold uppercase tracking-widest hover:bg-red-700 transition-colors rounded-lg shadow-lg">
-                            Konfirmasi Booking
-                        </button>
-                    </div>
-                </form>
+
+                    <form id="booking-form" onsubmit="submitForm(event)">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Name -->
+                            <div class="relative">
+                                <label class="block text-[10px] font-bold uppercase tracking-widest text-brand-dark/50 mb-1">Full Name</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <input type="text" required class="w-full bg-brand-light/50 border border-gray-200 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red transition-colors text-sm" placeholder="John Doe">
+                                </div>
+                            </div>
+                            <!-- Phone -->
+                            <div class="relative">
+                                <label class="block text-[10px] font-bold uppercase tracking-widest text-brand-dark/50 mb-1">Phone Number</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <input type="tel" required class="w-full bg-brand-light/50 border border-gray-200 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red transition-colors text-sm" placeholder="+62 812 3456">
+                                </div>
+                            </div>
+                            <!-- Date -->
+                            <div class="relative">
+                                <label class="block text-[10px] font-bold uppercase tracking-widest text-brand-dark/50 mb-1">Date</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-calendar-alt absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <input type="date" required class="w-full bg-brand-light/50 border border-gray-200 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red transition-colors text-sm" style="color-scheme: light;">
+                                </div>
+                            </div>
+                            <!-- Guests -->
+                            <div class="relative">
+                                <label class="block text-[10px] font-bold uppercase tracking-widest text-brand-dark/50 mb-1">Guests</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-users absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <select required class="w-full bg-brand-light/50 border border-gray-200 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red transition-colors text-sm appearance-none">
+                                        <option value="" disabled selected>Select people</option>
+                                        <option value="2">2 People (Date)</option>
+                                        <option value="4">4 People (Family)</option>
+                                        <option value="6">6+ People (Party)</option>
+                                    </select>
+                                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <button type="submit" id="submit-btn" class="w-full py-4 bg-brand-red text-white font-bold uppercase tracking-widest rounded-xl hover:bg-red-700 transition-colors shadow-lg shadow-brand-red/30 flex items-center justify-center gap-2">
+                                <span>Confirm Booking</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="bg-brand-dark text-white pt-20 pb-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16 text-center md:text-left">
+    <footer class="bg-brand-dark text-white pt-24 pb-8 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/food.png')]"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                 <!-- Brand -->
-                <div>
-                    <div class="flex items-center justify-center md:justify-start gap-2 mb-6">
-                        <i class="fa-solid fa-utensils text-brand-red text-2xl"></i>
-                        <span class="text-2xl font-serif font-bold tracking-wider">RASA.</span>
-                    </div>
-                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
-                        Restoran RASA menghadirkan kekayaan kuliner Indonesia dengan standar internasional. Rasa otentik, suasana modern.
+                <div class="md:col-span-2">
+                    <a href="#" class="flex items-center gap-2 mb-6">
+                        <div class="w-10 h-10 bg-brand-red rounded-full flex items-center justify-center text-white">
+                            <i class="fa-solid fa-fire text-lg"></i>
+                        </div>
+                        <span class="text-3xl font-serif font-bold tracking-tight text-white">RASA.</span>
+                    </a>
+                    <p class="text-white/60 text-sm leading-relaxed mb-8 max-w-sm">
+                        Elevating Indonesian dining experiences through exceptional culinary techniques and premium local ingredients since 1998.
                     </p>
-                    <div class="flex justify-center md:justify-start gap-4">
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-red transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-red transition-colors"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-red transition-colors"><i class="fa-brands fa-tiktok"></i></a>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-brand-red hover:border-brand-red transition-all"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-brand-red hover:border-brand-red transition-all"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-brand-red hover:border-brand-red transition-all"><i class="fa-brands fa-youtube"></i></a>
                     </div>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-widest text-brand-gold mb-6">Quick Links</h4>
+                    <ul class="space-y-4 text-white/60 text-sm">
+                        <li><a href="#about" class="hover:text-white transition-colors">Our Story</a></li>
+                        <li><a href="#menu" class="hover:text-white transition-colors">Full Menu</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Private Dining</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Gift Cards</a></li>
+                    </ul>
                 </div>
 
                 <!-- Contact -->
                 <div>
-                    <h4 class="text-lg font-serif font-bold mb-6 text-brand-gold">Hubungi Kami</h4>
-                    <ul class="space-y-4 text-gray-400 text-sm">
-                        <li class="flex flex-col md:flex-row items-center md:items-start gap-3">
+                    <h4 class="text-sm font-bold uppercase tracking-widest text-brand-gold mb-6">Visit Us</h4>
+                    <ul class="space-y-4 text-white/60 text-sm">
+                        <li class="flex items-start gap-3">
                             <i class="fa-solid fa-location-dot mt-1 text-brand-red"></i>
-                            <span>Jl. Senopati No. 45<br>Jakarta Selatan, 12190</span>
+                            <span>123 Senopati Raya<br>Jakarta Selatan, 12190</span>
                         </li>
-                        <li class="flex flex-col md:flex-row items-center md:items-start gap-3">
-                            <i class="fa-solid fa-phone mt-1 text-brand-red"></i>
-                            <span>+62 21 5555 1234</span>
+                        <li class="flex items-center gap-3">
+                            <i class="fa-solid fa-phone text-brand-red"></i>
+                            <a href="tel:+62215551234" class="hover:text-white transition-colors">+62 21 555 1234</a>
                         </li>
-                        <li class="flex flex-col md:flex-row items-center md:items-start gap-3">
-                            <i class="fa-solid fa-envelope mt-1 text-brand-red"></i>
-                            <span>hello@rasaculinary.id</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Hours -->
-                <div>
-                    <h4 class="text-lg font-serif font-bold mb-6 text-brand-gold">Jam Buka</h4>
-                    <ul class="space-y-2 text-gray-400 text-sm">
-                        <li class="flex justify-between max-w-xs mx-auto md:mx-0 border-b border-gray-800 pb-2">
-                            <span>Senin - Jumat</span>
-                            <span>10:00 - 22:00</span>
-                        </li>
-                        <li class="flex justify-between max-w-xs mx-auto md:mx-0 border-b border-gray-800 pb-2">
-                            <span>Sabtu - Minggu</span>
-                            <span>09:00 - 23:00</span>
+                        <li class="flex items-center gap-3">
+                            <i class="fa-solid fa-envelope text-brand-red"></i>
+                            <a href="mailto:hello@rasa.com" class="hover:text-white transition-colors">hello@rasa.com</a>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="border-t border-gray-800 pt-8 text-center text-xs text-gray-500">
-                <p>&copy; 2024 RASA Culinary. All rights reserved.</p>
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-white/40">
+                <p>&copy; 2026 RASA Culinary. All rights reserved.</p>
+                <div class="flex gap-4 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
             </div>
         </div>
     </footer>
 
+    <!-- Back to Hub Bubble -->
+    <a href="../../index.html" class="fixed bottom-6 right-6 w-14 h-14 bg-brand-dark text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 hover:-translate-y-1 transition-all z-[9999] border-2 border-brand-gold group">
+        <i class="fa-solid fa-layer-group text-xl group-hover:text-brand-gold transition-colors"></i>
+    </a>
+
+    <!-- SCRIPTS -->
+    <!-- 1. Lenis Smooth Scroll -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <!-- 2. GSAP Core & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- 3. Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
     <script>
-        // Intersection Observer for Animations
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1
-        };
-
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.fade-up').forEach(el => {
-            observer.observe(el);
+        // --- 1. Init Lenis Smooth Scroll ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
         });
 
-        // Navbar Scroll Effect
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('shadow-md');
-                navbar.classList.add('py-2');
-                navbar.classList.remove('py-4');
-            } else {
-                navbar.classList.remove('shadow-md');
-                navbar.classList.remove('py-2');
-                navbar.classList.add('py-4');
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // --- 2. GSAP Animations ---
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Sync Lenis with ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+        gsap.ticker.lagSmoothing(0, 0);
+
+        // Hero Parallax
+        gsap.to('.hero-bg', {
+            yPercent: 30,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '#home',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true
             }
         });
+
+        // Entrance Animations Reveal
+        gsap.fromTo('.GSAP-reveal', 
+            { y: 50, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1, stagger: 0.2, ease: "power3.out", delay: 0.2 }
+        );
+
+        // Text Reveal (Hero)
+        gsap.fromTo('.GSAP-reveal-text',
+            { clipPath: 'polygon(0 150%, 100% 150%, 100% 150%, 0% 150%)', y: 50 },
+            { clipPath: 'polygon(0 -50%, 100% -50%, 100% 150%, 0% 150%)', y: 0, duration: 1.5, ease: "expo.out" }
+        );
+
+        // Scroll Indicator
+        gsap.fromTo('.GSAP-scroll-indicator', 
+            { yPercent: -100 },
+            { yPercent: 100, duration: 2, ease: "power2.inOut", repeat: -1 }
+        );
+
+        // Bento Grid Stagger
+        gsap.from('.GSAP-bento > div', {
+            scrollTrigger: {
+                trigger: '.GSAP-bento',
+                start: 'top 80%'
+            },
+            y: 50,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: 'power2.out'
+        });
+
+        // About Image Parallax
+        gsap.to('#parallax-img', {
+            y: 30,
+            scrollTrigger: {
+                trigger: '.GSAP-about-img',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true
+            }
+        });
+
+        // Fade Up Elements
+        gsap.utils.toArray('.GSAP-fade').forEach(el => {
+            gsap.from(el, {
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 85%',
+                },
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+        });
+
+        // --- 3. Navbar Active States & Scroll Progress ---
+        const navbar = document.getElementById('navbar');
+        const scrollProgress = document.getElementById('scroll-progress');
+        window.addEventListener('scroll', () => {
+            // Navbar shrink
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-2', 'shadow-sm');
+                navbar.classList.remove('py-4', 'bg-white/80', 'border-white/20');
+                navbar.classList.add('bg-white/95', 'border-gray-200');
+            } else {
+                navbar.classList.remove('py-2', 'shadow-sm', 'bg-white/95', 'border-gray-200');
+                navbar.classList.add('py-4', 'bg-white/80', 'border-white/20');
+            }
+            // Scroll progress bar
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / docHeight) * 100;
+            scrollProgress.style.width = progress + '%';
+        });
+
+        // --- 4. Swiper Initialization ---
+        const swiper = new Swiper('.menuSwiper', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            loop: true,
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next-custom',
+                prevEl: '.swiper-button-prev-custom',
+            },
+            breakpoints: {
+                640: { slidesPerView: 2, spaceBetween: 20 },
+                1024: { slidesPerView: 3, spaceBetween: 30 },
+            }
+        });
+
+        // --- 5. Countdown Timer ---
+        function startCountdown() {
+            // Set for +2 days from now
+            let countDownDate = new Date().getTime() + (2 * 24 * 60 * 60 * 1000) + (14 * 60 * 60 * 1000);
+
+            const x = setInterval(function() {
+                let now = new Date().getTime();
+                let distance = countDownDate - now;
+
+                let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("cd-days").innerHTML = days.toString().padStart(2, '0');
+                document.getElementById("cd-hours").innerHTML = hours.toString().padStart(2, '0');
+                document.getElementById("cd-mins").innerHTML = minutes.toString().padStart(2, '0');
+                document.getElementById("cd-secs").innerHTML = seconds.toString().padStart(2, '0');
+
+                if (distance < 0) {
+                    clearInterval(x);
+                    document.getElementById("cd-days").innerHTML = "00";
+                }
+            }, 1000);
+        }
+        startCountdown();
+
+        // --- 6. Lightbox Logic ---
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+
+        window.openLightbox = function(src) {
+            lightboxImg.src = src;
+            lightbox.classList.add('active');
+            lightboxImg.classList.remove('scale-95');
+            lightboxImg.classList.add('scale-100');
+            lenis.stop(); // Stop scrolling when lightbox is open
+        }
+
+        window.closeLightbox = function() {
+            lightbox.classList.remove('active');
+            lightboxImg.classList.remove('scale-100');
+            lightboxImg.classList.add('scale-95');
+            lenis.start(); // Resume scrolling
+        }
+
+        // Close on background click
+        lightbox.addEventListener('click', (e) => {
+            if(e.target === lightbox) closeLightbox();
+        });
+
+        // --- 7. Form Submission Simualtion ---
+        window.submitForm = function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const originalContent = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                document.getElementById('booking-form').reset();
+                document.getElementById('form-success').classList.remove('opacity-0', 'pointer-events-none');
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }, 1500);
+        }
+
+        window.resetForm = function() {
+            document.getElementById('form-success').classList.add('opacity-0', 'pointer-events-none');
+        }
     </script>
-            <!-- Back to Hub Bubble -->
-    <a href="../../index.html" class="fixed bottom-6 right-6 w-14 h-14 bg-white text-[#d4af37] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 hover:-translate-y-1 transition-all z-[9999] border-2 border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.4)] group">
-        <i class="fa-solid fa-house text-xl group-hover:text-yellow-600 transition-colors"></i>
+    <!-- Copy Source Code Button (Culinary Style) -->
+    <button onclick="copySourceCode(this)" class="fixed bottom-28 right-8 z-[9999] group flex items-center justify-center p-4 bg-white border-2 border-brand-dark rounded-full shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all active:scale-95">
+        <div class="flex items-center gap-3 font-bold uppercase tracking-widest text-xs text-brand-dark">
+            <i class="fa-regular fa-copy text-brand-red"></i>
+            <span>Salin Resep</span>
+        </div>
+    </button>
+
+    <!-- Ultra-Premium Culinary Back Button (The Cloche & Velvet Banner) -->
+    <a href="../../index.html" class="fixed bottom-8 right-8 z-[9999] group flex flex-row-reverse items-center justify-start h-16 w-16 hover:w-[280px] transition-all duration-[700ms] ease-[cubic-bezier(0.25,1,0.25,1)] drop-shadow-[0_10px_15px_rgba(29,53,87,0.2)] hover:drop-shadow-[0_15px_25px_rgba(230,57,70,0.4)]" aria-label="Beranda">
+        
+        <!-- The Plate (Always visible, acts as the handle) -->
+        <div class="w-16 h-16 shrink-0 bg-brand-light rounded-full flex items-center justify-center border-[3px] border-white relative z-20 shadow-[0_5px_15px_rgba(0,0,0,0.15)] overflow-hidden">
+            <!-- Inner Gold Rim -->
+            <div class="absolute inset-1 border border-brand-gold/80 rounded-full transition-transform duration-[1000ms] ease-in-out group-hover:rotate-[180deg] border-dashed"></div>
+            
+            <!-- Icon 1: The Cloche (Tutup Saji - Lifts up) -->
+            <i class="fa-solid fa-bell-concierge text-brand-dark text-[22px] absolute transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-10 group-hover:opacity-0 group-hover:scale-75"></i>
+            
+            <!-- Icon 2: The Cutlery (Slides up & reveals) -->
+            <i class="fa-solid fa-utensils text-brand-red text-[22px] absolute translate-y-10 opacity-0 scale-75 transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0 group-hover:opacity-100 group-hover:scale-100"></i>
+        </div>
+
+        <!-- The Velvet Menu Banner (Hidden underneath, slides out to the left) -->
+        <div class="h-[52px] flex-grow bg-brand-dark group-hover:bg-brand-red border-y border-l border-brand-gold/40 flex items-center justify-start relative z-10 overflow-hidden rounded-l-full transition-colors duration-[700ms] shadow-inner -mr-8">
+            
+            <!-- Texture overlay for premium feel -->
+            <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')] pointer-events-none mix-blend-overlay"></div>
+            
+            <!-- Fixed Width Content Container so text never squishes -->
+            <div class="w-[240px] shrink-0 h-full flex flex-col items-start justify-center pl-10">
+                <!-- Staggered sliding text reveal -->
+                <span class="font-sans text-[7.5px] text-brand-gold uppercase tracking-[0.3em] font-black mb-[2px] transform translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-[500ms] delay-[150ms]">
+                    DISH FINISHED
+                </span>
+                <span class="font-serif italic text-[15px] text-white font-bold tracking-[0.15em] drop-shadow-lg transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-[500ms] delay-[250ms]">
+                    WANT BACK
+                </span>
+            </div>
+            
+        </div>
     </a>
+
+    <script>
+        // --- 0. Auto Image Placeholder ---
+        function handleImageError(img) {
+            const alt = (img.alt || '').toLowerCase();
+            const parent = img.parentElement;
+            
+            // Determine icon & theme based on alt text
+            let icon = 'fa-solid fa-image';
+            let label = 'Image';
+            let theme = 'ph-food';
+            
+            if (alt.includes('restaurant') || alt.includes('background')) {
+                icon = 'fa-solid fa-utensils'; label = 'Restaurant'; theme = 'ph-hero';
+            } else if (alt.includes('chef') || alt.includes('cooking')) {
+                icon = 'fa-solid fa-hat-chef'; label = 'Chef'; theme = 'ph-chef';
+                if (!document.querySelector('.fa-hat-chef')) icon = 'fa-solid fa-fire-burner';
+            } else if (alt.includes('main') || alt.includes('nasi') || alt.includes('sate') || alt.includes('salmon')) {
+                icon = 'fa-solid fa-plate-wheat'; label = alt.charAt(0).toUpperCase() + alt.slice(1); theme = 'ph-food';
+            } else if (alt.includes('starter')) {
+                icon = 'fa-solid fa-bowl-food'; label = 'Starters'; theme = 'ph-drink';
+            } else if (alt.includes('dessert')) {
+                icon = 'fa-solid fa-ice-cream'; label = 'Desserts'; theme = 'ph-dessert';
+            } else if (alt.includes('bar') || alt.includes('drink') || alt.includes('cocktail')) {
+                icon = 'fa-solid fa-champagne-glasses'; label = 'Bar'; theme = 'ph-drink';
+            } else if (alt.includes('gallery')) {
+                icon = 'fa-solid fa-camera-retro'; label = 'Gallery'; theme = 'ph-place';
+            } else if (alt.includes('place') || alt.includes('interior')) {
+                icon = 'fa-solid fa-store'; label = 'Ambience'; theme = 'ph-place';
+            }
+            
+            // Create placeholder div
+            const placeholder = document.createElement('div');
+            placeholder.className = 'img-placeholder ' + theme;
+            placeholder.innerHTML = '<i class="' + icon + '"></i><span>' + label + '</span>';
+            
+            // Copy sizing classes from img
+            const imgClasses = img.className.split(' ');
+            imgClasses.forEach(cls => {
+                if (cls && !cls.includes('hover') && !cls.includes('group') && !cls.includes('transition')) {
+                    placeholder.classList.add(cls);
+                }
+            });
+            
+            // Ensure it fills the container
+            placeholder.style.width = '100%';
+            placeholder.style.height = '100%';
+            if (parent && getComputedStyle(parent).position !== 'static') {
+                placeholder.style.position = 'absolute';
+                placeholder.style.inset = '0';
+            }
+            
+            img.replaceWith(placeholder);
+        }
+        
+        // Attach onerror to all images on page
+        document.querySelectorAll('img').forEach(img => {
+            img.onerror = function() { handleImageError(this); };
+            // If image already failed before JS loaded
+            if (img.complete && img.naturalWidth === 0 && img.src) {
+                handleImageError(img);
+            }
+        });
+        
+        // Mobile Menu Logic
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const icon = mobileBtn ? mobileBtn.querySelector('i') : null;
+
+        if (mobileBtn && mobileMenu) {
+            function toggleMenu() {
+                const isOpen = !mobileMenu.classList.contains('hidden');
+                if (isOpen) {
+                    mobileMenu.classList.remove('opacity-100');
+                    mobileMenu.classList.add('opacity-0');
+                    icon.classList.remove('fa-xmark');
+                    icon.classList.add('fa-bars-staggered');
+                    setTimeout(() => {
+                        mobileMenu.classList.add('hidden');
+                        mobileMenu.classList.remove('flex');
+                    }, 300);
+                } else {
+                    mobileMenu.classList.remove('hidden');
+                    mobileMenu.classList.add('flex');
+                    icon.classList.remove('fa-bars-staggered');
+                    icon.classList.add('fa-xmark');
+                    void mobileMenu.offsetWidth;
+                    mobileMenu.classList.remove('opacity-0');
+                    mobileMenu.classList.add('opacity-100');
+                }
+            }
+            mobileBtn.addEventListener('click', toggleMenu);
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.addEventListener('click', toggleMenu);
+            });
+        }
+
+        // Global Copy Script
+        window.copySourceCode = function(btn) {
+            const htmlContent = document.documentElement.outerHTML;
+            navigator.clipboard.writeText(htmlContent).then(() => {
+                const originalContent = btn.innerHTML;
+                
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3 font-bold uppercase tracking-widest text-xs text-green-500">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Grabbed!</span>
+                    </div>
+                `;
+                btn.classList.add('border-green-500');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.remove('border-green-500');
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>
-
-

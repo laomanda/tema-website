@@ -71,17 +71,21 @@
             inset: 0;
             z-index: -1;
             background: 
-                radial-gradient(circle at 15% 50%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 85% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+                radial-gradient(ellipse 80% 50% at 15% 40%, rgba(212, 175, 55, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 85% 20%, rgba(255, 255, 255, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse 70% 60% at 50% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 60%);
             filter: blur(60px);
         }
 
-        /* Glassmorphism Card */
-        .theme-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* Glassmorphism Card Premium */
+        .theme-card-premium {
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .theme-card-premium:hover {
+            transform: translateY(-12px);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 1), 0 0 40px rgba(212, 175, 55, 0.05);
         }
 
         .theme-card:hover {
@@ -93,6 +97,82 @@
 
         .theme-card:hover .theme-preview {
             transform: scale(1.05);
+        }
+
+        /* Bento Grid Premium Refinements */
+        .bento-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 180px;
+            gap: 1.5rem;
+        }
+
+        .bento-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.4s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .bento-card.large { grid-column: span 2; grid-row: span 2; }
+        .bento-card.tall { grid-column: span 1; grid-row: span 2; }
+        .bento-card.wide { grid-column: span 2; grid-row: span 1; }
+        .bento-card.standard { grid-column: span 1; grid-row: span 1; }
+
+        .bento-card::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(212, 175, 55, 0.15), transparent 40%);
+            z-index: -1;
+            border-radius: inherit;
+        }
+
+        .bento-card:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .bento-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(212, 175, 55, 0.08), transparent 50%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .bento-card:hover .bento-glow { opacity: 1; }
+
+        .metric-value {
+            font-size: 6rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            background: linear-gradient(to bottom, #fff 20%, rgba(255,255,255,0.1));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .bento-container {
+                grid-template-columns: repeat(2, 1fr);
+                grid-auto-rows: auto;
+            }
+            .bento-card.large, .bento-card.tall, .bento-card.wide { grid-column: span 2; grid-row: span 1; }
+        }
+        @media (max-width: 640px) {
+            .bento-container { grid-template-columns: 1fr; }
+            .bento-card { grid-column: span 1 !important; }
         }
 
         /* Custom Scrollbar */
@@ -110,54 +190,7 @@
             background: #d4af37;
         }
 
-        /* Realistic Theme Specific Previews (CSS Mini Layouts) */
-        /* Modern: Dark Dashboard Style */
-        .preview-modern { background: #111; position: relative; }
-        .preview-modern::before { content: ''; position: absolute; top: 10px; left: 10px; right: 10px; height: 30px; background: rgba(255,255,255,0.05); border-radius: 6px; }
-        .preview-modern::after { content: ''; position: absolute; top: 50px; left: 10px; width: 40px; height: 100px; background: rgba(59, 130, 246, 0.4); border-radius: 6px; }
-        
-        /* Minimalist: White, Clean, Architecture */
-        .preview-minimalist { background: #ffffff; position: relative; border: 1px solid #eee;}
-        .preview-minimalist::before { content: ''; position: absolute; top: 20px; left: 20px; width: 30px; height: 4px; background: #000; }
-        .preview-minimalist::after { content: ''; position: absolute; bottom: 20px; right: 20px; width: 80px; height: 80px; background: #f0f0f0; }
 
-        /* Monochrome: High Contrast B&W */
-        .preview-monochrome { background: #000; position: relative; }
-        .preview-monochrome::before { content: ''; position: absolute; top: 0; left: 30%; width: 40%; height: 100%; background: #fff; }
-        .preview-monochrome::after { content: ''; position: absolute; top: 40%; left: 10%; width: 80%; height: 2px; background: #888; }
-
-        /* Neo-Brutalism: Bold borders, yellow/black */
-        .preview-neobrutalism { background: #ffd500; position: relative; border: 4px solid #000; }
-        .preview-neobrutalism::before { content: ''; position: absolute; top: 10px; left: 10px; width: 50px; height: 50px; background: #ff4757; border: 3px solid #000; border-radius: 50%; box-shadow: 4px 4px 0 #000; }
-        .preview-neobrutalism::after { content: ''; position: absolute; bottom: 10px; right: 10px; width: 80px; height: 30px; background: #00e5ff; border: 3px solid #000; box-shadow: 4px 4px 0 #000; }
-
-        /* Cyberpunk: Neon, Glitch */
-        .preview-cyberpunk { background: #050505; position: relative; border-left: 4px solid #fcee0a; overflow: hidden; }
-        .preview-cyberpunk::before { content: 'SYSTEM ERROR'; position: absolute; top: 30%; left: 5px; color: #ff003c; font-family: monospace; font-size: 10px; letter-spacing: 2px; text-shadow: 2px 0 #00f0ff; }
-        .preview-cyberpunk::after { content: ''; position: absolute; bottom: 10px; right: 10px; width: 40px; height: 40px; border: 2px solid #00f0ff; border-radius: 50%; border-top-color: transparent; animation: spin 2s linear infinite; }
-
-        /* Anime: Pink/Purple Gradient, Speed lines */
-        .preview-anime { background: linear-gradient(135deg, #ff0080, #7928ca); position: relative; }
-        .preview-anime::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 12px); }
-        .preview-anime::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; backdrop-filter: blur(4px); border: 2px solid rgba(255,255,255,0.5); }
-
-        /* Kartun: Dot pattern, bright colors */
-        .preview-kartun { background: #00e5ff; position: relative; border: 4px solid #000; background-image: radial-gradient(#000 15%, transparent 16%); background-size: 10px 10px; }
-        .preview-kartun::before { content: ''; position: absolute; bottom: -10px; right: 20px; width: 60px; height: 80px; background: #ff4757; border: 4px solid #000; border-radius: 30px 30px 0 0; }
-        
-        /* Makanan: Warm colors, soft shapes */
-        .preview-makanan { background: #fff5e6; position: relative; }
-        .preview-makanan::before { content: ''; position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: #ff6b81; border-radius: 50%; }
-        .preview-makanan::after { content: ''; position: absolute; bottom: 20px; left: 20px; width: 60px; height: 10px; background: #ffa502; border-radius: 10px; }
-
-        /* Immersive: Dark 3D Space */
-        .preview-immersive { background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%); position: relative; perspective: 100px; }
-        .preview-immersive::before { content: ''; position: absolute; inset: 20px; background: linear-gradient(to top, rgba(0, 255, 255, 0.2), transparent); transform: rotateX(60deg); border: 1px solid rgba(0,255,255,0.3); }
-
-        /* Retro: Vaporwave Sun and Grid */
-        .preview-retro { background: linear-gradient(to bottom, #110022 0%, #3a005c 50%, #ff00cc 100%); position: relative; overflow: hidden; }
-        .preview-retro::before { content: ''; position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); width: 80px; height: 80px; background: linear-gradient(to bottom, #ffeb3b, #ff0055); border-radius: 50%; box-shadow: 0 0 20px #ff0055; }
-        .preview-retro::after { content: ''; position: absolute; bottom: 0; left: -50%; width: 200%; height: 30%; background: repeating-linear-gradient(0deg, #00f0ff, #00f0ff 1px, transparent 1px, transparent 10px); transform: perspective(200px) rotateX(60deg); }
 
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
@@ -182,19 +215,21 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative pt-40 pb-20 px-6 min-h-screen flex flex-col justify-center items-center text-center">
-        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 leading-tight max-w-5xl mx-auto">
-            Build Faster With <br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-brand-gold to-yellow-600 animate-gradient-x">
-                Beautiful Blocks.
-            </span>
-        </h1>
+    <section class="relative pt-40 pb-20 px-6 min-h-screen flex flex-col justify-center items-center text-center overflow-hidden bg-brand-black">
+        <div id="light-rays-bg" class="absolute inset-0 z-0 pointer-events-none opacity-100"></div>
+        <div class="relative z-10 w-full flex flex-col items-center">
+            <h1 id="hero-title" class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 leading-tight max-w-5xl mx-auto opacity-0">
+                Build Faster With <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-brand-gold to-yellow-600 animate-gradient-x">
+                    Beautiful Blocks.
+                </span>
+            </h1>
         
-        <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-light">
+        <p id="hero-desc" class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-light opacity-0">
             A curated collection of highly aesthetic, purely static HTML/Tailwind themes. No complex setups, just copy, paste, and ship.
         </p>
 
-        <div class="flex flex-col sm:flex-row gap-4">
+        <div id="hero-cta" class="flex flex-col sm:flex-row gap-4 opacity-0">
             <a href="#collection" class="px-8 py-4 rounded-xl bg-gradient-to-r from-brand-gold to-yellow-600 text-black font-bold hover:brightness-110 transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)] flex items-center justify-center gap-2">
                 Explore Themes <i class="fa-solid fa-arrow-down text-sm"></i>
             </a>
@@ -202,29 +237,231 @@
                 <i class="fa-solid fa-code"></i> View Documentation
             </a>
         </div>
+        </div>
+    </section>
+
+    <!-- Why Statis? (Ultra-Premium Section) -->
+    <section id="features" class="py-40 px-6 relative z-10 bg-brand-black">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8">
+                <div class="max-w-3xl">
+                    <span class="inline-block px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-brand-gold text-xs font-black uppercase tracking-[0.2em] mb-8">The Philosophy</span>
+                    <h2 class="text-5xl md:text-8xl font-black tracking-tight leading-[0.9] mb-8">
+                        The End of <br> <span class="text-brand-gold italic">Generic Layouts.</span>
+                    </h2>
+                </div>
+                <div class="text-gray-500 max-w-sm text-lg font-light leading-relaxed border-l border-brand-gold/20 pl-8">
+                    Statis represents a fundamental shift in web architecture. Pure performance meets high-craft aesthetics.
+                </div>
+            </div>
+
+            <div class="bento-container">
+                <!-- SPEED: Large Flagship -->
+                <div class="bento-card large group flex flex-col justify-between" data-tilt>
+                    <div class="bento-glow"></div>
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 rounded-2xl bg-brand-gold flex items-center justify-center text-black mb-10 shadow-[0_0_30px_rgba(212,175,55,0.4)]">
+                            <i class="fa-solid fa-bolt text-2xl"></i>
+                        </div>
+                        <h3 class="text-4xl font-bold mb-4 tracking-tighter">Raw Speed.</h3>
+                        <p class="text-gray-400 text-lg leading-relaxed font-light">
+                            We don't do bloat. Every line of code is optimized for instant first-contentful paint. No hydration delays, ever.
+                        </p>
+                    </div>
+                    <div class="mt-8 flex items-center gap-6 relative z-10">
+                        <span class="metric-value">100</span>
+                        <div class="h-12 w-[2px] bg-white/10"></div>
+                        <div class="text-sm font-bold tracking-widest uppercase text-white/40">Performance <br> Lighthouse</div>
+                    </div>
+                </div>
+
+                <!-- RESPONSIVE: Tall -->
+                <div class="bento-card tall flex flex-col justify-between group" data-tilt>
+                    <div class="bento-glow"></div>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                            <i class="fa-solid fa-expand text-xl text-blue-400"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4">Fluid Geometry.</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">
+                            Meticulously tuned for 24-inch monitors down to small-frame mobiles.
+                        </p>
+                    </div>
+                    <div class="relative h-40 flex items-center justify-center">
+                        <div class="w-24 h-40 border-2 border-white/5 rounded-2xl absolute transition-transform group-hover:scale-110"></div>
+                        <div class="w-32 h-20 border-2 border-brand-gold/30 rounded-lg bg-brand-black shadow-2xl transition-transform group-hover:translate-x-4"></div>
+                    </div>
+                </div>
+
+                <!-- ZERO CONFIG: Wide -->
+                <div class="bento-card wide flex items-center gap-10 group" data-tilt>
+                    <div class="bento-glow"></div>
+                    <div class="relative z-10 w-1/2">
+                        <h3 class="text-2xl font-bold mb-3">Copy. Ship. Done.</h3>
+                        <p class="text-gray-500 text-sm">Portable architectural blocks. Zero runtime dependencies.</p>
+                    </div>
+                    <div class="relative z-10 w-1/2 bg-black/40 rounded-2xl p-6 border border-white/5 font-mono text-xs overflow-hidden group-hover:border-brand-gold/30 transition-colors">
+                        <div class="text-green-400/60">$ git push prod</div>
+                        <div class="text-gray-600 mt-2">Deploying to edge...</div>
+                        <div class="absolute -right-4 -bottom-4 opacity-5 transform rotate-12 transition-transform group-hover:rotate-0 group-hover:opacity-20">
+                            <i class="fa-solid fa-rocket text-8xl text-brand-gold"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AESTHETIC: Standard -->
+                <div class="bento-card standard group flex flex-col justify-center items-center text-center" data-tilt>
+                    <div class="bento-glow"></div>
+                    <div class="text-3xl font-black tracking-tighter text-white mb-2">WOW</div>
+                    <div class="text-[10px] uppercase tracking-[0.3em] text-brand-gold font-black opacity-50">Effect</div>
+                </div>
+
+                <!-- BLOCKS: Standard -->
+                <div class="bento-card standard group flex flex-col justify-center items-center text-center" data-tilt>
+                    <div class="bento-glow"></div>
+                    <div class="text-4xl font-bold text-white mb-1 tracking-tighter">50+</div>
+                    <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Premium Blocks</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Start Building (Premium Quick Start) -->
+    <section class="py-40 px-6 relative z-10 bg-brand-black overflow-hidden">
+        <!-- Subtle Background Glow -->
+        <div class="absolute top-1/2 left-0 w-[600px] h-[600px] bg-brand-gold/5 rounded-full blur-[150px] -translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="flex flex-col lg:flex-row items-center gap-20">
+                <!-- Left: Interactive Timeline -->
+                <div class="lg:w-5/12 relative">
+                    <h2 class="text-4xl md:text-6xl font-black tracking-tighter mb-16 leading-none">
+                        Ship in <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-yellow-600">Minutes.</span>
+                    </h2>
+                    
+                    <!-- Vertical Line -->
+                    <div class="absolute left-[23px] top-[140px] bottom-6 w-[2px] bg-gradient-to-b from-brand-gold/50 via-white/10 to-transparent z-0"></div>
+
+                    <div class="space-y-12 relative z-10">
+                        <!-- Step 1 -->
+                        <div class="flex gap-8 group cursor-default">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-brand-black border-2 border-brand-gold text-brand-gold flex items-center justify-center font-black text-lg shadow-[0_0_20px_rgba(212,175,55,0.4)] group-hover:scale-110 transition-transform">
+                                1
+                            </div>
+                            <div class="pt-2 group-hover:translate-x-2 transition-transform">
+                                <h4 class="text-2xl font-bold mb-2 text-white/90 group-hover:text-brand-gold transition-colors">Select a Theme</h4>
+                                <p class="text-gray-500 font-light leading-relaxed">Browse our gallery of elite, handcrafted architectural templates designed for modern web apps.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="flex gap-8 group cursor-default">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-brand-black border-2 border-white/20 text-white/50 group-hover:border-brand-gold group-hover:text-brand-gold flex items-center justify-center font-black text-lg transition-all group-hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] group-hover:scale-110">
+                                2
+                            </div>
+                            <div class="pt-2 group-hover:translate-x-2 transition-transform">
+                                <h4 class="text-2xl font-bold mb-2 text-white/90 group-hover:text-white transition-colors">Live Preview</h4>
+                                <p class="text-gray-500 font-light leading-relaxed">Interact with high-fidelity live demos that faithfully represent the final production code.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="flex gap-8 group cursor-default">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-brand-black border-2 border-white/20 text-white/50 group-hover:border-brand-gold group-hover:text-brand-gold flex items-center justify-center font-black text-lg transition-all group-hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] group-hover:scale-110">
+                                3
+                            </div>
+                            <div class="pt-2 group-hover:translate-x-2 transition-transform">
+                                <h4 class="text-2xl font-bold mb-2 text-white/90 group-hover:text-white transition-colors">Copy & Ship</h4>
+                                <p class="text-gray-500 font-light leading-relaxed">Grab the exact markup. Paste into your local environment. You're effectively live.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: High-End IDE Mockup -->
+                <div class="lg:w-7/12 w-full perspective-2000">
+                    <div class="relative group transform-gpu hover:rotate-y-[-5deg] transition-transform duration-700 ease-out" style="transform-style: preserve-3d;">
+                        <!-- Underglow -->
+                        <div class="absolute -inset-2 bg-gradient-to-r from-brand-gold/20 via-blue-500/10 to-purple-500/20 rounded-[2.5rem] blur-2xl opacity-50 group-hover:opacity-100 transition duration-700"></div>
+                        
+                        <!-- IDE Window -->
+                        <div class="relative bg-[#0d0d0d]/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden">
+                            
+                            <!-- Header -->
+                            <div class="flex items-center px-4 py-3 border-b border-white/5 bg-white/[0.02]">
+                                <div class="flex gap-2 w-1/3">
+                                    <div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+                                    <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+                                    <div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+                                </div>
+                                <div class="w-1/3 text-center flex items-center justify-center gap-2 text-xs text-gray-400 font-mono">
+                                    <i class="fa-brands fa-html5 text-orange-500"></i> index.html
+                                </div>
+                                <div class="w-1/3"></div>
+                            </div>
+                            
+                            <!-- Code Content -->
+                            <div class="p-6 md:p-8 font-mono text-[13px] md:text-sm leading-loose overflow-x-auto">
+                                <div class="flex">
+                                    <!-- Line Numbers -->
+                                    <div class="flex flex-col text-gray-600 select-none pr-6 text-right border-r border-white/5 mr-6 font-normal">
+                                        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span>
+                                    </div>
+                                    <!-- Code -->
+                                    <div class="text-gray-300">
+                                        <p><span class="text-[#56b6c2]">&lt;section</span> <span class="text-[#c678dd]">class</span>=<span class="text-[#98c379]">"relative min-h-screen bg-black"</span><span class="text-[#56b6c2]">&gt;</span></p>
+                                        <p class="pl-8 text-gray-500 italic mt-1">&lt;!-- Elite Hero Component --&gt;</p>
+                                        <p class="pl-8 mt-1"><span class="text-[#56b6c2]">&lt;div</span> <span class="text-[#c678dd]">class</span>=<span class="text-[#98c379]">"absolute inset-0 z-0 opacity-50"</span><span class="text-[#56b6c2]">&gt;&lt;/div&gt;</span></p>
+                                        <p class="pl-8 mt-1"><span class="text-[#56b6c2]">&lt;h1</span> <span class="text-[#c678dd]">class</span>=<span class="text-[#98c379]">"text-6xl font-black text-white"</span><span class="text-[#56b6c2]">&gt;</span></p>
+                                        <p class="pl-16 text-[#e5c07b] font-bold">Ship Faster.</p>
+                                        <p class="pl-8"><span class="text-[#56b6c2]">&lt;/h1&gt;</span></p>
+                                        <p class="pl-8 mt-1"><span class="text-[#56b6c2]">&lt;button</span> <span class="text-[#c678dd]">class</span>=<span class="text-[#98c379]">"bg-brand-gold text-black px-6 py-2"</span><span class="text-[#56b6c2]">&gt;</span>Start<span class="text-[#56b6c2]">&lt;/button&gt;</span></p>
+                                        <p><span class="text-[#56b6c2]">&lt;/section&gt;</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Floating Copy Button -->
+                            <div class="absolute bottom-6 right-6 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+                                <button onclick="copyHeroCode(this)" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-md transition-all duration-300">
+                                    <i class="fa-regular fa-copy"></i>
+                                    <span class="text-sm">Copy Code</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Theme Gallery -->
-    <section id="collection" class="py-24 px-6 relative z-10 border-t border-white/5 bg-brand-dark">
-        <div class="max-w-7xl mx-auto">
+    <section id="collection" class="py-32 px-6 relative z-10 bg-brand-black overflow-hidden">
+        <!-- Subtle Background Glow -->
+        <div class="absolute bottom-0 right-0 w-[800px] h-[800px] bg-brand-gold/5 rounded-full blur-[200px] translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto relative z-10">
             
-            <div class="flex items-end justify-between mb-16">
+            <div class="flex flex-col md:flex-row items-start md:items-end justify-between mb-20 gap-8">
                 <div>
-                    <h2 class="text-3xl font-bold tracking-tight mb-2">The Collection</h2>
-                    <p class="text-gray-500">Select a theme to view the live demo.</p>
+                    <span class="inline-block px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-brand-gold text-xs font-black uppercase tracking-[0.2em] mb-4">The Gallery</span>
+                    <h2 class="text-4xl md:text-6xl font-black tracking-tight leading-none mb-4">
+                        Curated <span class="text-brand-gold italic">Excellence.</span>
+                    </h2>
+                    <p class="text-gray-500 text-lg max-w-md font-light">Meticulously crafted base themes designed to kickstart your next ambitious project.</p>
                 </div>
-                <div class="hidden md:flex gap-2" id="filter-buttons">
-                    <button onclick="filterThemes('all')" class="filter-btn active px-3 py-1 text-xs font-semibold bg-white/10 rounded-full border border-white/5 transition-colors">All</button>
-                    <button onclick="filterThemes('clean')" class="filter-btn px-3 py-1 text-xs font-semibold text-gray-400 hover:text-white rounded-full transition-colors">Clean</button>
-                    <button onclick="filterThemes('creative')" class="filter-btn px-3 py-1 text-xs font-semibold text-gray-400 hover:text-white rounded-full transition-colors">Creative</button>
+                
+                <!-- Premium Filter Buttons -->
+                <div class="flex flex-wrap gap-3 p-1.5 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md" id="filter-buttons">
+                    <button onclick="filterThemes('all')" class="filter-btn active px-6 py-2.5 text-sm font-bold bg-white text-black rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all">All</button>
+                    <button onclick="filterThemes('clean')" class="filter-btn px-6 py-2.5 text-sm font-semibold text-gray-400 hover:text-white rounded-full transition-all">Clean</button>
+                    <button onclick="filterThemes('creative')" class="filter-btn px-6 py-2.5 text-sm font-semibold text-gray-400 hover:text-white rounded-full transition-all">Creative</button>
                 </div>
             </div>
 
             <!-- Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="theme-grid">
-                
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10" id="theme-grid">
                 <!-- Cards will be injected by JS -->
-
             </div>
         </div>
     </section>
@@ -236,16 +473,17 @@
 
     <script>
         const themes = [
-            { id: 'modern', name: 'Modern', desc: 'Sleek gradients, glassmorphism, and analytics dashboard style.', icon: 'fa-chart-pie', cssClass: 'preview-modern', category: 'clean' },
-            { id: 'minimalist', name: 'Minimalist', desc: 'Ultra-clean, whitespace-heavy layout for architecture & design.', icon: 'fa-pen-nib', cssClass: 'preview-minimalist', category: 'clean' },
-            { id: 'monochrome', name: 'Monochrome', desc: 'High-contrast, black and white aesthetic for striking portfolios.', icon: 'fa-chess-board', cssClass: 'preview-monochrome', category: 'clean' },
-            { id: 'neo-brutalism', name: 'Neo-Brutalism', desc: 'Bold outlines, flat colors, and playful geometry.', icon: 'fa-shapes', cssClass: 'preview-neobrutalism', category: 'creative' },
-            { id: 'cyberpunk', name: 'Cyberpunk', desc: 'Neon lights, glitch effects, and futuristic UI.', icon: 'fa-microchip', cssClass: 'preview-cyberpunk', category: 'creative' },
-            { id: 'anime', name: 'Anime', desc: 'Vibrant pop-culture aesthetics with manga elements.', icon: 'fa-bolt', cssClass: 'preview-anime', category: 'creative' },
-            { id: 'kartun', name: 'Kartun', desc: 'Fun, colorful superhero comic book style.', icon: 'fa-mask', cssClass: 'preview-kartun', category: 'creative' },
-            { id: 'makanan', name: 'Makanan', desc: 'Warm palettes and appetizing layouts for culinary.', icon: 'fa-utensils', cssClass: 'preview-makanan', category: 'clean' },
-            { id: 'immersive', name: 'Immersive', desc: 'Deep, dark 3D-like experiences and WebGL aesthetics.', icon: 'fa-vr-cardboard', cssClass: 'preview-immersive', category: 'creative' },
-            { id: 'retro', name: 'Retro 80s', desc: 'Synthwave sunsets, neon grids, and nostalgic vibes.', icon: 'fa-gamepad', cssClass: 'preview-retro', category: 'creative' },
+            { id: 'modern', name: 'Modern', desc: 'Sleek gradients, glassmorphism, and analytics dashboard style.', icon: 'fa-chart-pie', category: 'clean', previewHTML: `<div class="absolute inset-0 bg-slate-900 overflow-hidden flex flex-col p-4 gap-3"><div class="w-full flex justify-between items-center"><div class="w-16 h-3 bg-blue-500/20 rounded-full"></div><div class="w-6 h-6 rounded-full bg-slate-800"></div></div><div class="flex gap-3 h-full"><div class="w-1/3 h-full bg-white/5 backdrop-blur-md rounded-xl border border-white/10 flex flex-col p-2 gap-2"><div class="w-full h-2 bg-slate-700/50 rounded-full"></div><div class="w-3/4 h-2 bg-slate-700/50 rounded-full"></div></div><div class="flex-grow h-full bg-blue-500/10 backdrop-blur-md rounded-xl border border-blue-500/20 relative overflow-hidden"><div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-transparent"></div></div></div></div>` },
+            { id: 'minimalist', name: 'Minimalist', desc: 'Ultra-clean, whitespace-heavy layout for architecture & design.', icon: 'fa-pen-nib', category: 'clean', previewHTML: `<div class="absolute inset-0 bg-zinc-50 flex overflow-hidden"><div class="w-1/2 p-4 flex flex-col justify-center h-full"><div class="w-8 h-1 bg-black mb-4"></div><div class="w-3/4 h-2 bg-zinc-200 mb-2"></div><div class="w-1/2 h-2 bg-zinc-200"></div></div><div class="w-1/2 h-full bg-zinc-100 relative border-l border-zinc-200"><div class="absolute top-4 right-4 text-[8px] font-sans tracking-widest text-zinc-400 uppercase">Gallery</div></div></div>` },
+            { id: 'monochrome', name: 'Monochrome', desc: 'High-contrast, black and white aesthetic for striking portfolios.', icon: 'fa-chess-board', category: 'clean', previewHTML: `<div class="absolute inset-0 bg-white grid grid-cols-2 grid-rows-2"><div class="border-b-2 border-r-2 border-black flex items-center justify-center p-2"><div class="text-4xl font-black text-black leading-none">A</div></div><div class="bg-black text-white flex items-end p-2 border-b-2 border-black"><div class="w-full h-1 bg-white/30"></div></div><div class="border-r-2 border-black flex items-end justify-start p-2"><div class="text-[10px] font-bold text-black uppercase tracking-widest">Noir</div></div><div class="bg-white flex flex-col justify-center items-center gap-1 p-2"><div class="w-full h-4 bg-black"></div><div class="w-4/5 h-4 bg-black"></div></div></div>` },
+            { id: 'neo-brutalism', name: 'Neo-Brutalism', desc: 'Bold outlines, flat colors, and playful geometry.', icon: 'fa-shapes', category: 'creative', previewHTML: `<div class="absolute inset-0 bg-[#ffd500] p-4 flex flex-col gap-3"><div class="w-full h-8 border-4 border-black bg-white flex items-center px-2"><div class="w-1/3 h-2 bg-black"></div></div><div class="flex gap-3 h-full"><div class="w-1/2 h-full border-4 border-black bg-[#ff4757] shadow-[4px_4px_0_0_#000]"></div><div class="w-1/2 h-full border-4 border-black bg-[#00e5ff] shadow-[4px_4px_0_0_#000] flex flex-col justify-end p-2"><div class="w-full h-2 bg-black mb-1"></div></div></div></div>` },
+            { id: 'cyberpunk', name: 'Cyberpunk', desc: 'Neon lights, glitch effects, and futuristic UI.', icon: 'fa-microchip', category: 'creative', previewHTML: `<div class="absolute inset-0 bg-[#09090b] border-l-4 border-[#fcee0a] p-4 relative overflow-hidden"><div class="absolute inset-0 bg-[linear-gradient(rgba(0,255,100,0.03)_1px,transparent_1px)] bg-[size:100%_4px]"></div><div class="text-[#ff003c] font-mono text-[9px] tracking-widest uppercase mb-2 animate-pulse drop-shadow-[0_0_5px_#ff003c]">sys.alert</div><div class="w-full h-10 border border-[#00f0ff] bg-[#00f0ff]/10 relative mt-4"><div class="absolute top-0 left-0 w-2 h-2 bg-[#00f0ff]"></div><div class="absolute bottom-0 right-0 w-2 h-2 bg-[#00f0ff]"></div></div></div>` },
+            { id: 'anime', name: 'Anime', desc: 'Vibrant pop-culture aesthetics with manga elements.', icon: 'fa-bolt', category: 'creative', previewHTML: `<div class="absolute inset-0 bg-gray-900 border-4 border-white overflow-hidden p-3 flex flex-col justify-between" style="background-image: repeating-linear-gradient(45deg, #FF008020 0, #FF008020 2px, transparent 2px, transparent 10px);"><div class="bg-white px-2 py-1 self-start font-black italic text-[#FF0080] text-[10px] tracking-widest uppercase shadow-[4px_4px_0_0_#00DFD8] border-2 border-black transform -skew-x-12"><span class="block skew-x-12">Manga</span></div><div class="bg-white px-2 py-1 self-end font-black italic text-black text-[10px] tracking-widest uppercase shadow-[4px_4px_0_0_#FF0080] border-2 border-black transform -skew-x-12"><span class="block skew-x-12">Panel</span></div></div>` },
+            { id: 'kartun', name: 'Kartun', desc: 'Fun, colorful superhero comic book style.', icon: 'fa-mask', category: 'creative', previewHTML: `<div class="absolute inset-0 bg-[#00e5ff] overflow-hidden border-4 border-black" style="background-image: radial-gradient(#000 15%, transparent 16%); background-size: 8px 8px;"><div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#ff4757] border-4 border-black flex items-center justify-center p-2 rounded-[30%_70%_70%_30%/30%_30%_70%_70%] shadow-[4px_4px_0_0_#000] z-10"><span class="font-black text-white text-sm uppercase drop-shadow-[2px_2px_0_#000]">POW!</span></div></div>` },
+            { id: 'makanan', name: 'Makanan', desc: 'Warm palettes and appetizing layouts for culinary.', icon: 'fa-utensils', category: 'clean', previewHTML: `<div class="absolute inset-0 bg-[#F1FAEE] p-4 flex flex-col items-center justify-center relative overflow-hidden"><div class="absolute top-0 right-0 w-24 h-24 bg-[#E63946] opacity-10 rounded-bl-full"></div><div class="absolute bottom-0 left-0 w-20 h-20 bg-[#F4A261] opacity-10 rounded-tr-full"></div><div class="w-16 h-16 rounded-full border border-gray-200 bg-white flex flex-col items-center justify-center shadow-lg relative z-10"><i class="fa-solid fa-bell-concierge text-lg text-[#1D3557]"></i><div class="w-6 h-[1px] bg-[#F4A261] mt-1"></div></div><div class="mt-3 font-serif text-[#1D3557] font-bold text-[8px] tracking-[0.2em] uppercase">Fine Dining</div></div>` },
+            { id: 'immersive', name: 'Immersive', desc: 'Deep, dark 3D-like experiences and WebGL aesthetics.', icon: 'fa-vr-cardboard', category: 'creative', previewHTML: `<div class="absolute inset-0 bg-black flex items-center justify-center overflow-hidden"><div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-30 mix-blend-screen"></div><div class="w-full h-[1px] bg-[#00f3ff]/30 absolute top-1/2 shadow-[0_0_15px_#00f3ff]"></div><div class="w-[1px] h-full bg-[#00f3ff]/30 absolute left-1/2 shadow-[0_0_15px_#00f3ff]"></div><div class="w-20 h-20 bg-black/50 backdrop-blur-md border border-[#00f3ff]/50 rounded-lg transform rotate-12 shadow-[0_0_30px_rgba(0,243,255,0.3)] flex items-center justify-center relative z-10"><div class="w-10 h-10 rounded-full border border-[#bc13fe]/70 border-dashed animate-[spin_4s_linear_infinite]"></div></div></div>` },
+            { id: 'retro', name: 'Retro 80s', desc: 'Synthwave sunsets, neon grids, and nostalgic vibes.', icon: 'fa-gamepad', category: 'creative', previewHTML: `<div class="absolute inset-0 bg-[#008080] p-3 flex items-center justify-center"><div class="w-full h-full max-h-32 bg-[#c0c0c0] shadow-[inset_1px_1px_#dfdfdf,inset_-1px_-1px_#000000,inset_2px_2px_#ffffff,inset_-2px_-2px_#808080] p-[2px] flex flex-col"><div class="bg-[#000080] px-1 py-[2px] flex justify-between items-center text-white h-4"><span class="font-mono text-[6px] font-bold">Retro.exe</span><div class="flex gap-[1px]"><div class="w-2 h-2 bg-[#c0c0c0] shadow-[inset_1px_1px_#fff,inset_-1px_-1px_#000]"></div></div></div><div class="flex-grow bg-white m-1 border border-[#808080] flex items-center justify-center relative overflow-hidden"><div class="absolute inset-0 bg-gradient-to-b from-[#3a005c] to-[#ff00cc] opacity-80"></div><div class="font-mono text-white text-[8px] z-10 drop-shadow-[1px_1px_0_#ff0055]">WIN_95</div></div></div></div>` },
+            { id: 'coming-soon', name: 'Coming Soon', desc: 'More unique themes and high-performance blocks are currently in development.', icon: 'fa-hourglass-half', category: 'all', status: 'upcoming', previewHTML: `<div class="absolute inset-0 bg-neutral-900 flex items-center justify-center overflow-hidden"><div class="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px]"></div><div class="relative"><div class="w-16 h-16 rounded-full border-2 border-dashed border-neutral-700 animate-[spin_10s_linear_infinite]"></div><i class="fa-solid fa-plus absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral-500 text-xl"></i></div></div>` },
         ];
 
         const grid = document.getElementById('theme-grid');
@@ -256,25 +494,63 @@
             const filteredThemes = filter === 'all' ? themes : themes.filter(t => t.category === filter);
 
             filteredThemes.forEach((theme, index) => {
-                const card = document.createElement('a');
-                card.href = `theme/${theme.id}/index.html`;
-                card.className = 'theme-card block rounded-2xl overflow-hidden group';
-                // Entrance animation
-                gsap.fromTo(card, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, delay: index * 0.05, ease: "power2.out" });
+                const isUpcoming = theme.status === 'upcoming';
+                const card = document.createElement(isUpcoming ? 'div' : 'a');
+                if (!isUpcoming) card.href = `theme/${theme.id}/index.html`;
+                
+                // Add premium styling classes
+                card.className = `theme-card-premium block rounded-[2rem] bg-[#0d0d0d] border border-white/5 overflow-hidden group relative ${isUpcoming ? 'cursor-default opacity-60' : ''}`;
+                
+                // Entrance animation with ScrollTrigger
+                gsap.fromTo(card, 
+                    { opacity: 0, y: 40, scale: 0.95 }, 
+                    { 
+                        opacity: 1, 
+                        y: 0, 
+                        scale: 1,
+                        duration: 0.8, 
+                        delay: index * 0.1, 
+                        ease: "expo.out",
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top 85%",
+                        }
+                    }
+                );
 
                 card.innerHTML = `
-                    <div class="h-48 w-full relative overflow-hidden ${theme.cssClass}">
-                        <!-- Hover Overlay with Icon -->
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 backdrop-blur-sm transition-all duration-300 z-10">
-                            <i class="fa-solid ${theme.icon} text-4xl text-white drop-shadow-2xl transform scale-50 group-hover:scale-100 transition-transform duration-300 delay-100"></i>
+                    <!-- Ambient Glow Effect -->
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                    
+                    <div class="h-56 w-full relative overflow-hidden bg-brand-black border-b border-white/5">
+                        <!-- Precise Theme Preview Structure -->
+                        <div class="absolute inset-0 z-0 transition-transform duration-1000 ease-out group-hover:scale-110">
+                            ${theme.previewHTML}
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
                         </div>
+                        
+                        <!-- Premium Hover Overlay -->
+                        <div class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 bg-brand-black/80 backdrop-blur-md transition-all duration-500 z-10">
+                            <div class="w-16 h-16 rounded-full bg-brand-gold flex items-center justify-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100 shadow-[0_0_30px_rgba(212,175,55,0.4)]">
+                                <i class="fa-solid ${theme.icon} text-2xl text-black"></i>
+                            </div>
+                            <span class="mt-4 text-white font-bold tracking-widest uppercase text-xs transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-150">${isUpcoming ? 'In Development' : 'Launch Demo'}</span>
+                        </div>
+                        
+                        <!-- Category Badge -->
+                        ${!isUpcoming ? `
+                        <div class="absolute top-4 left-4 z-20 px-3 py-1.5 rounded-full bg-brand-black/80 backdrop-blur-md border border-white/10 text-[10px] font-bold text-white uppercase tracking-widest opacity-100 group-hover:opacity-0 transition-opacity duration-300">
+                            ${theme.category}
+                        </div>
+                        ` : ''}
                     </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold tracking-tight">${theme.name}</h3>
-                            <i class="fa-solid fa-arrow-right -rotate-45 text-gray-500 group-hover:text-white group-hover:rotate-0 transition-all duration-300"></i>
+                    
+                    <div class="p-8 relative z-20">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold tracking-tighter text-white group-hover:text-brand-gold transition-colors duration-300">${theme.name}</h3>
+                            <i class="fa-solid ${isUpcoming ? 'fa-clock' : 'fa-arrow-right -rotate-45'} ${isUpcoming ? 'text-gray-600' : 'text-gray-400'} group-hover:text-brand-gold group-hover:rotate-0 transition-all duration-500 bg-white/5 w-10 h-10 rounded-full flex items-center justify-center"></i>
                         </div>
-                        <p class="text-sm text-gray-400 line-clamp-2">${theme.desc}</p>
+                        <p class="text-gray-500 leading-relaxed font-light">${theme.desc}</p>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -285,10 +561,10 @@
         function filterThemes(category) {
             // Update Buttons
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                if (btn.innerText.toLowerCase() === category) {
-                    btn.className = "filter-btn active px-3 py-1 text-xs font-semibold bg-white/10 rounded-full border border-white/5 transition-colors";
+                if (btn.innerText.toLowerCase() === category || (category === 'all' && btn.innerText === 'All')) {
+                    btn.className = "filter-btn active px-6 py-2.5 text-sm font-bold bg-white text-black rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all";
                 } else {
-                    btn.className = "filter-btn px-3 py-1 text-xs font-semibold text-gray-400 hover:text-white rounded-full transition-colors";
+                    btn.className = "filter-btn px-6 py-2.5 text-sm font-semibold text-gray-400 hover:text-white rounded-full transition-all";
                 }
             });
 
@@ -303,11 +579,318 @@
         // GSAP Animations
         gsap.registerPlugin(ScrollTrigger);
 
-        gsap.to("h1", { opacity: 1, y: 0, duration: 1, delay: 0.2, ease: "power3.out", startAt: { opacity: 0, y: 30 } });
-        gsap.to("p.text-xl", { opacity: 1, y: 0, duration: 1, delay: 0.4, ease: "power3.out", startAt: { opacity: 0, y: 20 } });
-        gsap.to(".flex-col.sm\\:flex-row", { opacity: 1, y: 0, duration: 1, delay: 0.6, ease: "power3.out", startAt: { opacity: 0, y: 20 } });
+        // Copy Code Functionality
+        function copyHeroCode(buttonElement) {
+            const componentCode = `<section class="relative min-h-screen bg-black">
+    <!-- Elite Hero Component -->
+    <div class="absolute inset-0 z-0 opacity-50"></div>
+    <h1 class="text-6xl font-black text-white">
+        Ship Faster.
+    </h1>
+    <button class="bg-brand-gold text-black px-6 py-2">Start</button>
+</section>`;
+
+            navigator.clipboard.writeText(componentCode).then(() => {
+                const originalHTML = buttonElement.innerHTML;
+                
+                // Visual feedback: Change to success state
+                buttonElement.innerHTML = `<i class="fa-solid fa-check"></i><span class="text-sm">Copied!</span>`;
+                buttonElement.classList.remove('bg-white/10', 'hover:bg-white/20', 'border-white/20', 'text-white');
+                buttonElement.classList.add('bg-green-500/20', 'border-green-500/50', 'text-green-400', 'scale-95');
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalHTML;
+                    buttonElement.classList.remove('bg-green-500/20', 'border-green-500/50', 'text-green-400', 'scale-95');
+                    buttonElement.classList.add('bg-white/10', 'hover:bg-white/20', 'border-white/20', 'text-white');
+                }, 2000);
+            });
+        }
+
+        gsap.to("#hero-title", { opacity: 1, y: 0, duration: 1, delay: 0.2, ease: "power3.out" });
+        gsap.to("#hero-desc", { opacity: 1, y: 0, duration: 1, delay: 0.4, ease: "power3.out" });
+        gsap.to("#hero-cta", { opacity: 1, y: 0, duration: 1, delay: 0.6, ease: "power3.out" });
+
+        // Bento Cards Effects
+        document.querySelectorAll('.bento-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+
+                // 3D Tilt Logic
+                if (card.hasAttribute('data-tilt')) {
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = (y - centerY) / 15;
+                    const rotateY = (centerX - x) / 15;
+                    gsap.to(card, {
+                        rotateX: rotateX,
+                        rotateY: rotateY,
+                        duration: 0.3,
+                        ease: "power2.out"
+                    });
+                }
+            });
+
+            card.addEventListener('mouseleave', () => {
+                if (card.hasAttribute('data-tilt')) {
+                    gsap.to(card, {
+                        rotateX: 0,
+                        rotateY: 0,
+                        duration: 0.5,
+                        ease: "power2.out"
+                    });
+                }
+            });
+        });
+
+        // Staggered Feature Entry
+        gsap.from(".bento-card", {
+            scrollTrigger: {
+                trigger: "#features",
+                start: "top 60%",
+            },
+            scale: 0.9,
+            y: 40,
+            opacity: 0,
+            duration: 1.2,
+            stagger: 0.2,
+            ease: "expo.out"
+        });
+
+        gsap.from("#features h2", {
+            scrollTrigger: {
+                trigger: "#features",
+                start: "top 80%",
+            },
+            x: -50,
+            opacity: 0,
+            duration: 1.2,
+            ease: "power4.out"
+        });
 
 
+
+    </script>
+
+    <!-- Light Rays WebGL Background -->
+    <script type="module">
+        import { Renderer, Program, Triangle, Mesh } from 'https://esm.sh/ogl@1.0.11';
+
+        const container = document.getElementById('light-rays-bg');
+        if (container) {
+            const hexToRgb = hex => {
+                const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return m ? [parseInt(m[1], 16) / 255, parseInt(m[2], 16) / 255, parseInt(m[3], 16) / 255] : [1, 1, 1];
+            };
+
+            const getAnchorAndDir = (origin, w, h) => {
+                const outside = 0.2;
+                switch (origin) {
+                    case 'top-left': return { anchor: [0, -outside * h], dir: [0, 1] };
+                    case 'top-right': return { anchor: [w, -outside * h], dir: [0, 1] };
+                    case 'left': return { anchor: [-outside * w, 0.5 * h], dir: [1, 0] };
+                    case 'right': return { anchor: [(1 + outside) * w, 0.5 * h], dir: [-1, 0] };
+                    case 'bottom-left': return { anchor: [0, (1 + outside) * h], dir: [0, -1] };
+                    case 'bottom-center': return { anchor: [0.5 * w, (1 + outside) * h], dir: [0, -1] };
+                    case 'bottom-right': return { anchor: [w, (1 + outside) * h], dir: [0, -1] };
+                    default: return { anchor: [0.5 * w, -outside * h], dir: [0, 1] }; // "top-center"
+                }
+            };
+
+            const raysOrigin = 'top-center';
+            const raysColor = '#ffffff';
+            const raysSpeed = 1.2;
+            const lightSpread = 0.6;
+            const rayLength = 3.5;
+            const pulsating = true;
+            const fadeDistance = 1.2;
+            const saturation = 1;
+            const followMouse = true;
+            const mouseInfluence = 0.15;
+            const noiseAmount = 0.05;
+            const distortion = 0.1;
+
+            let isVisible = true;
+            const observer = new IntersectionObserver((entries) => {
+                isVisible = entries[0].isIntersecting;
+            }, { threshold: 0.01 });
+            observer.observe(container);
+
+            const renderer = new Renderer({
+                dpr: Math.min(window.devicePixelRatio, 2),
+                alpha: true,
+                premultipliedAlpha: false
+            });
+            const gl = renderer.gl;
+            gl.canvas.style.width = '100%';
+            gl.canvas.style.height = '100%';
+            container.appendChild(gl.canvas);
+
+            const vert = `
+attribute vec2 position;
+varying vec2 vUv;
+void main() {
+  vUv = position * 0.5 + 0.5;
+  gl_Position = vec4(position, 0.0, 1.0);
+}`;
+
+            const frag = `precision highp float;
+
+uniform float iTime;
+uniform vec2  iResolution;
+uniform vec2  rayPos;
+uniform vec2  rayDir;
+uniform vec3  raysColor;
+uniform float raysSpeed;
+uniform float lightSpread;
+uniform float rayLength;
+uniform float pulsating;
+uniform float fadeDistance;
+uniform float saturation;
+uniform vec2  mousePos;
+uniform float mouseInfluence;
+uniform float noiseAmount;
+uniform float distortion;
+
+varying vec2 vUv;
+
+float noise(vec2 st) {
+  return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+}
+
+float rayStrength(vec2 raySource, vec2 rayRefDirection, vec2 coord, float seedA, float seedB, float speed) {
+  vec2 sourceToCoord = coord - raySource;
+  vec2 dirNorm = normalize(sourceToCoord);
+  float cosAngle = dot(dirNorm, rayRefDirection);
+  float distortedAngle = cosAngle + distortion * sin(iTime * 2.0 + length(sourceToCoord) * 0.01) * 0.2;
+  float spreadFactor = pow(max(distortedAngle, 0.0), 1.0 / max(lightSpread, 0.001));
+  float distance = length(sourceToCoord);
+  float maxDistance = iResolution.x * rayLength;
+  float lengthFalloff = clamp((maxDistance - distance) / maxDistance, 0.0, 1.0);
+  float fadeFalloff = clamp((iResolution.x * fadeDistance - distance) / (iResolution.x * fadeDistance), 0.5, 1.0);
+  float pulse = pulsating > 0.5 ? (0.85 + 0.15 * sin(iTime * speed * 2.0)) : 1.0;
+  float baseStrength = clamp(
+    (0.45 + 0.15 * sin(distortedAngle * seedA + iTime * speed)) +
+    (0.3 + 0.2 * cos(-distortedAngle * seedB + iTime * speed)),
+    0.0, 1.0
+  );
+  return baseStrength * lengthFalloff * fadeFalloff * spreadFactor * pulse;
+}
+
+void main() {
+  vec2 coord = vec2(gl_FragCoord.x, iResolution.y - gl_FragCoord.y);
+  vec2 finalRayDir = rayDir;
+  if (mouseInfluence > 0.0) {
+    vec2 mouseScreenPos = mousePos * iResolution.xy;
+    vec2 mouseDirection = normalize(mouseScreenPos - rayPos);
+    finalRayDir = normalize(mix(rayDir, mouseDirection, mouseInfluence));
+  }
+  
+  float s1 = rayStrength(rayPos, finalRayDir, coord, 36.2214, 21.11349, 1.5 * raysSpeed);
+  float s2 = rayStrength(rayPos, finalRayDir, coord, 22.3991, 18.0234, 1.1 * raysSpeed);
+  float strength = s1 * 0.6 + s2 * 0.4;
+
+  if (noiseAmount > 0.0) {
+    float n = noise(coord * 0.01 + iTime * 0.1);
+    strength *= (1.0 - noiseAmount + noiseAmount * n);
+  }
+
+  float brightness = 1.0 - (coord.y / iResolution.y);
+  vec3 color = raysColor;
+  color.x *= 0.2 + brightness * 0.8;
+  color.y *= 0.4 + brightness * 0.6;
+  color.z *= 0.6 + brightness * 0.4;
+  
+  if (saturation != 1.0) {
+    float gray = dot(color, vec3(0.299, 0.587, 0.114));
+    color = mix(vec3(gray), color, saturation);
+  }
+
+  gl_FragColor = vec4(color * strength, strength * 0.8);
+}`;
+
+            const uniforms = {
+                iTime: { value: 0 },
+                iResolution: { value: [1, 1] },
+                rayPos: { value: [0, 0] },
+                rayDir: { value: [0, 1] },
+                raysColor: { value: hexToRgb(raysColor) },
+                raysSpeed: { value: raysSpeed },
+                lightSpread: { value: lightSpread },
+                rayLength: { value: rayLength },
+                pulsating: { value: pulsating ? 1.0 : 0.0 },
+                fadeDistance: { value: fadeDistance },
+                saturation: { value: saturation },
+                mousePos: { value: [0.5, 0.5] },
+                mouseInfluence: { value: mouseInfluence },
+                noiseAmount: { value: noiseAmount },
+                distortion: { value: distortion }
+            };
+
+            const geometry = new Triangle(gl);
+            const program = new Program(gl, { vertex: vert, fragment: frag, uniforms });
+            const mesh = new Mesh(gl, { geometry, program });
+
+            let mouse = { x: 0.5, y: 0.5 };
+            let smoothMouse = { x: 0.5, y: 0.5 };
+
+            if (followMouse) {
+                window.addEventListener('mousemove', (e) => {
+                    const rect = container.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width;
+                    const y = (e.clientY - rect.top) / rect.height;
+                    mouse = { x, y };
+                });
+            }
+
+            const updatePlacement = () => {
+                if (!renderer) return;
+                renderer.dpr = Math.min(window.devicePixelRatio, 2);
+                const { clientWidth: wCSS, clientHeight: hCSS } = container;
+                renderer.setSize(wCSS, hCSS);
+
+                const dpr = renderer.dpr;
+                const w = wCSS * dpr;
+                const h = hCSS * dpr;
+
+                uniforms.iResolution.value = [w, h];
+
+                const { anchor, dir } = getAnchorAndDir(raysOrigin, w, h);
+                uniforms.rayPos.value = anchor;
+                uniforms.rayDir.value = dir;
+            };
+
+            window.addEventListener('resize', updatePlacement);
+            
+            // initial call delayed slightly so container is sized natively
+            setTimeout(() => {
+                updatePlacement();
+            }, 50);
+
+            let animationId;
+            const loop = (t) => {
+                animationId = requestAnimationFrame(loop);
+                
+                if (!isVisible) return;
+
+                uniforms.iTime.value = t * 0.001;
+
+                if (followMouse && mouseInfluence > 0.0) {
+                    const smoothing = 0.92;
+                    smoothMouse.x = smoothMouse.x * smoothing + mouse.x * (1 - smoothing);
+                    smoothMouse.y = smoothMouse.y * smoothing + mouse.y * (1 - smoothing);
+                    uniforms.mousePos.value = [smoothMouse.x, smoothMouse.y];
+                }
+
+                renderer.render({ scene: mesh });
+            };
+
+            animationId = requestAnimationFrame(loop);
+        }
     </script>
 </body>
 </html>
