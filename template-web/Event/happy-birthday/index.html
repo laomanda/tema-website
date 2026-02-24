@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Sarah!</title>
+    
+    <!-- Google Fonts: Fredoka (Heading) & Inter (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Fredoka', 'sans-serif'],
+                    },
+                    colors: {
+                        party: {
+                            blue: '#BAE6FD',   // sky-200
+                            pink: '#FBCFE8',   // pink-200
+                            yellow: '#FBBF24', // yellow-400
+                            magenta: '#EC4899',// pink-500
+                            dark: '#1E293B'    // slate-800
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out 3s infinite',
+                        'bounce-slight': 'bounceSlight 2s infinite',
+                        'spin-slow': 'spin 6s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-20px) rotate(5deg)' },
+                        },
+                        bounceSlight: {
+                            '0%, 100%': { transform: 'translateY(-5%)' },
+                            '50%': { transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Styles */
+        body {
+            background: linear-gradient(135deg, #BAE6FD, #FBCFE8);
+            background-attachment: fixed;
+            color: #1E293B;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #FBCFE8; }
+        ::-webkit-scrollbar-thumb { background: #EC4899; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #DB2777; }
+
+        /* Hide Scrollbar for internal overflow */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Scroll Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* Fun bouncy easing */
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Interactive Flip Card */
+        .flip-card {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1.5rem;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Image Hover Zoom */
+        .gallery-img { transition: transform 0.5s ease; }
+        .group:hover .gallery-img { transform: scale(1.1); rotate: 2deg; }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Playful Buttons */
+        .btn-fun {
+            box-shadow: 0 6px 0 0 #D97706; /* Darker yellow */
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .btn-fun:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 0 #D97706;
+        }
+        /* Back to Hub Button */
+        .back-hub-btn {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(242, 242, 242, 0.94));
+            border: 1px solid rgba(15, 23, 42, 0.14);
+            box-shadow: 0 16px 34px -22px rgba(2, 6, 23, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.92), inset 0 -1px 0 rgba(15, 23, 42, 0.08);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+            animation: backHubGlow 4s ease-in-out infinite;
+        }
+        .back-hub-btn::before {
+            content: "";
+            position: absolute;
+            inset: -150% -28%;
+            background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.72) 50%, transparent 62%);
+            transform: translateX(-72%) rotate(10deg);
+            transition: transform 0.95s ease;
+            pointer-events: none;
+        }
+        .back-hub-btn::after {
+            content: "";
+            position: absolute;
+            inset: 1px;
+            border-radius: inherit;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+        }
+        .back-hub-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            border-color: rgba(15, 23, 42, 0.28);
+            box-shadow: 0 24px 44px -26px rgba(2, 6, 23, 0.88), 0 10px 24px -18px rgba(15, 23, 42, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.96);
+        }
+        .back-hub-btn:hover::before {
+            transform: translateX(82%) rotate(10deg);
+        }
+        .back-hub-btn:focus-visible {
+            outline: 2px solid rgba(15, 23, 42, 0.45);
+            outline-offset: 3px;
+        }
+        .back-hub-icon {
+            background: linear-gradient(165deg, #020202, #1A1A1E 70%);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 14px 22px -14px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: transform 0.35s ease, box-shadow 0.35s ease, filter 0.35s ease;
+        }
+        .back-hub-btn:hover .back-hub-icon {
+            transform: rotate(-11deg) scale(1.08);
+            box-shadow: 0 18px 26px -14px rgba(0, 0, 0, 1), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+            filter: brightness(1.05);
+        }
+        .back-hub-title {
+            color: #0F172A;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+        }
+        @keyframes backHubGlow {
+            0%, 100% { box-shadow: 0 16px 34px -22px rgba(2, 6, 23, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.92), inset 0 -1px 0 rgba(15, 23, 42, 0.08); }
+            50% { box-shadow: 0 22px 38px -24px rgba(2, 6, 23, 0.84), 0 12px 28px -20px rgba(15, 23, 42, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.96); }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-party-yellow selection:text-party-dark">
+
+        <!-- Back to Hub Button -->
+    <a href="../../../index.html" class="back-hub-btn fixed bottom-6 right-6 md:bottom-8 md:right-8 z-[9999] group flex items-center gap-2.5 px-3.5 py-2 rounded-2xl backdrop-blur-md">
+        <div class="back-hub-icon w-8 h-8 text-white rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        </div>
+        <span class="back-hub-title text-sm font-extrabold tracking-[0.16em] leading-none">BACK</span>
+    </a>
+
+
+
+    <!-- Background Music -->
+    <!-- Placeholder happy upbeat music -->
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Music Toggle Button -->
+    <button id="music-toggle" class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-white text-party-magenta rounded-full flex items-center justify-center shadow-xl hover:bg-party-magenta hover:text-white transition-colors border-4 border-party-pink">
+        <i class="ph-fill ph-music-notes text-2xl animate-bounce-slight" id="music-icon"></i>
+    </button>
+
+    <!-- Floating Decorations -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <i class="ph-fill ph-balloon text-6xl text-party-magenta/20 absolute top-20 left-10 animate-float"></i>
+        <i class="ph-fill ph-star text-5xl text-party-yellow/30 absolute top-1/3 right-12 animate-float-delayed"></i>
+        <i class="ph-fill ph-confetti text-6xl text-party-magenta/20 absolute bottom-1/4 left-1/4 animate-float"></i>
+    </div>
+
+    <!-- 1. HERO SECTION -->
+    <header class="relative min-h-screen flex items-center justify-center px-4 z-10">
+        <div class="text-center bg-white/40 backdrop-blur-md p-8 md:p-16 rounded-[3rem] border-4 border-white shadow-2xl max-w-4xl mx-auto transform transition-all hover:scale-[1.02] duration-500">
+            
+            <div class="inline-block px-6 py-2 bg-party-magenta text-white font-bold rounded-full mb-6 text-sm uppercase tracking-widest shadow-md transform -rotate-2">
+                It's Time To Celebrate! 🎉
+            </div>
+            
+            <h1 class="font-display font-bold text-6xl md:text-8xl text-party-magenta mb-4 drop-shadow-sm">
+                Happy Birthday, <br/>
+                <span class="text-party-yellow drop-shadow-md">Sarah!</span>
+            </h1>
+            
+            <p class="font-sans text-lg md:text-xl text-party-dark/80 mb-10 max-w-xl mx-auto font-medium">
+                Hari ini adalah harimu! Semoga hari ulang tahunmu dipenuhi dengan kebahagiaan, tawa, dan banyak kue yang manis!
+            </p>
+            
+            <button id="surprise-btn" class="btn-fun inline-flex items-center gap-3 bg-party-yellow text-party-dark font-display font-bold text-xl px-10 py-5 rounded-full hover:bg-yellow-300">
+                <i class="ph-fill ph-gift text-2xl"></i> Open Surprise
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT (Revealed by scrolling) -->
+    <div id="main-content" class="relative z-10">
+
+        <!-- 2. Countdown Section -->
+        <section class="py-16 md:py-24 px-4">
+            <div class="max-w-4xl mx-auto text-center reveal">
+                <h3 class="font-display text-3xl md:text-4xl mb-8 text-party-magenta">Hitung Mundur ke Pesta Utama! 🎂</h3>
+                
+                <div class="flex justify-center gap-4 md:gap-8 flex-wrap">
+                    <div class="glass-card p-4 md:p-6 rounded-3xl min-w-[90px] md:min-w-[120px] text-center border-white">
+                        <span id="days" class="font-display text-4xl md:text-5xl text-party-magenta font-bold">00</span>
+                        <p class="font-sans text-xs md:text-sm font-bold uppercase text-party-dark/60 mt-2">Hari</p>
+                    </div>
+                    <div class="glass-card p-4 md:p-6 rounded-3xl min-w-[90px] md:min-w-[120px] text-center border-white">
+                        <span id="hours" class="font-display text-4xl md:text-5xl text-party-magenta font-bold">00</span>
+                        <p class="font-sans text-xs md:text-sm font-bold uppercase text-party-dark/60 mt-2">Jam</p>
+                    </div>
+                    <div class="glass-card p-4 md:p-6 rounded-3xl min-w-[90px] md:min-w-[120px] text-center border-white">
+                        <span id="minutes" class="font-display text-4xl md:text-5xl text-party-magenta font-bold">00</span>
+                        <p class="font-sans text-xs md:text-sm font-bold uppercase text-party-dark/60 mt-2">Menit</p>
+                    </div>
+                    <div class="glass-card p-4 md:p-6 rounded-3xl min-w-[90px] md:min-w-[120px] text-center border-white">
+                        <span id="seconds" class="font-display text-4xl md:text-5xl text-party-yellow font-bold">00</span>
+                        <p class="font-sans text-xs md:text-sm font-bold uppercase text-party-dark/60 mt-2">Detik</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Birthday Message & Interactive Flip Card -->
+        <section id="message" class="py-16 md:py-24 px-4">
+            <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+                
+                <!-- Text Message -->
+                <div class="reveal glass-card p-8 md:p-12 rounded-[2.5rem] border-white relative overflow-hidden">
+                    <!-- Decor -->
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-party-pink rounded-full blur-2xl opacity-60"></div>
+                    
+                    <h2 class="font-display text-4xl md:text-5xl text-party-magenta mb-6">A Special Note For You</h2>
+                    <p class="text-lg leading-relaxed text-party-dark mb-4">
+                        Selamat Ulang Tahun, Sahabatku yang paling luar biasa! ✨
+                    </p>
+                    <p class="text-lg leading-relaxed text-party-dark mb-6">
+                        Tahun ini telah menjadi petualangan yang luar biasa berkat kamu. Semoga di usiamu yang baru ini, semua impian liarmu tercapai dan hari-harimu diisi dengan kebahagiaan yang tak berujung.
+                    </p>
+                    <p class="font-display text-2xl text-party-yellow font-bold">You deserve the world!</p>
+                </div>
+
+                <!-- Interactive Flip Card -->
+                <div class="reveal h-96 relative group cursor-pointer perspective-1000" style="transition-delay: 200ms;">
+                    <div class="flip-card w-full h-full">
+                        <div class="flip-card-inner rounded-3xl shadow-2xl">
+                            <!-- Front -->
+                            <div class="flip-card-front bg-party-magenta flex flex-col items-center justify-center p-8 border-4 border-white text-center">
+                                <i class="ph-fill ph-envelope-simple text-6xl text-white mb-4 animate-bounce"></i>
+                                <h3 class="font-display text-3xl text-white font-bold mb-2">Sebuah Rahasia...</h3>
+                                <p class="text-white/80 font-medium bg-black/10 px-4 py-2 rounded-full">Arahkan cursor ke sini!</p>
+                            </div>
+                            <!-- Back -->
+                            <div class="flip-card-back bg-white flex flex-col items-center justify-center p-8 border-4 border-party-magenta text-center">
+                                <i class="ph-fill ph-shooting-star text-5xl text-party-yellow mb-4"></i>
+                                <h3 class="font-display text-2xl text-party-magenta font-bold mb-4">You Are Amazing!</h3>
+                                <p class="text-party-dark font-medium leading-relaxed">
+                                    Jangan pernah berhenti menjadi dirimu sendiri yang ceria, menginspirasi, dan selalu membawa tawa bagi semua orang di sekitarmu!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 4. Reasons You're Amazing Grid -->
+        <section class="py-16 md:py-24 px-4 bg-white/30 border-y border-white">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16 reveal">
+                    <h2 class="font-display text-4xl md:text-5xl text-party-magenta mb-4">3 Alasan Kamu Luar Biasa</h2>
+                    <p class="text-party-dark font-medium">Hanya tiga dari sejuta alasan lainnya!</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="reveal glass-card p-8 rounded-3xl text-center transform hover:-translate-y-2 transition-transform">
+                        <div class="w-16 h-16 bg-party-yellow rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-party-yellow/40">
+                            <i class="ph-bold ph-smiley text-3xl text-white"></i>
+                        </div>
+                        <h4 class="font-display text-2xl text-party-dark mb-3">Tawamu Menular</h4>
+                        <p class="text-party-dark/70 text-sm">Kamu punya kemampuan ajaib untuk membuat satu ruangan ikut tertawa hanya dengan melihatmu bahagia.</p>
+                    </div>
+                    <div class="reveal glass-card p-8 rounded-3xl text-center transform hover:-translate-y-2 transition-transform" style="transition-delay: 100ms;">
+                        <div class="w-16 h-16 bg-party-magenta rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-party-magenta/40">
+                            <i class="ph-bold ph-heart text-3xl text-white"></i>
+                        </div>
+                        <h4 class="font-display text-2xl text-party-dark mb-3">Hati yang Besar</h4>
+                        <p class="text-party-dark/70 text-sm">Kamu selalu peduli pada orang lain dan selalu ada saat seseorang membutuhkan pundak untuk bersandar.</p>
+                    </div>
+                    <div class="reveal glass-card p-8 rounded-3xl text-center transform hover:-translate-y-2 transition-transform" style="transition-delay: 200ms;">
+                        <div class="w-16 h-16 bg-blue-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-400/40">
+                            <i class="ph-bold ph-lightning text-3xl text-white"></i>
+                        </div>
+                        <h4 class="font-display text-2xl text-party-dark mb-3">Semangat Tanpa Batas</h4>
+                        <p class="text-party-dark/70 text-sm">Energimu tidak pernah habis. Kamu selalu siap untuk petualangan baru dan ide-ide spontan!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Gallery of Memories -->
+        <section class="py-16 md:py-24 px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16 reveal">
+                    <h2 class="font-display text-4xl md:text-5xl text-party-magenta mb-4">Memori Seru Kita 📸</h2>
+                    <p class="text-party-dark font-medium">Klik foto untuk memperbesar memori.</p>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 reveal">
+                    <!-- Photo 1 -->
+                    <div class="group cursor-pointer aspect-square rounded-2xl overflow-hidden shadow-md border-4 border-white transform rotate-2 hover:rotate-0 transition-transform md:col-span-2" onclick="openLightbox('https://images.unsplash.com/photo-1530103862676-de889ba09d44?q=80&w=1200&auto=format&fit=crop')">
+                        <img src="https://images.unsplash.com/photo-1530103862676-de889ba09d44?q=80&w=800&auto=format&fit=crop" alt="Balloons" class="w-full h-full object-cover gallery-img">
+                    </div>
+                    <!-- Photo 2 -->
+                    <div class="group cursor-pointer aspect-square rounded-2xl overflow-hidden shadow-md border-4 border-white transform -rotate-2 hover:rotate-0 transition-transform" onclick="openLightbox('https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=1200&auto=format&fit=crop')">
+                        <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=600&auto=format&fit=crop" alt="Party" class="w-full h-full object-cover gallery-img">
+                    </div>
+                    <!-- Photo 3 -->
+                    <div class="group cursor-pointer aspect-square rounded-2xl overflow-hidden shadow-md border-4 border-white transform rotate-1 hover:rotate-0 transition-transform" onclick="openLightbox('https://images.unsplash.com/photo-1558636508-e0db3814bd1d?q=80&w=1200&auto=format&fit=crop')">
+                        <img src="https://images.unsplash.com/photo-1558636508-e0db3814bd1d?q=80&w=600&auto=format&fit=crop" alt="Cake" class="w-full h-full object-cover gallery-img">
+                    </div>
+                    <!-- Photo 4 -->
+                    <div class="group cursor-pointer aspect-[4/3] rounded-2xl overflow-hidden shadow-md border-4 border-white transform -rotate-1 hover:rotate-0 transition-transform md:col-span-2" onclick="openLightbox('https://images.unsplash.com/photo-1602631985686-1bb0e955115a?q=80&w=1200&auto=format&fit=crop')">
+                        <img src="https://images.unsplash.com/photo-1602631985686-1bb0e955115a?q=80&w=800&auto=format&fit=crop" alt="Friends" class="w-full h-full object-cover gallery-img">
+                    </div>
+                    <!-- Photo 5 -->
+                    <div class="group cursor-pointer aspect-[4/3] rounded-2xl overflow-hidden shadow-md border-4 border-white transform rotate-2 hover:rotate-0 transition-transform md:col-span-2" onclick="openLightbox('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1200&auto=format&fit=crop')">
+                        <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=800&auto=format&fit=crop" alt="Concert/Fun" class="w-full h-full object-cover gallery-img">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Leave a Wish Form -->
+        <section class="py-16 md:py-24 px-4 bg-white/50 border-t border-white">
+            <div class="max-w-2xl mx-auto reveal">
+                <div class="text-center mb-10">
+                    <h2 class="font-display text-4xl text-party-magenta mb-3">Tinggalkan Harapanmu! 💌</h2>
+                    <p class="text-party-dark font-medium">Tulis doa dan harapan manismu untuk Sarah.</p>
+                </div>
+
+                <div class="glass-card p-8 rounded-[2rem]">
+                    <form id="wish-form" novalidate>
+                        <div class="mb-5">
+                            <label class="block font-display text-party-magenta mb-2 text-lg">Siapa Namamu?</label>
+                            <input type="text" id="wish-name" required placeholder="Nama teman yang asik..." class="w-full bg-white/80 border-2 border-party-pink rounded-xl px-4 py-3 focus:outline-none focus:border-party-magenta focus:ring-4 focus:ring-party-pink/50 transition-all font-medium">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block font-display text-party-magenta mb-2 text-lg">Pesan & Doa</label>
+                            <textarea id="wish-msg" required rows="4" placeholder="Semoga tahun ini..." class="w-full bg-white/80 border-2 border-party-pink rounded-xl px-4 py-3 focus:outline-none focus:border-party-magenta focus:ring-4 focus:ring-party-pink/50 transition-all font-medium resize-none"></textarea>
+                        </div>
+                        <button type="submit" class="btn-fun w-full bg-party-magenta text-white font-display font-bold text-xl px-6 py-4 rounded-xl hover:bg-pink-600">
+                            Kirim Harapan! <i class="ph-bold ph-paper-plane-tilt ml-2"></i>
+                        </button>
+                    </form>
+
+                    <!-- Success State -->
+                    <div id="form-success" class="hidden text-center py-8">
+                        <div class="w-20 h-20 bg-party-yellow rounded-full flex items-center justify-center text-white mx-auto mb-6 shadow-lg shadow-party-yellow/50 animate-bounce">
+                            <i class="ph-bold ph-check text-4xl"></i>
+                        </div>
+                        <h3 class="font-display text-3xl text-party-magenta mb-3">Pesan Terkirim!</h3>
+                        <p class="text-party-dark font-medium">Terima kasih atas doa baiknya! Sarah pasti akan sangat senang membacanya.</p>
+                        <button onclick="resetForm()" class="mt-6 px-6 py-2 bg-white rounded-full text-party-magenta font-bold border-2 border-party-magenta hover:bg-party-pink transition-colors">Tulis lagi</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-12 text-center text-party-dark relative z-10 bg-white/40">
+            <h2 class="font-display text-2xl text-party-magenta mb-2">Happy Birthday Sarah!</h2>
+            <p class="font-sans font-medium text-sm text-party-dark/60">Dibuat dengan penuh ❤️ dan 🎉 untuk hari spesialmu.</p>
+        </footer>
+
+    </div>
+
+    <!-- Lightbox Modal (Hidden) -->
+    <div id="lightbox" class="fixed inset-0 z-[110] hidden bg-party-dark/90 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <button onclick="closeLightbox()" class="absolute top-6 right-6 text-white hover:text-party-yellow transition-colors p-2 focus:outline-none bg-white/10 rounded-full w-12 h-12 flex items-center justify-center">
+            <i class="ph-bold ph-x text-2xl"></i>
+        </button>
+        <img id="lightbox-img" src="" alt="Enlarged Memory" class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl border-4 border-white">
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. Confetti & Hero Button ---
+            const surpriseBtn = document.getElementById('surprise-btn');
+            surpriseBtn.addEventListener('click', () => {
+                // Fire Canvas Confetti
+                var duration = 3 * 1000;
+                var animationEnd = Date.now() + duration;
+                var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+                function randomInRange(min, max) {
+                    return Math.random() * (max - min) + min;
+                }
+
+                var interval = setInterval(function() {
+                    var timeLeft = animationEnd - Date.now();
+
+                    if (timeLeft <= 0) {
+                        return clearInterval(interval);
+                    }
+
+                    var particleCount = 50 * (timeLeft / duration);
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                }, 250);
+
+                // Play music if not playing
+                if(!isPlaying) playMusic();
+
+                // Scroll to message section after a short delay
+                setTimeout(() => {
+                    document.getElementById('message').scrollIntoView({ behavior: 'smooth' });
+                }, 1000);
+            });
+
+            // --- 2. Music Toggle ---
+            const bgMusic = document.getElementById('bg-music');
+            const musicToggle = document.getElementById('music-toggle');
+            const musicIcon = document.getElementById('music-icon');
+            let isPlaying = false;
+
+            window.playMusic = function() {
+                bgMusic.play().then(() => {
+                    isPlaying = true;
+                    musicIcon.classList.remove('ph-music-notes-slash');
+                    musicIcon.classList.add('ph-music-notes');
+                    musicIcon.classList.add('animate-bounce-slight');
+                }).catch(e => {
+                    console.log("Auto-play prevented. User needs to interact first.");
+                });
+            }
+
+            musicToggle.addEventListener('click', () => {
+                if (isPlaying) {
+                    bgMusic.pause();
+                    isPlaying = false;
+                    musicIcon.classList.remove('ph-music-notes');
+                    musicIcon.classList.add('ph-music-notes-slash');
+                    musicIcon.classList.remove('animate-bounce-slight');
+                } else {
+                    playMusic();
+                }
+            });
+
+            // --- 3. Scroll Reveal Animation ---
+            const revealElements = document.querySelectorAll('.reveal');
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
+            
+            revealElements.forEach(el => revealObserver.observe(el));
+
+            // --- 4. Birthday Countdown Timer ---
+            // Set for a fun target date (e.g., end of current day for demo, or a specific date)
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + 5); // 5 Days from now for demonstration
+            targetDate.setHours(0, 0, 0, 0);
+
+            const timerInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = targetDate.getTime() - now;
+
+                if (distance < 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('days').innerText = "00";
+                    document.getElementById('hours').innerText = "00";
+                    document.getElementById('minutes').innerText = "00";
+                    document.getElementById('seconds').innerText = "00";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('days').innerText = days < 10 ? '0' + days : days;
+                document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
+                document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+                document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+            }, 1000);
+
+            // --- 5. Lightbox Modal ---
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+
+            window.openLightbox = function(src) {
+                lightboxImg.src = src;
+                lightbox.classList.remove('hidden');
+                // Trigger reflow
+                void lightbox.offsetWidth;
+                lightbox.classList.remove('opacity-0');
+                lightbox.classList.add('opacity-100');
+                document.body.style.overflow = 'hidden'; // Lock scroll
+            };
+
+            window.closeLightbox = function() {
+                lightbox.classList.remove('opacity-100');
+                lightbox.classList.add('opacity-0');
+                setTimeout(() => {
+                    lightbox.classList.add('hidden');
+                    lightboxImg.src = '';
+                    document.body.style.overflow = 'auto'; // Unlock scroll
+                }, 300);
+            };
+
+            // Close on background click
+            lightbox.addEventListener('click', (e) => {
+                if(e.target === lightbox) closeLightbox();
+            });
+
+            // --- 6. Form Submission Logic ---
+            const form = document.getElementById('wish-form');
+            const nameInput = document.getElementById('wish-name');
+            const msgInput = document.getElementById('wish-msg');
+            const successState = document.getElementById('form-success');
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const name = nameInput.value.trim();
+                const msg = msgInput.value.trim();
+
+                if (name && msg) {
+                    // Valid submission
+                    form.style.display = 'none';
+                    successState.classList.remove('hidden');
+                    
+                    // Pop small confetti
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 },
+                        colors: ['#FBBF24', '#EC4899', '#BAE6FD']
+                    });
+
+                } else {
+                    alert('Halo! Jangan lupa isi nama dan harapanmu ya! 🎈');
+                }
+            });
+
+            window.resetForm = function() {
+                form.reset();
+                successState.classList.add('hidden');
+                form.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

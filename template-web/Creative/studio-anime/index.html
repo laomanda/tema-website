@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToonForge | Premium Animation Studio</title>
+    
+    <!-- Google Fonts: Fredoka (Headings) & Inter (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Fredoka', 'sans-serif'],
+                    },
+                    colors: {
+                        base: {
+                            DEFAULT: '#0B1220', // Dark Blue/Slate Base
+                            surface: '#151F32',
+                            card: '#1E293B'
+                        },
+                        text: {
+                            main: '#F8FAFC',
+                            muted: '#94A3B8'
+                        },
+                        toon: {
+                            yellow: '#FFB703', // CTA
+                            pink: '#FB7185',   // Highlight
+                            cyan: '#22D3EE'    // Detail
+                        }
+                    },
+                    boxShadow: {
+                        'playful-yellow': '0 8px 0 0 #D97706',
+                        'playful-pink': '0 8px 0 0 #E11D48',
+                        'playful-cyan': '0 8px 0 0 #0891B2',
+                        'glow-yellow': '0 0 25px rgba(255, 183, 3, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Styles */
+        body {
+            background-color: #0B1220;
+            color: #F8FAFC;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #0B1220; }
+        ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 5px; border: 2px solid #0B1220; }
+        ::-webkit-scrollbar-thumb:hover { background: #FB7185; }
+        
+        /* Hide scrollbar for slider */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy ease */
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Playful Button Active State */
+        .btn-playful:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 0 rgba(0,0,0,0.5) !important;
+        }
+
+        /* Floating Animation for Hero */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .animate-float {
+            animation: float 5s ease-in-out infinite;
+        }
+
+        /* FAQ Transition */
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease;
+        }
+        .faq-answer.open {
+            max-height: 400px; /* Arbitrary large height */
+        }
+
+        /* Image Zoom */
+        .img-zoom-container { overflow: hidden; }
+        .img-zoom-container img { transition: transform 0.5s ease; }
+        .group:hover .img-zoom-container img { transform: scale(1.1); }
+        /* Back to Hub Button */
+        .back-hub-btn {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(242, 242, 242, 0.94));
+            border: 1px solid rgba(15, 23, 42, 0.14);
+            box-shadow: 0 16px 34px -22px rgba(2, 6, 23, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.92), inset 0 -1px 0 rgba(15, 23, 42, 0.08);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+            animation: backHubGlow 4s ease-in-out infinite;
+        }
+        .back-hub-btn::before {
+            content: "";
+            position: absolute;
+            inset: -150% -28%;
+            background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.72) 50%, transparent 62%);
+            transform: translateX(-72%) rotate(10deg);
+            transition: transform 0.95s ease;
+            pointer-events: none;
+        }
+        .back-hub-btn::after {
+            content: "";
+            position: absolute;
+            inset: 1px;
+            border-radius: inherit;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+        }
+        .back-hub-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            border-color: rgba(15, 23, 42, 0.28);
+            box-shadow: 0 24px 44px -26px rgba(2, 6, 23, 0.88), 0 10px 24px -18px rgba(15, 23, 42, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.96);
+        }
+        .back-hub-btn:hover::before {
+            transform: translateX(82%) rotate(10deg);
+        }
+        .back-hub-btn:focus-visible {
+            outline: 2px solid rgba(15, 23, 42, 0.45);
+            outline-offset: 3px;
+        }
+        .back-hub-icon {
+            background: linear-gradient(165deg, #020202, #1A1A1E 70%);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 14px 22px -14px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: transform 0.35s ease, box-shadow 0.35s ease, filter 0.35s ease;
+        }
+        .back-hub-btn:hover .back-hub-icon {
+            transform: rotate(-11deg) scale(1.08);
+            box-shadow: 0 18px 26px -14px rgba(0, 0, 0, 1), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+            filter: brightness(1.05);
+        }
+        .back-hub-title {
+            color: #0F172A;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+        }
+        @keyframes backHubGlow {
+            0%, 100% { box-shadow: 0 16px 34px -22px rgba(2, 6, 23, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.92), inset 0 -1px 0 rgba(15, 23, 42, 0.08); }
+            50% { box-shadow: 0 22px 38px -24px rgba(2, 6, 23, 0.84), 0 12px 28px -20px rgba(15, 23, 42, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.96); }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-toon-pink selection:text-white">
+
+        <!-- Back to Hub Button -->
+    <a href="../../../index.html" class="back-hub-btn fixed bottom-6 right-6 md:bottom-8 md:right-8 z-[9999] group flex items-center gap-2.5 px-3.5 py-2 rounded-2xl backdrop-blur-md">
+        <div class="back-hub-icon w-8 h-8 text-white rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        </div>
+        <span class="back-hub-title text-sm font-extrabold tracking-[0.16em] leading-none">BACK</span>
+    </a>
+
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent py-5">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 bg-toon-pink rounded-xl flex items-center justify-center rotate-3 group-hover:-rotate-3 transition-transform shadow-playful-pink">
+                        <i class="ph-bold ph-magic-wand text-2xl text-white"></i>
+                    </div>
+                    <span class="font-heading font-bold text-2xl tracking-wide text-white">Toon<span class="text-toon-cyan">Forge</span></span>
+                </a>
+
+                <!-- Desktop Nav -->
+                <div class="hidden lg:flex items-center space-x-8 bg-base-surface/80 backdrop-blur-md px-8 py-3 rounded-full border border-white/10">
+                    <a href="#services" class="text-sm font-semibold text-text-muted hover:text-toon-yellow transition-colors">Services</a>
+                    <a href="#work" class="text-sm font-semibold text-text-muted hover:text-toon-pink transition-colors">Our Work</a>
+                    <a href="#process" class="text-sm font-semibold text-text-muted hover:text-toon-cyan transition-colors">Process</a>
+                    <a href="#team" class="text-sm font-semibold text-text-muted hover:text-toon-yellow transition-colors">Team</a>
+                    <a href="#pricing" class="text-sm font-semibold text-text-muted hover:text-toon-pink transition-colors">Pricing</a>
+                </div>
+
+                <!-- CTA & Mobile Toggle -->
+                <div class="flex items-center gap-4">
+                    <a href="#contact" class="hidden md:inline-flex btn-playful bg-toon-yellow text-base font-heading font-bold px-6 py-2.5 rounded-xl shadow-[0_6px_0_0_#D97706] hover:-translate-y-1 transition-transform tracking-wide">
+                        Request a Quote
+                    </a>
+                    <button id="mobile-menu-btn" class="lg:hidden text-white p-2">
+                        <i class="ph-bold ph-list text-3xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-base-surface/95 backdrop-blur-xl border-b border-white/10 p-6 flex flex-col gap-4 shadow-2xl">
+            <a href="#services" class="mobile-link font-heading text-xl text-text-main hover:text-toon-yellow">Services</a>
+            <a href="#work" class="mobile-link font-heading text-xl text-text-main hover:text-toon-pink">Our Work</a>
+            <a href="#process" class="mobile-link font-heading text-xl text-text-main hover:text-toon-cyan">Process</a>
+            <a href="#team" class="mobile-link font-heading text-xl text-text-main hover:text-toon-yellow">Team</a>
+            <a href="#pricing" class="mobile-link font-heading text-xl text-text-main hover:text-toon-pink">Pricing</a>
+            <a href="#contact" class="mobile-link mt-4 text-center bg-toon-yellow text-base font-heading font-bold px-6 py-3 rounded-xl shadow-[0_6px_0_0_#D97706]">Request a Quote</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
+        <!-- Background Decor -->
+        <div class="absolute inset-0 z-0 opacity-20">
+            <div class="absolute top-20 left-10 w-64 h-64 bg-toon-pink rounded-full mix-blend-screen filter blur-[100px] animate-pulse"></div>
+            <div class="absolute bottom-20 right-10 w-80 h-80 bg-toon-cyan rounded-full mix-blend-screen filter blur-[120px] animate-pulse" style="animation-delay: 2s;"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-toon-yellow rounded-full mix-blend-screen filter blur-[150px]"></div>
+        </div>
+
+        <!-- Pattern Overlay -->
+        <div class="absolute inset-0 z-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')]"></div>
+
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col items-center">
+            
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-base-surface border border-white/10 mb-8 animate-float">
+                <span class="relative flex h-3 w-3">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-toon-pink opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-toon-pink"></span>
+                </span>
+                <span class="text-sm font-medium text-text-main">Award-Winning Studio 2026</span>
+            </div>
+
+            <h1 class="font-heading font-bold text-5xl md:text-7xl lg:text-8xl leading-[1.1] mb-6 tracking-tight">
+                Bringing Your <br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-toon-pink via-toon-yellow to-toon-cyan">Imagination</span> to Life.
+            </h1>
+            
+            <p class="text-text-muted text-lg md:text-xl max-w-2xl mx-auto mb-12 font-light leading-relaxed">
+                Kami adalah studio animasi kreatif yang menggabungkan seni, teknologi, dan storytelling untuk menciptakan visual yang menakjubkan bagi brand, film, dan game di seluruh dunia.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-6 justify-center w-full max-w-md mx-auto">
+                <a href="#work" class="btn-playful flex-1 bg-toon-pink text-white font-heading font-bold px-8 py-4 rounded-2xl shadow-playful-pink text-lg hover:-translate-y-1 transition-transform text-center">
+                    See Our Work
+                </a>
+                <button onclick="openShowreel()" class="btn-playful flex-1 bg-base-surface border-2 border-white/10 text-white font-heading font-bold px-8 py-4 rounded-2xl shadow-[0_6px_0_0_rgba(255,255,255,0.1)] hover:border-white/30 text-lg hover:-translate-y-1 transition-transform flex items-center justify-center gap-2">
+                    <i class="ph-fill ph-play-circle text-2xl text-toon-cyan"></i> Showreel
+                </button>
+            </div>
+        </div>
+
+        <!-- Floating Elements (Decorative) -->
+        <div class="hidden lg:block absolute left-[10%] top-[30%] text-5xl animate-float" style="animation-delay: 1s;">✨</div>
+        <div class="hidden lg:block absolute right-[15%] bottom-[20%] text-6xl animate-float" style="animation-delay: 2.5s;">🚀</div>
+        <div class="hidden lg:block absolute left-[20%] bottom-[15%] text-4xl animate-float" style="animation-delay: 0.5s;">🎨</div>
+    </header>
+
+    <!-- Services Section -->
+    <section id="services" class="py-24 relative scroll-mt-20">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <span class="font-heading text-toon-cyan text-lg tracking-wider block mb-2">OUR EXPERTISE</span>
+                <h2 class="font-heading font-bold text-4xl md:text-5xl">What We Do Best</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Service 1 -->
+                <div class="bg-base-card p-8 rounded-3xl border border-white/5 hover:border-toon-pink group transition-all duration-300 hover:-translate-y-2 hover:shadow-glow-yellow reveal">
+                    <div class="w-16 h-16 rounded-2xl bg-toon-pink/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform group-hover:bg-toon-pink">
+                        <i class="ph-duotone ph-pencil-line text-4xl text-toon-pink group-hover:text-white"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-2xl mb-3">2D Animation</h3>
+                    <p class="text-text-muted leading-relaxed">Animasi frame-by-frame tradisional maupun rig-based untuk serial, iklan, dan explainer videos yang penuh warna.</p>
+                </div>
+                
+                <!-- Service 2 -->
+                <div class="bg-base-card p-8 rounded-3xl border border-white/5 hover:border-toon-cyan group transition-all duration-300 hover:-translate-y-2 hover:shadow-glow-yellow reveal" style="transition-delay: 100ms;">
+                    <div class="w-16 h-16 rounded-2xl bg-toon-cyan/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform group-hover:bg-toon-cyan">
+                        <i class="ph-duotone ph-cube text-4xl text-toon-cyan group-hover:text-base"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-2xl mb-3">3D Animation</h3>
+                    <p class="text-text-muted leading-relaxed">Modeling, rigging, dan rendering 3D berkualitas tinggi untuk game cinematic, produk, dan karakter bergaya Pixar/Stylized.</p>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="bg-base-card p-8 rounded-3xl border border-white/5 hover:border-toon-yellow group transition-all duration-300 hover:-translate-y-2 hover:shadow-glow-yellow reveal" style="transition-delay: 200ms;">
+                    <div class="w-16 h-16 rounded-2xl bg-toon-yellow/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform group-hover:bg-toon-yellow">
+                        <i class="ph-duotone ph-video-camera text-4xl text-toon-yellow group-hover:text-base"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-2xl mb-3">Motion Graphics</h3>
+                    <p class="text-text-muted leading-relaxed">Grafis bergerak yang dinamis untuk UI presentasi, brand identity, broadcast design, dan media sosial yang engaging.</p>
+                </div>
+
+                <!-- Service 4 -->
+                <div class="bg-base-card p-8 rounded-3xl border border-white/5 hover:border-green-400 group transition-all duration-300 hover:-translate-y-2 hover:shadow-glow-yellow reveal" style="transition-delay: 300ms;">
+                    <div class="w-16 h-16 rounded-2xl bg-green-400/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform group-hover:bg-green-400">
+                        <i class="ph-duotone ph-alien text-4xl text-green-400 group-hover:text-base"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-2xl mb-3">Character Design</h3>
+                    <p class="text-text-muted leading-relaxed">Pengembangan karakter orisinal dari sketsa kasar hingga siap dianimsikan, lengkap dengan turnarounds & expression sheets.</p>
+                </div>
+
+                <!-- Service 5 (Spans 2 cols on lg) -->
+                <div class="bg-gradient-to-br from-toon-pink to-toon-yellow p-8 rounded-3xl group transition-all duration-300 hover:-translate-y-2 lg:col-span-2 relative overflow-hidden reveal" style="transition-delay: 400ms;">
+                    <div class="relative z-10 flex flex-col md:flex-row items-center gap-8 h-full">
+                        <div class="flex-1">
+                            <span class="inline-block bg-white text-base font-bold text-xs uppercase tracking-widest px-3 py-1 rounded-full mb-4">Flagship Service</span>
+                            <h3 class="font-heading font-bold text-3xl mb-3 text-base">Brand Commercial Films</h3>
+                            <p class="text-base/80 leading-relaxed font-medium mb-6">Paket lengkap end-to-end: Konsep, naskah, storyboard, voice over, hingga animasi final untuk kampanye besar brand Anda.</p>
+                            <a href="#contact" class="inline-flex items-center gap-2 text-base font-bold hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
+                                Let's Discuss <i class="ph-bold ph-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="w-32 h-32 md:w-48 md:h-48 shrink-0 relative">
+                            <!-- Decorative element -->
+                            <i class="ph-fill ph-film-strip text-9xl text-white/30 absolute -right-4 -bottom-4 transform rotate-12"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Works (Portfolio) -->
+    <section id="work" class="py-24 bg-base-surface relative scroll-mt-20">
+        <!-- Top Wave Divider -->
+        <div class="absolute top-0 left-0 w-full overflow-hidden leading-none transform -translate-y-full">
+            <svg class="relative block w-full h-[50px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,123.8,188.45,115.14,236.44,107.91,281.39,81.44,321.39,56.44Z" fill="#151F32"></path>
+            </svg>
+        </div>
+
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 reveal">
+                <div>
+                    <span class="font-heading text-toon-pink text-lg tracking-wider block mb-2">PORTFOLIO</span>
+                    <h2 class="font-heading font-bold text-4xl md:text-5xl">Featured Works</h2>
+                </div>
+                
+                <!-- Filters -->
+                <div class="flex flex-wrap gap-3" id="portfolio-filters">
+                    <button class="filter-btn active px-5 py-2 rounded-full font-semibold text-sm transition-all bg-toon-pink text-white shadow-playful-pink" data-filter="all">All</button>
+                    <button class="filter-btn px-5 py-2 rounded-full font-semibold text-sm transition-all bg-base-card text-text-muted hover:text-white" data-filter="2d">2D Animation</button>
+                    <button class="filter-btn px-5 py-2 rounded-full font-semibold text-sm transition-all bg-base-card text-text-muted hover:text-white" data-filter="3d">3D Render</button>
+                    <button class="filter-btn px-5 py-2 rounded-full font-semibold text-sm transition-all bg-base-card text-text-muted hover:text-white" data-filter="motion">Motion</button>
+                </div>
+            </div>
+
+            <!-- Portfolio Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="portfolio-grid">
+                <!-- Items generated via JS -->
+            </div>
+            
+            <div class="mt-16 text-center reveal">
+                <button class="btn-playful bg-base-card border-2 border-white/10 text-white font-heading font-bold px-8 py-4 rounded-2xl shadow-[0_6px_0_0_rgba(255,255,255,0.1)] hover:-translate-y-1 transition-transform inline-flex items-center gap-2">
+                    Load More Magic <i class="ph-bold ph-spinner-gap"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Wave Divider -->
+        <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none transform translate-y-full rotate-180 z-10">
+            <svg class="relative block w-full h-[50px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,123.8,188.45,115.14,236.44,107.91,281.39,81.44,321.39,56.44Z" fill="#151F32"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Interactive Process Timeline -->
+    <section id="process" class="py-32 relative scroll-mt-20">
+        <div class="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20 reveal">
+                <span class="font-heading text-toon-cyan text-lg tracking-wider block mb-2">HOW IT WORKS</span>
+                <h2 class="font-heading font-bold text-4xl md:text-5xl">Our Magic Process</h2>
+            </div>
+
+            <div class="relative">
+                <!-- Vertical Line -->
+                <div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-1 bg-white/10 -translate-x-1/2 rounded-full"></div>
+
+                <!-- Step 1 -->
+                <div class="relative flex flex-col md:flex-row items-center mb-16 reveal">
+                    <div class="hidden md:block w-1/2 pr-12 text-right">
+                        <h3 class="font-heading font-bold text-3xl text-toon-yellow mb-2">Discover & Concept</h3>
+                        <p class="text-text-muted">Brainstorming ide liar, moodboard, dan penulisan naskah yang memastikan pesan Anda tersampaikan dengan tepat.</p>
+                    </div>
+                    <div class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-base rounded-full border-4 border-toon-yellow flex items-center justify-center z-10 shadow-glow-yellow">
+                        <i class="ph-bold ph-lightbulb text-2xl text-toon-yellow"></i>
+                    </div>
+                    <div class="md:hidden pl-24 w-full">
+                        <h3 class="font-heading font-bold text-2xl text-toon-yellow mb-2">Discover & Concept</h3>
+                        <p class="text-text-muted text-sm">Brainstorming ide liar, moodboard, dan penulisan naskah yang memastikan pesan Anda tersampaikan dengan tepat.</p>
+                    </div>
+                    <div class="hidden md:block w-1/2 pl-12"></div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative flex flex-col md:flex-row items-center mb-16 reveal">
+                    <div class="hidden md:block w-1/2 pr-12"></div>
+                    <div class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-base rounded-full border-4 border-toon-pink flex items-center justify-center z-10 shadow-playful-pink">
+                        <i class="ph-bold ph-images text-2xl text-toon-pink"></i>
+                    </div>
+                    <div class="md:hidden pl-24 w-full">
+                        <h3 class="font-heading font-bold text-2xl text-toon-pink mb-2">Storyboard & Style</h3>
+                        <p class="text-text-muted text-sm">Pembuatan storyboard visual (animatik) dan penentuan styleframe agar Anda bisa melihat 'look & feel' sebelum animasi dimulai.</p>
+                    </div>
+                    <div class="hidden md:block w-1/2 pl-12">
+                        <h3 class="font-heading font-bold text-3xl text-toon-pink mb-2">Storyboard & Style</h3>
+                        <p class="text-text-muted">Pembuatan storyboard visual (animatik) dan penentuan styleframe agar Anda bisa melihat 'look & feel' sebelum animasi dimulai.</p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative flex flex-col md:flex-row items-center mb-16 reveal">
+                    <div class="hidden md:block w-1/2 pr-12 text-right">
+                        <h3 class="font-heading font-bold text-3xl text-toon-cyan mb-2">Animate & Magic</h3>
+                        <p class="text-text-muted">Tim animator kami menghidupkan karakter dan objek frame-by-frame dengan prinsip animasi kelas dunia.</p>
+                    </div>
+                    <div class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-base rounded-full border-4 border-toon-cyan flex items-center justify-center z-10 shadow-[0_0_20px_rgba(34,211,238,0.4)]">
+                        <i class="ph-bold ph-magic-wand text-2xl text-toon-cyan"></i>
+                    </div>
+                    <div class="md:hidden pl-24 w-full">
+                        <h3 class="font-heading font-bold text-2xl text-toon-cyan mb-2">Animate & Magic</h3>
+                        <p class="text-text-muted text-sm">Tim animator kami menghidupkan karakter dan objek frame-by-frame dengan prinsip animasi kelas dunia.</p>
+                    </div>
+                    <div class="hidden md:block w-1/2 pl-12"></div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="relative flex flex-col md:flex-row items-center reveal">
+                    <div class="hidden md:block w-1/2 pr-12"></div>
+                    <div class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-base rounded-full border-4 border-green-400 flex items-center justify-center z-10 shadow-[0_0_20px_rgba(74,222,128,0.4)]">
+                        <i class="ph-bold ph-speaker-hifi text-2xl text-green-400"></i>
+                    </div>
+                    <div class="md:hidden pl-24 w-full">
+                        <h3 class="font-heading font-bold text-2xl text-green-400 mb-2">Sound & Delivery</h3>
+                        <p class="text-text-muted text-sm">Penambahan Sound Effects (SFX), musik orisinal, dan compositing final sebelum render resolusi tinggi diserahkan.</p>
+                    </div>
+                    <div class="hidden md:block w-1/2 pl-12">
+                        <h3 class="font-heading font-bold text-3xl text-green-400 mb-2">Sound & Delivery</h3>
+                        <p class="text-text-muted">Penambahan Sound Effects (SFX), musik orisinal, dan compositing final sebelum render resolusi tinggi diserahkan.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Cards -->
+    <section id="team" class="py-24 bg-base-surface border-y border-white/5 scroll-mt-20">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-heading font-bold text-4xl md:text-5xl mb-4">Meet the Makers</h2>
+                <p class="text-text-muted max-w-2xl mx-auto">Orang-orang gila di balik layar yang kurang tidur tapi sangat mencintai keyframes.</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Team 1 -->
+                <div class="bg-base-card rounded-3xl p-6 text-center group cursor-pointer hover:-translate-y-2 transition-transform border border-white/5 hover:border-toon-yellow reveal" onclick="openTeamModal('team1')">
+                    <div class="w-32 h-32 mx-auto rounded-full overflow-hidden mb-6 border-4 border-toon-yellow p-1 bg-toon-yellow/20">
+                        <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=300&auto=format&fit=crop" alt="Alex" class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform">
+                    </div>
+                    <h4 class="font-heading font-bold text-xl mb-1">Alex Morgan</h4>
+                    <p class="text-toon-yellow text-sm font-semibold mb-4">Creative Director</p>
+                    <p class="text-text-muted text-xs line-clamp-2">Visioner studio dengan 10+ tahun pengalaman di industri animasi.</p>
+                </div>
+                <!-- Team 2 -->
+                <div class="bg-base-card rounded-3xl p-6 text-center group cursor-pointer hover:-translate-y-2 transition-transform border border-white/5 hover:border-toon-pink reveal" style="transition-delay: 100ms;" onclick="openTeamModal('team2')">
+                    <div class="w-32 h-32 mx-auto rounded-full overflow-hidden mb-6 border-4 border-toon-pink p-1 bg-toon-pink/20">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=300&auto=format&fit=crop" alt="Sarah" class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform">
+                    </div>
+                    <h4 class="font-heading font-bold text-xl mb-1">Sarah Chen</h4>
+                    <p class="text-toon-pink text-sm font-semibold mb-4">Lead 3D Artist</p>
+                    <p class="text-text-muted text-xs line-clamp-2">Master blender dan zBrush yang bisa memahat monster menggemaskan.</p>
+                </div>
+                <!-- Team 3 -->
+                <div class="bg-base-card rounded-3xl p-6 text-center group cursor-pointer hover:-translate-y-2 transition-transform border border-white/5 hover:border-toon-cyan reveal" style="transition-delay: 200ms;" onclick="openTeamModal('team3')">
+                    <div class="w-32 h-32 mx-auto rounded-full overflow-hidden mb-6 border-4 border-toon-cyan p-1 bg-toon-cyan/20">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300&auto=format&fit=crop" alt="David" class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform">
+                    </div>
+                    <h4 class="font-heading font-bold text-xl mb-1">David Lee</h4>
+                    <p class="text-toon-cyan text-sm font-semibold mb-4">Motion Designer</p>
+                    <p class="text-text-muted text-xs line-clamp-2">Pakar After Effects yang membuat tipografi menari di layar Anda.</p>
+                </div>
+                <!-- Team 4 -->
+                <div class="bg-base-card rounded-3xl p-6 text-center group cursor-pointer hover:-translate-y-2 transition-transform border border-white/5 hover:border-green-400 reveal" style="transition-delay: 300ms;" onclick="openTeamModal('team4')">
+                    <div class="w-32 h-32 mx-auto rounded-full overflow-hidden mb-6 border-4 border-green-400 p-1 bg-green-400/20">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop" alt="Mia" class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform">
+                    </div>
+                    <h4 class="font-heading font-bold text-xl mb-1">Mia Santoso</h4>
+                    <p class="text-green-400 text-sm font-semibold mb-4">2D Animator</p>
+                    <p class="text-text-muted text-xs line-clamp-2">Animator frame-by-frame dengan obsesi pada squash & stretch.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Client / Brands Strip -->
+    <section class="py-12 bg-base border-b border-white/5">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
+            <p class="text-center text-sm font-bold text-text-muted tracking-widest uppercase mb-8">Trusted by Happy Brands</p>
+            <!-- Flex wrap for simple static strip -->
+            <div class="flex flex-wrap justify-center items-center gap-12 md:gap-20 opacity-50 grayscale hover:grayscale-0 transition-all duration-500 reveal">
+                <i class="ph-fill ph-spotify-logo text-5xl hover:text-green-500 transition-colors cursor-default"></i>
+                <i class="ph-fill ph-twitch-logo text-5xl hover:text-purple-500 transition-colors cursor-default"></i>
+                <i class="ph-fill ph-discord-logo text-5xl hover:text-indigo-500 transition-colors cursor-default"></i>
+                <i class="ph-fill ph-snapchat-logo text-5xl hover:text-yellow-400 transition-colors cursor-default"></i>
+                <i class="ph-fill ph-reddit-logo text-5xl hover:text-orange-500 transition-colors cursor-default hidden sm:block"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Slider -->
+    <section class="py-24 bg-base relative overflow-hidden">
+        <!-- Decoration -->
+        <i class="ph-fill ph-quotes text-[200px] text-white/[0.03] absolute left-10 top-10 pointer-events-none"></i>
+        
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <h2 class="font-heading font-bold text-4xl text-center mb-16 reveal">Client Sweet Words</h2>
+            
+            <div class="flex gap-6 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-8 reveal">
+                <!-- Testi 1 -->
+                <div class="snap-center shrink-0 w-[300px] md:w-[450px] bg-base-surface p-8 rounded-3xl border border-white/5 shadow-soft relative">
+                    <div class="flex text-toon-yellow mb-4"><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i></div>
+                    <p class="text-text-main text-lg mb-6 leading-relaxed">"ToonForge membawa maskot brand kami hidup dengan cara yang tak terbayangkan. Animasi mereka super fluid dan tepat waktu!"</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-toon-pink rounded-full flex items-center justify-center text-xl font-bold">J</div>
+                        <div>
+                            <p class="font-bold">Jason Doe</p>
+                            <p class="text-sm text-text-muted">CMO, TechNova</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testi 2 -->
+                <div class="snap-center shrink-0 w-[300px] md:w-[450px] bg-base-surface p-8 rounded-3xl border border-white/5 shadow-soft relative">
+                    <div class="flex text-toon-yellow mb-4"><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i></div>
+                    <p class="text-text-main text-lg mb-6 leading-relaxed">"Komunikasi yang luar biasa dari awal storyboard hingga final render. Video explainer kami meningkatkan konversi hingga 40%."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-toon-cyan rounded-full flex items-center justify-center text-xl font-bold text-base">A</div>
+                        <div>
+                            <p class="font-bold">Amanda Smith</p>
+                            <p class="text-sm text-text-muted">Founder, EduPlay</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testi 3 -->
+                <div class="snap-center shrink-0 w-[300px] md:w-[450px] bg-base-surface p-8 rounded-3xl border border-white/5 shadow-soft relative">
+                    <div class="flex text-toon-yellow mb-4"><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i></div>
+                    <p class="text-text-main text-lg mb-6 leading-relaxed">"Sangat puas dengan kualitas 3D yang dihasilkan. Detail tekstur dan pencahayaannya sekelas film animasi box office!"</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-green-400 rounded-full flex items-center justify-center text-xl font-bold text-base">R</div>
+                        <div>
+                            <p class="font-bold">Robert King</p>
+                            <p class="text-sm text-text-muted">Director, IndieGames</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Packages -->
+    <section id="pricing" class="py-24 bg-base-surface border-y border-white/5 scroll-mt-20">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <span class="font-heading text-toon-yellow text-lg tracking-wider block mb-2">PRICING</span>
+                <h2 class="font-heading font-bold text-4xl md:text-5xl">Simple Packages</h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Starter -->
+                <div class="bg-base-card rounded-3xl p-8 border border-white/5 flex flex-col reveal">
+                    <h3 class="font-heading font-bold text-2xl text-text-main mb-2">Starter</h3>
+                    <p class="text-text-muted text-sm mb-6">Cocok untuk konten sosmed singkat.</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-heading font-bold text-white">15s</span>
+                        <span class="text-text-muted">/video</span>
+                    </div>
+                    <ul class="space-y-4 mb-8 flex-1 text-sm text-text-main">
+                        <li class="flex items-center gap-3"><i class="ph-bold ph-check text-green-400"></i> Motion Graphics / 2D Basic</li>
+                        <li class="flex items-center gap-3"><i class="ph-bold ph-check text-green-400"></i> 2x Revisi</li>
+                        <li class="flex items-center gap-3"><i class="ph-bold ph-check text-green-400"></i> Free Royalty Music</li>
+                        <li class="flex items-center gap-3 text-text-muted"><i class="ph-bold ph-x"></i> Voice Over</li>
+                    </ul>
+                    <a href="#contact" class="w-full py-3 rounded-xl border-2 border-white/10 text-center font-bold hover:bg-white/5 transition-colors">Choose Starter</a>
+                </div>
+
+                <!-- Pro (Highlighted) -->
+                <div class="bg-gradient-to-b from-toon-pink to-toon-yellow p-[2px] rounded-3xl reveal transform md:-translate-y-4 shadow-playful-pink relative" style="transition-delay: 100ms;">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-toon-pink text-white font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full z-10">Best Value</div>
+                    <div class="bg-base-card rounded-[22px] p-8 flex flex-col h-full">
+                        <h3 class="font-heading font-bold text-2xl text-white mb-2">Pro Explainer</h3>
+                        <p class="text-text-muted text-sm mb-6">Sempurna untuk landing page & presentasi.</p>
+                        <div class="mb-6">
+                            <span class="text-4xl font-heading font-bold text-white">60s</span>
+                            <span class="text-text-muted">/video</span>
+                        </div>
+                        <ul class="space-y-4 mb-8 flex-1 text-sm text-white">
+                            <li class="flex items-center gap-3"><i class="ph-bold ph-check text-toon-yellow"></i> Full 2D/3D Character Anim.</li>
+                            <li class="flex items-center gap-3"><i class="ph-bold ph-check text-toon-yellow"></i> Custom Storyboard</li>
+                            <li class="flex items-center gap-3"><i class="ph-bold ph-check text-toon-yellow"></i> Pro Voice Over (EN/ID)</li>
+                            <li class="flex items-center gap-3"><i class="ph-bold ph-check text-toon-yellow"></i> Unlimited Minor Revs</li>
+                        </ul>
+                        <a href="#contact" class="btn-playful w-full py-3 rounded-xl bg-toon-yellow text-base text-center font-bold shadow-[0_4px_0_0_#D97706] hover:-translate-y-1 transition-transform">Choose Pro</a>
+                    </div>
+                </div>
+
+                <!-- Studio -->
+                <div class="bg-base-card rounded-3xl p-8 border border-white/5 flex flex-col reveal" style="transition-delay: 200ms;">
+                    <h3 class="font-heading font-bold text-2xl text-text-main mb-2">Studio</h3>
+                    <p class="text-text-muted text-sm mb-6">Kualitas iklan TV & kampanye besar.</p>
+                    <div class="mb-6">
+                        <span class="text-xl font-heading font-bold text-white">Custom Duration</span>
+                    </div>
+                    <ul class="space-y-4 mb-8 flex-1 text-sm text-text-main">
+                        <li class="flex items-center gap-3"><i class="ph-bold ph-check text-toon-cyan"></i> Premium 3D Cinematic</li>
+                        <li class="flex items-center gap-3"><i class="ph-bold ph-check text-toon-cyan"></i> Full Dedicated Team</li>
+                        <li class="flex items-center gap-3"><i class="ph-bold ph-check text-toon-cyan"></i> Original Soundtrack</li>
+                        <li class="flex items-center gap-3"><i class="ph-bold ph-check text-toon-cyan"></i> Source Files Included</li>
+                    </ul>
+                    <a href="#contact" class="w-full py-3 rounded-xl border-2 border-white/10 text-center font-bold hover:bg-white/5 transition-colors">Let's Talk</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ & Contact -->
+    <section id="contact" class="py-24 scroll-mt-20">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16">
+                <!-- FAQ -->
+                <div class="reveal">
+                    <h2 class="font-heading font-bold text-4xl mb-8">Got Questions?</h2>
+                    <div class="space-y-4">
+                        <div class="bg-base-surface rounded-2xl border border-white/5">
+                            <button class="faq-btn w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none">
+                                <span class="font-bold text-white">Berapa lama proses pengerjaan 1 video?</span>
+                                <i class="ph-bold ph-caret-down text-toon-cyan transition-transform duration-300"></i>
+                            </button>
+                            <div class="faq-answer bg-base-card rounded-b-2xl">
+                                <p class="text-text-muted text-sm px-6 pb-5">Tergantung kompleksitas. Untuk paket Starter biasanya memakan waktu 1-2 minggu. Paket Pro sekitar 3-4 minggu. Kami selalu memastikan timeline transparan sejak awal.</p>
+                            </div>
+                        </div>
+                        <div class="bg-base-surface rounded-2xl border border-white/5">
+                            <button class="faq-btn w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none">
+                                <span class="font-bold text-white">Apakah saya mendapatkan file mentah (source file)?</span>
+                                <i class="ph-bold ph-caret-down text-toon-cyan transition-transform duration-300"></i>
+                            </button>
+                            <div class="faq-answer bg-base-card rounded-b-2xl">
+                                <p class="text-text-muted text-sm px-6 pb-5">Source file (.aep, .blend, dll) tersedia pada paket Studio. Untuk paket lain, source file dapat ditambahkan dengan biaya terpisah.</p>
+                            </div>
+                        </div>
+                        <div class="bg-base-surface rounded-2xl border border-white/5">
+                            <button class="faq-btn w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none">
+                                <span class="font-bold text-white">Bagaimana sistem pembayarannya?</span>
+                                <i class="ph-bold ph-caret-down text-toon-cyan transition-transform duration-300"></i>
+                            </button>
+                            <div class="faq-answer bg-base-card rounded-b-2xl">
+                                <p class="text-text-muted text-sm px-6 pb-5">Kami memberlakukan sistem 50% DP untuk memulai proyek, dan pelunasan 50% setelah video final disetujui (sebelum penyerahan file tanpa watermark).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="bg-base-surface p-8 md:p-10 rounded-3xl border border-white/5 shadow-soft reveal relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-toon-pink/10 rounded-full blur-3xl"></div>
+                    
+                    <h2 class="font-heading font-bold text-3xl mb-2 relative z-10">Start Your Project</h2>
+                    <p class="text-text-muted text-sm mb-8 relative z-10">Isi form di bawah ini dan produser kami akan menghubungi Anda dalam 24 jam.</p>
+                    
+                    <form id="inquiry-form" class="space-y-5 relative z-10" novalidate>
+                        <div class="grid grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Name</label>
+                                <input type="text" id="name" required class="w-full bg-base border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-toon-cyan transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Email</label>
+                                <input type="email" id="email" required class="w-full bg-base border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-toon-cyan transition-colors">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Project Type</label>
+                            <select class="w-full bg-base border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-toon-cyan transition-colors appearance-none">
+                                <option>2D Explainer</option>
+                                <option>3D Animation</option>
+                                <option>Motion Graphics</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Message</label>
+                            <textarea id="message" required rows="4" class="w-full bg-base border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-toon-cyan transition-colors resize-none"></textarea>
+                        </div>
+                        <button type="submit" class="btn-playful w-full bg-toon-cyan text-base font-heading font-bold px-6 py-4 rounded-xl shadow-[0_6px_0_0_#0891B2] hover:-translate-y-1 transition-transform tracking-wide">
+                            Send Magic Letter <i class="ph-bold ph-paper-plane-right ml-1"></i>
+                        </button>
+                    </form>
+
+                    <!-- Success State -->
+                    <div id="form-success" class="hidden absolute inset-0 bg-base-surface flex flex-col items-center justify-center text-center z-20 p-8">
+                        <div class="w-20 h-20 bg-green-400 rounded-full flex items-center justify-center text-base mb-6 animate-bounce">
+                            <i class="ph-bold ph-check text-4xl"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-3xl mb-2 text-white">Yayy! Sent.</h3>
+                        <p class="text-text-muted text-sm">Pesan ajaib Anda telah terbang ke studio kami. Tunggu balasan kami segera!</p>
+                        <button onclick="resetForm()" class="mt-8 text-toon-cyan font-bold text-sm hover:underline">Send another one</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-base-surface pt-20 pb-10 border-t border-white/5 relative overflow-hidden">
+        <!-- Giant Background Text -->
+        <div class="absolute bottom-[-20%] left-1/2 -translate-x-1/2 font-heading font-black text-[15vw] text-white/[0.02] whitespace-nowrap pointer-events-none">
+            TOONFORGE
+        </div>
+
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <!-- Brand -->
+                <div class="lg:col-span-1">
+                    <a href="#" class="flex items-center gap-2 mb-6">
+                        <div class="w-8 h-8 bg-toon-pink rounded-lg flex items-center justify-center">
+                            <i class="ph-bold ph-magic-wand text-white"></i>
+                        </div>
+                        <span class="font-heading font-bold text-xl tracking-wide text-white">Toon<span class="text-toon-cyan">Forge</span></span>
+                    </a>
+                    <p class="text-text-muted text-sm leading-relaxed mb-6">Menciptakan keajaiban visual untuk brand yang berani tampil beda melalui animasi berkualitas tinggi.</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-xl bg-base border border-white/5 flex items-center justify-center text-text-muted hover:text-white hover:border-toon-pink hover:bg-toon-pink/20 transition-all"><i class="ph-fill ph-instagram-logo text-lg"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-xl bg-base border border-white/5 flex items-center justify-center text-text-muted hover:text-white hover:border-toon-cyan hover:bg-toon-cyan/20 transition-all"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-xl bg-base border border-white/5 flex items-center justify-center text-text-muted hover:text-white hover:border-toon-yellow hover:bg-toon-yellow/20 transition-all"><i class="ph-fill ph-behance-logo text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="font-heading font-bold text-white mb-6">Explore</h4>
+                    <ul class="space-y-3 text-sm text-text-muted">
+                        <li><a href="#services" class="hover:text-toon-yellow transition-colors">Our Services</a></li>
+                        <li><a href="#work" class="hover:text-toon-pink transition-colors">Portfolio</a></li>
+                        <li><a href="#process" class="hover:text-toon-cyan transition-colors">How We Work</a></li>
+                        <li><a href="#pricing" class="hover:text-toon-yellow transition-colors">Pricing Options</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="font-heading font-bold text-white mb-6">Say Hello</h4>
+                    <ul class="space-y-4 text-sm text-text-muted">
+                        <li class="flex items-start gap-3">
+                            <i class="ph-fill ph-envelope-simple text-toon-cyan text-lg"></i>
+                            <a href="#" class="hover:text-white transition-colors">hello@toonforge.studio</a>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="ph-fill ph-map-pin text-toon-pink text-lg"></i>
+                            <span>Creative Block No. 42<br>Jakarta Selatan, ID 12190</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="font-heading font-bold text-white mb-6">Toon Letter</h4>
+                    <p class="text-text-muted text-sm mb-4">Dapatkan update karya terbaru dan insight animasi bulanan.</p>
+                    <form onsubmit="event.preventDefault(); alert('Subscribed!');" class="flex">
+                        <input type="email" placeholder="Email Address" required class="bg-base border border-white/10 border-r-0 rounded-l-xl px-4 py-2 w-full text-sm focus:outline-none focus:border-toon-cyan">
+                        <button type="submit" class="bg-toon-cyan text-base font-bold px-4 py-2 rounded-r-xl hover:bg-cyan-300 transition-colors">Join</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-text-muted gap-4 text-center md:text-left">
+                <p>&copy; 2026 ToonForge Animation Studio. All Rights Reserved.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-white transition-colors">Privacy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals (Hidden by Default) -->
+
+    <!-- Showreel Video Modal -->
+    <div id="video-modal" class="fixed inset-0 z-[100] hidden bg-base/95 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="w-full max-w-5xl relative">
+            <button onclick="closeShowreel()" class="absolute -top-12 right-0 text-white hover:text-toon-pink transition-colors flex items-center gap-2 font-bold focus:outline-none">
+                Close <i class="ph-bold ph-x text-2xl"></i>
+            </button>
+            <div class="aspect-video bg-base border border-white/10 shadow-glow-yellow rounded-2xl overflow-hidden flex items-center justify-center relative">
+                <!-- Decorative Play Button replacing actual iframe for static demo -->
+                <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=1600&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-50 grayscale" alt="Showreel bg">
+                <div class="relative z-10 text-center flex flex-col items-center">
+                    <i class="ph-fill ph-play-circle text-7xl text-toon-yellow animate-pulse"></i>
+                    <p class="font-heading font-bold text-xl mt-4">2026 Studio Showreel</p>
+                    <p class="text-sm text-text-muted">[ Video Placeholder ]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Detail Modal -->
+    <div id="project-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-base/80 backdrop-blur-md transition-opacity duration-300" onclick="closeProjectModal()"></div>
+        
+        <!-- Modal Content -->
+        <div class="bg-base-surface w-full max-w-4xl max-h-[90vh] overflow-y-auto hide-scrollbar relative z-10 rounded-3xl shadow-2xl border border-white/10 animate-[float_0.3s_ease-out]">
+            <button onclick="closeProjectModal()" class="absolute top-6 right-6 z-20 w-10 h-10 bg-base/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-toon-pink transition-colors">
+                <i class="ph-bold ph-x text-lg"></i>
+            </button>
+
+            <!-- Header Img -->
+            <div class="w-full h-64 md:h-80 bg-base relative">
+                <img id="proj-modal-img" src="" alt="Project" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-base-surface to-transparent"></div>
+            </div>
+
+            <!-- Body -->
+            <div class="p-8 md:p-12 -mt-16 relative z-10">
+                <span id="proj-modal-category" class="inline-block px-3 py-1 rounded-full bg-toon-cyan/20 text-toon-cyan text-xs font-bold uppercase tracking-widest mb-4">Category</span>
+                <h2 id="proj-modal-title" class="font-heading font-bold text-3xl md:text-5xl mb-6">Project Title</h2>
+                
+                <p class="text-text-main leading-relaxed mb-8">Ini adalah deskripsi statis untuk proyek yang menakjubkan ini. Kami merancang setiap aset dari nol, menganimasikannya dengan penuh cinta, dan memberikan hasil akhir yang membuat klien kami melompat kegirangan.</p>
+                
+                <div class="grid sm:grid-cols-2 gap-8 mb-8 border-t border-white/10 pt-8">
+                    <div>
+                        <h4 class="font-heading font-bold text-xl mb-4 text-toon-yellow">Tools Used</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-base rounded-lg text-sm text-text-muted border border-white/5">After Effects</span>
+                            <span class="px-3 py-1 bg-base rounded-lg text-sm text-text-muted border border-white/5">Illustrator</span>
+                            <span class="px-3 py-1 bg-base rounded-lg text-sm text-text-muted border border-white/5">Cinema 4D</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-heading font-bold text-xl mb-4 text-toon-pink">The Outcome</h4>
+                        <p class="text-sm text-text-muted">Peningkatan engagement 150% di sosial media dan memenangkan penghargaan "Best Visual" di ajang animasi lokal.</p>
+                    </div>
+                </div>
+
+                <!-- Dummy Gallery -->
+                <h4 class="font-heading font-bold text-xl mb-4">Behind The Scenes</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="aspect-video bg-base rounded-xl overflow-hidden"><img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover opacity-70"></div>
+                    <div class="aspect-video bg-base rounded-xl overflow-hidden"><img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover opacity-70"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Bio Modal -->
+    <div id="team-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-base/80 backdrop-blur-md" onclick="closeTeamModal()"></div>
+        <div class="bg-base-surface w-full max-w-sm rounded-3xl p-8 text-center relative z-10 shadow-2xl border border-white/10 animate-[float_0.3s_ease-out]">
+            <button onclick="closeTeamModal()" class="absolute top-4 right-4 text-text-muted hover:text-white">
+                <i class="ph-bold ph-x text-xl"></i>
+            </button>
+            <div id="team-modal-avatar" class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 border-2 border-toon-cyan">
+                <!-- Img injected via JS -->
+            </div>
+            <h3 id="team-modal-name" class="font-heading font-bold text-2xl mb-1">Name</h3>
+            <p id="team-modal-role" class="text-sm text-toon-cyan font-semibold mb-4">Role</p>
+            <p class="text-sm text-text-muted mb-6">"Saya suka menggambar karakter kotak yang tiba-tiba bisa menjadi bulat dalam 24 frame." - (Bio Statis)</p>
+            <div class="flex justify-center gap-3">
+                <a href="#" class="w-8 h-8 rounded-full bg-base flex items-center justify-center hover:text-toon-pink transition-colors"><i class="ph-fill ph-instagram-logo"></i></a>
+                <a href="#" class="w-8 h-8 rounded-full bg-base flex items-center justify-center hover:text-toon-cyan transition-colors"><i class="ph-fill ph-behance-logo"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. Sticky Navbar ---
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('bg-base/90', 'backdrop-blur-md', 'border-b', 'border-white/5', 'shadow-lg');
+                    navbar.classList.remove('bg-transparent', 'py-5');
+                    navbar.classList.add('py-3');
+                } else {
+                    navbar.classList.remove('bg-base/90', 'backdrop-blur-md', 'border-b', 'border-white/5', 'shadow-lg', 'py-3');
+                    navbar.classList.add('bg-transparent', 'py-5');
+                }
+            });
+
+            // --- 2. Mobile Menu Toggle ---
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileLinks = document.querySelectorAll('.mobile-link');
+
+            mobileBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // --- 3. Scroll Reveal Animation ---
+            const revealElements = document.querySelectorAll('.reveal');
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+            
+            revealElements.forEach(el => revealObserver.observe(el));
+            
+            // Trigger immediately for top elements
+            setTimeout(() => {
+                revealElements.forEach(el => {
+                    if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('active');
+                });
+            }, 100);
+
+            // --- 4. Portfolio Data & Filtering ---
+            const portfolioData = [
+                { id: 1, title: 'Cosmic Quest', cat: '2d', img: 'https://images.unsplash.com/photo-1618331835717-801e976710b2?q=80&w=800&auto=format&fit=crop' },
+                { id: 2, title: 'Neon Runner', cat: '3d', img: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=800&auto=format&fit=crop' },
+                { id: 3, title: 'Fintech Explainer', cat: 'motion', img: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop' },
+                { id: 4, title: 'Cute Monsters', cat: '2d', img: 'https://images.unsplash.com/photo-1580477667995-15608101a8f9?q=80&w=800&auto=format&fit=crop' },
+                { id: 5, title: 'Product Reveal', cat: '3d', img: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop' },
+                { id: 6, title: 'Event Teaser', cat: 'motion', img: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=800&auto=format&fit=crop' },
+                { id: 7, title: 'Forest Tale', cat: '2d', img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800&auto=format&fit=crop' },
+                { id: 8, title: 'Mecha Intro', cat: '3d', img: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?q=80&w=800&auto=format&fit=crop' },
+                { id: 9, title: 'App UI Flow', cat: 'motion', img: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=800&auto=format&fit=crop' }
+            ];
+
+            const grid = document.getElementById('portfolio-grid');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+
+            function renderPortfolio(filter = 'all') {
+                grid.innerHTML = '';
+                const filtered = portfolioData.filter(item => filter === 'all' || item.cat === filter);
+                
+                filtered.forEach((item, idx) => {
+                    const delay = idx * 50;
+                    
+                    // Style mapping for categories
+                    let catColor, catText;
+                    if(item.cat === '2d') { catColor = 'bg-toon-pink'; catText = '2D Anim'; }
+                    else if(item.cat === '3d') { catColor = 'bg-toon-cyan'; catText = '3D Render'; }
+                    else { catColor = 'bg-toon-yellow'; catText = 'Motion'; }
+
+                    const html = `
+                        <div class="group relative rounded-3xl overflow-hidden aspect-[4/3] cursor-pointer border border-white/5 opacity-0 animate-[float_0.5s_ease-out_forwards]" style="animation-delay: ${delay}ms" onclick="openProjectModal(${item.id})">
+                            <div class="img-zoom-container w-full h-full bg-base-surface">
+                                <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-base via-base/40 to-transparent opacity-80 group-hover:opacity-60 transition-opacity"></div>
+                            
+                            <div class="absolute bottom-0 left-0 p-6 w-full transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                                <span class="inline-block ${catColor} text-base font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded mb-2">${catText}</span>
+                                <h3 class="font-heading font-bold text-2xl text-white">${item.title}</h3>
+                            </div>
+                        </div>
+                    `;
+                    grid.innerHTML += html;
+                });
+            }
+
+            // Init Portfolio
+            renderPortfolio('all');
+
+            // Filter Click
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    // Visual active state
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-toon-pink', 'text-white', 'shadow-playful-pink');
+                        b.classList.add('bg-base-card', 'text-text-muted');
+                    });
+                    e.target.classList.remove('bg-base-card', 'text-text-muted');
+                    e.target.classList.add('bg-toon-pink', 'text-white', 'shadow-playful-pink');
+
+                    renderPortfolio(e.target.getAttribute('data-filter'));
+                });
+            });
+
+            // --- 5. FAQ Accordion ---
+            const faqBtns = document.querySelectorAll('.faq-btn');
+            faqBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const answer = btn.nextElementSibling;
+                    const icon = btn.querySelector('i');
+                    const isOpen = answer.classList.contains('open');
+
+                    document.querySelectorAll('.faq-answer').forEach(ans => ans.classList.remove('open'));
+                    document.querySelectorAll('.faq-btn i').forEach(i => i.style.transform = 'rotate(0deg)');
+
+                    if (!isOpen) {
+                        answer.classList.add('open');
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            // --- 6. Form Validation ---
+            const form = document.getElementById('inquiry-form');
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const msgInput = document.getElementById('message');
+            const successMsg = document.getElementById('form-success');
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (nameInput.value && msgInput.value && emailRegex.test(emailInput.value)) {
+                    successMsg.classList.remove('hidden');
+                } else {
+                    alert('Oops! Harap isi semua field dengan email yang valid.');
+                }
+            });
+
+            // Expose reset globally
+            window.resetForm = function() {
+                form.reset();
+                successMsg.classList.add('hidden');
+            }
+
+            // Expose Project Modal globally
+            window.openProjectModal = function(id) {
+                const item = portfolioData.find(p => p.id === id);
+                if(!item) return;
+
+                document.getElementById('proj-modal-img').src = item.img;
+                document.getElementById('proj-modal-title').textContent = item.title;
+                document.getElementById('proj-modal-category').textContent = item.cat === '2d' ? '2D Animation' : (item.cat === '3d' ? '3D Render' : 'Motion Graphics');
+
+                const modal = document.getElementById('project-modal');
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+
+        // --- Global Modal Functions ---
+        
+        // Project Modal Close
+        function closeProjectModal() {
+            document.getElementById('project-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Showreel Modal
+        const videoModal = document.getElementById('video-modal');
+        function openShowreel() {
+            videoModal.classList.remove('hidden');
+            void videoModal.offsetWidth; // reflow
+            videoModal.classList.remove('opacity-0');
+            videoModal.classList.add('opacity-100');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeShowreel() {
+            videoModal.classList.remove('opacity-100');
+            videoModal.classList.add('opacity-0');
+            setTimeout(() => {
+                videoModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        // Team Modal
+        const teamData = {
+            'team1': { name: 'Alex Morgan', role: 'Creative Director', img: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=300' },
+            'team2': { name: 'Sarah Chen', role: 'Lead 3D Artist', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=300' },
+            'team3': { name: 'David Lee', role: 'Motion Designer', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300' },
+            'team4': { name: 'Mia Santoso', role: '2D Animator', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300' }
+        };
+        const teamModal = document.getElementById('team-modal');
+        
+        function openTeamModal(id) {
+            const member = teamData[id];
+            if(!member) return;
+            
+            document.getElementById('team-modal-avatar').innerHTML = `<img src="${member.img}" class="w-full h-full object-cover">`;
+            document.getElementById('team-modal-name').textContent = member.name;
+            document.getElementById('team-modal-role').textContent = member.role;
+            
+            teamModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeTeamModal() {
+            teamModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+    </script>
+</body>
+</html>

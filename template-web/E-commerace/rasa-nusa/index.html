@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kantin RasaNusa | Cita Rasa Nusantara</title>
+    
+    <!-- Google Fonts: Poppins (Heading) & Inter (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            DEFAULT: '#FF8A00', // Orange CTA
+                            hover: '#E67A00',
+                            light: '#FFF3E5',
+                        },
+                        surface: {
+                            DEFAULT: '#FFFBF5', // Cream/Warm White
+                            card: '#FFFFFF',
+                        },
+                        text: {
+                            dark: '#1E1E1E',
+                            muted: '#6B7280',
+                        },
+                        accent: {
+                            green: '#4CAF50', // Fresh Green Badge
+                            red: '#EF4444',
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.05)',
+                        'floating': '0 20px 40px -10px rgba(255, 138, 0, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Styles */
+        body {
+            background-color: #FFFBF5;
+            color: #1E1E1E;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #FFFBF5; }
+        ::-webkit-scrollbar-thumb { background: #FF8A00; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #E67A00; }
+
+        /* Hide scrollbar for clean horizontal scroll (Testimonials & Categories) */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease forwards; }
+
+        /* Image Hover Zoom */
+        .img-zoom-container { overflow: hidden; }
+        .img-zoom-container img { transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .group:hover .img-zoom-container img { transform: scale(1.08); }
+
+        /* FAQ Accordion Transition */
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease;
+        }
+        .faq-answer.open {
+            max-height: 200px;
+        }
+
+        /* Cart Drawer Backdrop */
+        #cart-backdrop {
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        /* Back to Hub Button */
+        .back-hub-btn {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(242, 242, 242, 0.94));
+            border: 1px solid rgba(15, 23, 42, 0.14);
+            box-shadow: 0 16px 34px -22px rgba(2, 6, 23, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.92), inset 0 -1px 0 rgba(15, 23, 42, 0.08);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+            animation: backHubGlow 4s ease-in-out infinite;
+        }
+        .back-hub-btn::before {
+            content: "";
+            position: absolute;
+            inset: -150% -28%;
+            background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.72) 50%, transparent 62%);
+            transform: translateX(-72%) rotate(10deg);
+            transition: transform 0.95s ease;
+            pointer-events: none;
+        }
+        .back-hub-btn::after {
+            content: "";
+            position: absolute;
+            inset: 1px;
+            border-radius: inherit;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+        }
+        .back-hub-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            border-color: rgba(15, 23, 42, 0.28);
+            box-shadow: 0 24px 44px -26px rgba(2, 6, 23, 0.88), 0 10px 24px -18px rgba(15, 23, 42, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.96);
+        }
+        .back-hub-btn:hover::before {
+            transform: translateX(82%) rotate(10deg);
+        }
+        .back-hub-btn:focus-visible {
+            outline: 2px solid rgba(15, 23, 42, 0.45);
+            outline-offset: 3px;
+        }
+        .back-hub-icon {
+            background: linear-gradient(165deg, #020202, #1A1A1E 70%);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 14px 22px -14px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: transform 0.35s ease, box-shadow 0.35s ease, filter 0.35s ease;
+        }
+        .back-hub-btn:hover .back-hub-icon {
+            transform: rotate(-11deg) scale(1.08);
+            box-shadow: 0 18px 26px -14px rgba(0, 0, 0, 1), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+            filter: brightness(1.05);
+        }
+        .back-hub-title {
+            color: #0F172A;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+        }
+        @keyframes backHubGlow {
+            0%, 100% { box-shadow: 0 16px 34px -22px rgba(2, 6, 23, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.92), inset 0 -1px 0 rgba(15, 23, 42, 0.08); }
+            50% { box-shadow: 0 22px 38px -24px rgba(2, 6, 23, 0.84), 0 12px 28px -20px rgba(15, 23, 42, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.96); }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand selection:text-white">
+
+        <!-- Back to Hub Button -->
+    <a href="../../../index.html" class="back-hub-btn fixed bottom-6 right-6 md:bottom-8 md:right-8 z-[9999] group flex items-center gap-2.5 px-3.5 py-2 rounded-2xl backdrop-blur-md">
+        <div class="back-hub-icon w-8 h-8 text-white rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        </div>
+        <span class="back-hub-title text-sm font-extrabold tracking-[0.16em] leading-none">BACK</span>
+    </a>
+
+
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-40 bg-surface/90 backdrop-blur-md border-b border-gray-200 transition-all duration-300" id="navbar">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Mobile Menu Toggle -->
+                <button class="lg:hidden text-text-dark p-2 -ml-2 hover:text-brand transition-colors">
+                    <i class="ph ph-list text-2xl"></i>
+                </button>
+
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-2 flex-shrink-0 group">
+                    <div class="w-10 h-10 bg-brand rounded-full flex items-center justify-center text-white shadow-floating group-hover:scale-105 transition-transform">
+                        <i class="ph-fill ph-cooking-pot text-xl"></i>
+                    </div>
+                    <span class="font-heading font-bold text-2xl tracking-tight text-text-dark">Rasa<span class="text-brand">Nusa</span></span>
+                </a>
+
+                <!-- Desktop Nav -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="#menu" class="text-sm font-semibold text-text-dark hover:text-brand transition-colors">Menu</a>
+                    <a href="#promo" class="text-sm font-semibold text-text-dark hover:text-brand transition-colors">Promo</a>
+                    <a href="#reviews" class="text-sm font-semibold text-text-dark hover:text-brand transition-colors">Reviews</a>
+                    <a href="#location" class="text-sm font-semibold text-text-dark hover:text-brand transition-colors">Location</a>
+                    <a href="#contact" class="text-sm font-semibold text-text-dark hover:text-brand transition-colors">Contact</a>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center space-x-4">
+                    <button class="hidden sm:inline-flex items-center justify-center bg-brand hover:bg-brand-hover text-white font-semibold px-6 py-2.5 rounded-full text-sm transition-all shadow-floating transform hover:-translate-y-0.5">
+                        Order Now
+                    </button>
+                    <!-- Cart Button -->
+                    <button onclick="toggleCart()" class="relative p-2 text-text-dark hover:text-brand transition-colors group">
+                        <div class="bg-surface-card rounded-full p-2 shadow-sm border border-gray-100 group-hover:border-brand/30">
+                            <i class="ph ph-shopping-cart text-xl"></i>
+                        </div>
+                        <span id="nav-cart-counter" class="absolute top-0 right-0 bg-accent-red text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-surface transform scale-0 transition-transform duration-300">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Drawer -->
+    <div id="cart-drawer-container" class="fixed inset-0 z-50 pointer-events-none">
+        <!-- Backdrop -->
+        <div id="cart-backdrop" class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300" onclick="toggleCart()"></div>
+        
+        <!-- Drawer -->
+        <div id="cart-drawer" class="absolute top-0 right-0 w-full max-w-md h-full bg-surface-card shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col pointer-events-auto">
+            <!-- Header -->
+            <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-surface-card">
+                <h3 class="font-heading font-bold text-xl flex items-center gap-2">
+                    <i class="ph-fill ph-shopping-bag text-brand"></i> Keranjang Anda
+                </h3>
+                <button onclick="toggleCart()" class="p-2 text-gray-400 hover:text-text-dark hover:bg-gray-100 rounded-full transition-colors">
+                    <i class="ph ph-x text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Cart Items List -->
+            <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar">
+                <!-- Empty State (Default) -->
+                <div id="cart-empty" class="h-full flex flex-col items-center justify-center text-center text-text-muted opacity-60">
+                    <i class="ph ph-shopping-cart text-6xl mb-4"></i>
+                    <p>Keranjang masih kosong.<br>Yuk, pesan makanan enak!</p>
+                </div>
+                <!-- Items will be injected here -->
+            </div>
+
+            <!-- Footer / Checkout -->
+            <div class="border-t border-gray-100 p-6 bg-surface-card">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-text-muted font-medium">Total Pembayaran</span>
+                    <span id="cart-total" class="font-heading font-bold text-2xl text-text-dark">Rp 0</span>
+                </div>
+                <button onclick="checkout()" class="w-full bg-brand hover:bg-brand-hover text-white font-bold py-4 rounded-xl shadow-floating transition-all transform hover:-translate-y-1 flex justify-center items-center gap-2">
+                    Lanjut Pembayaran <i class="ph-bold ph-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="pt-32 pb-16 lg:pt-40 lg:pb-24 overflow-hidden relative">
+        <!-- Background Decoration -->
+        <div class="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[600px] h-[600px] bg-brand/10 rounded-full blur-[100px] -z-10"></div>
+        
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Text Content -->
+                <div class="animate-fade-in z-10 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-light text-brand font-semibold text-sm mb-6 border border-brand/20">
+                        <i class="ph-fill ph-fire"></i> Diskon 20% Pengguna Baru
+                    </div>
+                    <h1 class="font-heading font-extrabold text-5xl md:text-6xl lg:text-7xl leading-[1.15] mb-6">
+                        Sensasi Asli <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-orange-400">Kuliner Nusantara.</span>
+                    </h1>
+                    <p class="text-text-muted text-lg mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                        Nikmati hidangan khas Indonesia yang dimasak dengan bumbu rempah pilihan dan resep warisan leluhur. Hangat, lezat, dan mengenyangkan.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="#menu" class="bg-brand hover:bg-brand-hover text-white font-bold px-8 py-4 rounded-full text-center transition-all shadow-floating transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                            Lihat Menu Kami <i class="ph-bold ph-arrow-down"></i>
+                        </a>
+                        <a href="#location" class="bg-white hover:bg-gray-50 text-text-dark font-semibold px-8 py-4 rounded-full text-center border border-gray-200 transition-colors flex items-center justify-center gap-2 shadow-sm">
+                            <i class="ph-fill ph-map-pin text-brand"></i> Lokasi Kantin
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Hero Image -->
+                <div class="relative animate-fade-in" style="animation-delay: 200ms;">
+                    <div class="relative rounded-3xl overflow-hidden aspect-[4/3] shadow-2xl border-4 border-white transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                        <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=1200&auto=format&fit=crop" alt="Delicious Food" class="w-full h-full object-cover">
+                        <!-- Floating Badge -->
+                        <div class="absolute bottom-6 left-6 bg-white/90 backdrop-blur-md px-4 py-3 rounded-2xl shadow-xl border border-white/50 flex items-center gap-3 animate-bounce" style="animation-duration: 3s;">
+                            <div class="w-10 h-10 bg-accent-green rounded-full flex items-center justify-center text-white">
+                                <i class="ph-bold ph-leaf text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-muted font-medium">Bahan Premium</p>
+                                <p class="font-bold text-sm text-text-dark">100% Segar</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Decorative Element -->
+                    <div class="absolute -z-10 top-1/2 -translate-y-1/2 -right-8 w-full h-full border-2 border-brand/30 rounded-3xl rounded-tr-[100px]"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Menu Section -->
+    <section id="menu" class="py-20 bg-surface-card scroll-mt-20 border-t border-gray-100">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="text-brand font-bold tracking-wider uppercase text-sm mb-2 block">Menu Favorit</span>
+                <h2 class="font-heading font-bold text-3xl md:text-4xl">Jelajahi Rasa Kami</h2>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="flex flex-col lg:flex-row justify-between items-center gap-6 mb-12">
+                <!-- Search Bar -->
+                <div class="relative w-full lg:w-96">
+                    <input type="text" id="search-input" placeholder="Cari makanan atau minuman..." class="w-full bg-surface border border-gray-200 rounded-full pl-12 pr-4 py-3.5 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-colors text-sm">
+                    <i class="ph ph-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
+                </div>
+
+                <!-- Category Filters (Horizontal Scroll on Mobile) -->
+                <div class="flex items-center gap-3 overflow-x-auto w-full lg:w-auto pb-2 lg:pb-0 no-scrollbar" id="category-filters">
+                    <button class="cat-btn active flex-shrink-0 px-6 py-2.5 rounded-full text-sm font-semibold transition-colors bg-text-dark text-white border border-text-dark" data-category="all">Semua Menu</button>
+                    <button class="cat-btn flex-shrink-0 px-6 py-2.5 rounded-full text-sm font-semibold transition-colors bg-surface border border-gray-200 text-text-muted hover:text-text-dark hover:border-gray-300" data-category="utama">Makanan Utama</button>
+                    <button class="cat-btn flex-shrink-0 px-6 py-2.5 rounded-full text-sm font-semibold transition-colors bg-surface border border-gray-200 text-text-muted hover:text-text-dark hover:border-gray-300" data-category="minuman">Minuman</button>
+                    <button class="cat-btn flex-shrink-0 px-6 py-2.5 rounded-full text-sm font-semibold transition-colors bg-surface border border-gray-200 text-text-muted hover:text-text-dark hover:border-gray-300" data-category="snack">Snack</button>
+                    <button class="cat-btn flex-shrink-0 px-6 py-2.5 rounded-full text-sm font-semibold transition-colors bg-surface border border-gray-200 text-text-muted hover:text-text-dark hover:border-gray-300" data-category="paket">Paket Hemat</button>
+                </div>
+            </div>
+
+            <!-- Empty Search State -->
+            <div id="empty-state" class="hidden text-center py-16 text-text-muted">
+                <i class="ph ph-magnifying-glass text-5xl mb-3 opacity-50"></i>
+                <p class="text-lg">Yah, menu yang kamu cari tidak ditemukan.</p>
+                <p class="text-sm">Coba kata kunci lain.</p>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="menu-grid">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Promo Banner Section -->
+    <section id="promo" class="py-16">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-brand rounded-3xl overflow-hidden relative shadow-floating">
+                <!-- Background Pattern -->
+                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white to-transparent" style="background-size: 20px 20px;"></div>
+                
+                <div class="grid md:grid-cols-2 items-center">
+                    <div class="p-10 md:p-16 text-white z-10">
+                        <span class="inline-block bg-white text-brand font-bold text-xs uppercase tracking-widest px-3 py-1 rounded-full mb-4">Promo Terbatas</span>
+                        <h2 class="font-heading font-bold text-3xl md:text-5xl mb-4 leading-tight">Makan Kenyang, Dompet Tenang!</h2>
+                        <p class="text-brand-light text-lg mb-8 max-w-md">Dapatkan Gratis Es Teh Manis dan Potongan Harga 15% untuk setiap pembelian Paket Nasi Komplit khusus hari ini.</p>
+                        <button class="bg-text-dark hover:bg-gray-800 text-white font-bold px-8 py-3.5 rounded-full transition-colors flex items-center gap-2 w-fit">
+                            Klaim Promo <i class="ph-bold ph-ticket"></i>
+                        </button>
+                    </div>
+                    <div class="relative h-64 md:h-full hidden md:block">
+                        <img src="https://images.unsplash.com/photo-1548943487-a2e4d43b4851?q=80&w=800&auto=format&fit=crop" alt="Promo Food" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-r from-brand to-transparent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Slider (Static Flex) -->
+    <section id="reviews" class="py-20 bg-surface-card border-y border-gray-100">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <span class="text-brand font-bold tracking-wider uppercase text-sm mb-2 block">Testimoni</span>
+                    <h2 class="font-heading font-bold text-3xl md:text-4xl">Apa Kata Mereka?</h2>
+                </div>
+                <!-- Navigation Arrows (Cosmetic for static layout) -->
+                <div class="hidden sm:flex gap-2">
+                    <button class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-text-muted hover:bg-brand hover:text-white hover:border-brand transition-colors"><i class="ph-bold ph-arrow-left"></i></button>
+                    <button class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-text-muted hover:bg-brand hover:text-white hover:border-brand transition-colors"><i class="ph-bold ph-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div class="flex gap-6 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-8">
+                <!-- Card 1 -->
+                <div class="snap-center shrink-0 w-[320px] bg-surface rounded-2xl p-8 shadow-soft border border-gray-100">
+                    <div class="flex text-brand mb-4 text-sm"><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i></div>
+                    <p class="text-text-muted mb-6 leading-relaxed">"Nasi Goreng Spesialnya benar-benar juara! Porsinya pas, bumbunya terasa banget, dan packagingnya sangat rapi untuk dibawa pulang."</p>
+                    <div class="flex items-center gap-3">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop" alt="User" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <p class="font-bold text-sm text-text-dark">Sarah Amalia</p>
+                            <p class="text-xs text-text-muted">Pekerja Kantoran</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div class="snap-center shrink-0 w-[320px] bg-surface rounded-2xl p-8 shadow-soft border border-gray-100">
+                    <div class="flex text-brand mb-4 text-sm"><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star-half"></i></div>
+                    <p class="text-text-muted mb-6 leading-relaxed">"Sering pesan katering dari RasaNusa untuk acara kantor. Selalu tepat waktu dan makanannya fresh. Ayam Bakarnya recommended!"</p>
+                    <div class="flex items-center gap-3">
+                        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=150&auto=format&fit=crop" alt="User" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <p class="font-bold text-sm text-text-dark">Budi Santoso</p>
+                            <p class="text-xs text-text-muted">HR Manager</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div class="snap-center shrink-0 w-[320px] bg-surface rounded-2xl p-8 shadow-soft border border-gray-100">
+                    <div class="flex text-brand mb-4 text-sm"><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i></div>
+                    <p class="text-text-muted mb-6 leading-relaxed">"Kopi Susu Gula Aren andalan tiap siang. Manisnya pas nggak bikin eneg. Apalagi kalau ditambah tempe mendoan anget, mantap!"</p>
+                    <div class="flex items-center gap-3">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" alt="User" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <p class="font-bold text-sm text-text-dark">Dina Fitri</p>
+                            <p class="text-xs text-text-muted">Mahasiswa</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 4 -->
+                <div class="snap-center shrink-0 w-[320px] bg-surface rounded-2xl p-8 shadow-soft border border-gray-100">
+                    <div class="flex text-brand mb-4 text-sm"><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i></div>
+                    <p class="text-text-muted mb-6 leading-relaxed">"Harga sangat masuk akal untuk kualitas rasanya. Kantinnya juga bersih banget kalau makan langsung di tempat. Pelayanan ramah."</p>
+                    <div class="flex items-center gap-3">
+                        <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=150&auto=format&fit=crop" alt="User" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <p class="font-bold text-sm text-text-dark">Reza Pratama</p>
+                            <p class="text-xs text-text-muted">Wiraswasta</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ & Location Section -->
+    <section id="location" class="py-20">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16">
+                
+                <!-- FAQ Accordion -->
+                <div>
+                    <span class="text-brand font-bold tracking-wider uppercase text-sm mb-2 block">Informasi</span>
+                    <h2 class="font-heading font-bold text-3xl mb-8">Pertanyaan Umum (FAQ)</h2>
+                    
+                    <div class="space-y-4">
+                        <!-- FAQ Item 1 -->
+                        <div class="bg-surface-card border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                            <button class="faq-btn w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none">
+                                <span class="font-bold text-text-dark">Apakah menerima pesanan dalam jumlah besar (katering)?</span>
+                                <i class="ph ph-caret-down text-gray-400 transition-transform duration-300"></i>
+                            </button>
+                            <div class="faq-answer bg-surface">
+                                <p class="text-text-muted pb-5 px-6 text-sm">Ya, kami menerima pesanan katering untuk acara kantor, syukuran, atau ulang tahun. Mohon hubungi H-2 sebelum acara untuk konfirmasi.</p>
+                            </div>
+                        </div>
+                        <!-- FAQ Item 2 -->
+                        <div class="bg-surface-card border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                            <button class="faq-btn w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none">
+                                <span class="font-bold text-text-dark">Bisa request tingkat kepedasan?</span>
+                                <i class="ph ph-caret-down text-gray-400 transition-transform duration-300"></i>
+                            </button>
+                            <div class="faq-answer bg-surface">
+                                <p class="text-text-muted pb-5 px-6 text-sm">Tentu saja. Anda bisa memilih level pedas (Sedang/Pedas/Ekstra Pedas) saat memesan menu tertentu melalui sistem order kami.</p>
+                            </div>
+                        </div>
+                        <!-- FAQ Item 3 -->
+                        <div class="bg-surface-card border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                            <button class="faq-btn w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none">
+                                <span class="font-bold text-text-dark">Metode pembayaran apa saja yang tersedia?</span>
+                                <i class="ph ph-caret-down text-gray-400 transition-transform duration-300"></i>
+                            </button>
+                            <div class="faq-answer bg-surface">
+                                <p class="text-text-muted pb-5 px-6 text-sm">Kami menerima pembayaran tunai (di tempat), QRIS, Transfer Bank, dan e-wallet (GoPay, OVO, Dana, ShopeePay).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location & Hours -->
+                <div>
+                    <span class="text-brand font-bold tracking-wider uppercase text-sm mb-2 block">Kunjungi Kami</span>
+                    <h2 class="font-heading font-bold text-3xl mb-8">Lokasi & Jam Buka</h2>
+                    
+                    <div class="bg-surface-card p-2 rounded-2xl border border-gray-200 shadow-soft mb-6">
+                        <!-- Static Image representing Map -->
+                        <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop" alt="Restaurant Map" class="w-full h-48 object-cover rounded-xl">
+                    </div>
+
+                    <div class="grid sm:grid-cols-2 gap-6">
+                        <div class="bg-surface-card p-6 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-brand-light text-brand flex items-center justify-center shrink-0">
+                                <i class="ph-fill ph-map-pin text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-text-dark mb-1">Alamat</h4>
+                                <p class="text-sm text-text-muted leading-relaxed">Jl. Sudirman Kav 25,<br>Gedung Menara Mulia Lt. Dasar,<br>Jakarta Selatan</p>
+                            </div>
+                        </div>
+                        <div class="bg-surface-card p-6 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-brand-light text-brand flex items-center justify-center shrink-0">
+                                <i class="ph-fill ph-clock text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-text-dark mb-1">Jam Operasional</h4>
+                                <ul class="text-sm text-text-muted space-y-1">
+                                    <li class="flex justify-between"><span>Sen - Jum:</span> <span>08:00 - 20:00</span></li>
+                                    <li class="flex justify-between"><span>Sabtu:</span> <span>09:00 - 15:00</span></li>
+                                    <li class="flex justify-between text-accent-red"><span>Minggu:</span> <span>Tutup</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-text-dark text-white pt-20 pb-10 rounded-t-[40px] mt-10">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <!-- Brand -->
+                <div class="lg:col-span-1">
+                    <a href="#" class="flex items-center gap-2 mb-6">
+                        <div class="w-10 h-10 bg-brand rounded-full flex items-center justify-center text-white">
+                            <i class="ph-fill ph-cooking-pot text-xl"></i>
+                        </div>
+                        <span class="font-heading font-bold text-2xl tracking-tight text-white">Rasa<span class="text-brand">Nusa</span></span>
+                    </a>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        Menghadirkan hidangan autentik Nusantara yang dimasak dengan penuh cinta untuk menemani hari sibuk Anda.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand transition-colors"><i class="ph-fill ph-instagram-logo text-lg"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand transition-colors"><i class="ph-fill ph-whatsapp-logo text-lg"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand transition-colors"><i class="ph-fill ph-facebook-logo text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="font-bold text-lg mb-6 text-white">Pintasan</h4>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li><a href="#menu" class="hover:text-brand transition-colors">Lihat Menu</a></li>
+                        <li><a href="#promo" class="hover:text-brand transition-colors">Promo Spesial</a></li>
+                        <li><a href="#reviews" class="hover:text-brand transition-colors">Testimoni Pelanggan</a></li>
+                        <li><a href="#location" class="hover:text-brand transition-colors">Lokasi Kantin</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="font-bold text-lg mb-6 text-white">Hubungi Kami</h4>
+                    <ul class="space-y-4 text-sm text-gray-400">
+                        <li class="flex items-start gap-3">
+                            <i class="ph-fill ph-phone text-brand text-lg mt-0.5"></i>
+                            <span>+62 812 3456 7890<br>(Pemesanan / Katering)</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="ph-fill ph-envelope-simple text-brand text-lg mt-0.5"></i>
+                            <span>halo@rasanusa.id</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="font-bold text-lg mb-6 text-white">Newsletter</h4>
+                    <p class="text-gray-400 text-sm mb-4">Dapatkan info menu baru dan promo diskon mingguan.</p>
+                    <form class="flex" onsubmit="event.preventDefault(); alert('Berhasil berlangganan!');">
+                        <input type="email" placeholder="Email Anda" required class="bg-white/5 border border-white/10 rounded-l-xl px-4 py-2.5 w-full text-sm focus:outline-none focus:border-brand text-white">
+                        <button type="submit" class="bg-brand hover:bg-brand-hover text-white px-4 py-2.5 rounded-r-xl font-bold transition-colors"><i class="ph-bold ph-paper-plane-right"></i></button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+                <p>&copy; 2026 Kantin RasaNusa. Hak Cipta Dilindungi.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition-colors">Kebijakan Privasi</a>
+                    <a href="#" class="hover:text-white transition-colors">Syarat & Ketentuan</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Detail Menu -->
+    <div id="menu-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-text-dark/80 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+        
+        <!-- Modal Content -->
+        <div class="bg-surface-card w-full max-w-2xl rounded-3xl overflow-hidden relative z-10 shadow-2xl animate-fade-in flex flex-col md:flex-row max-h-[90vh]">
+            <!-- Close Btn -->
+            <button onclick="closeModal()" class="absolute top-4 right-4 z-20 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-brand transition-colors">
+                <i class="ph ph-x"></i>
+            </button>
+
+            <!-- Image -->
+            <div class="w-full md:w-2/5 h-64 md:h-auto bg-gray-100 relative">
+                <img id="modal-img" src="" alt="Food" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent md:hidden"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="w-full md:w-3/5 p-6 md:p-8 overflow-y-auto no-scrollbar flex flex-col">
+                <div id="modal-badge-container" class="mb-2"></div>
+                <h3 id="modal-title" class="font-heading font-bold text-2xl text-text-dark mb-2">Nama Menu</h3>
+                <p id="modal-desc" class="text-text-muted text-sm leading-relaxed mb-6">Deskripsi makanan akan muncul di sini.</p>
+                
+                <p id="modal-price" class="font-heading font-bold text-brand text-2xl mb-6">Rp 0</p>
+
+                <!-- Spicy Level Options (Dummy) -->
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-text-dark mb-3">Tingkat Kepedasan</label>
+                    <div class="flex gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="spicy" class="peer sr-only" checked>
+                            <div class="px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium peer-checked:border-brand peer-checked:bg-brand-light peer-checked:text-brand hover:border-gray-300 transition-colors">Biasa</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="spicy" class="peer sr-only">
+                            <div class="px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium peer-checked:border-accent-red peer-checked:bg-red-50 peer-checked:text-accent-red hover:border-gray-300 transition-colors">Pedas</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Add Ons Options (Dummy) -->
+                <div class="mb-8">
+                    <label class="block text-sm font-bold text-text-dark mb-3">Tambahan (Opsional)</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center justify-between cursor-pointer group">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" class="w-4 h-4 text-brand rounded focus:ring-brand border-gray-300">
+                                <span class="text-sm text-text-muted group-hover:text-text-dark">Telur Ceplok</span>
+                            </div>
+                            <span class="text-sm text-text-muted">+ Rp 5.000</span>
+                        </label>
+                        <label class="flex items-center justify-between cursor-pointer group">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" class="w-4 h-4 text-brand rounded focus:ring-brand border-gray-300">
+                                <span class="text-sm text-text-muted group-hover:text-text-dark">Kerupuk Kulit</span>
+                            </div>
+                            <span class="text-sm text-text-muted">+ Rp 8.000</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Add to Cart Action -->
+                <div class="mt-auto flex gap-4 border-t border-gray-100 pt-6">
+                    <div class="border border-gray-200 rounded-xl flex items-center w-28 bg-surface shrink-0">
+                        <button class="w-8 h-10 flex items-center justify-center text-text-muted hover:text-brand" onclick="changeQty(-1)"><i class="ph-bold ph-minus"></i></button>
+                        <input type="text" id="modal-qty" value="1" class="w-full text-center text-sm font-bold outline-none bg-transparent" readonly>
+                        <button class="w-8 h-10 flex items-center justify-center text-text-muted hover:text-brand" onclick="changeQty(1)"><i class="ph-bold ph-plus"></i></button>
+                    </div>
+                    <button id="btn-add-to-cart" class="flex-1 bg-brand hover:bg-brand-hover text-white font-bold py-3 rounded-xl shadow-floating transition-colors">
+                        Tambah ke Keranjang
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        // --- 1. Menu Data ---
+        const menuData = [
+            { id: 1, name: "Nasi Goreng Spesial", category: "utama", price: 35000, tag: "Best Seller", img: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=800", desc: "Nasi goreng bumbu rempah dengan telur mata sapi, ayam suwir, acar, dan kerupuk renyah." },
+            { id: 2, name: "Sate Ayam Madura", category: "utama", price: 30000, tag: "Best Seller", img: "https://images.unsplash.com/photo-1555126634-ae23443a33c4?auto=format&fit=crop&q=80&w=800", desc: "10 tusuk sate ayam empuk dengan baluran bumbu kacang legit dan irisan bawang merah." },
+            { id: 3, name: "Soto Betawi Kuah Susu", category: "utama", price: 40000, tag: "", img: "https://images.unsplash.com/photo-1548943487-a2e4d43b4851?auto=format&fit=crop&q=80&w=800", desc: "Soto daging sapi dengan kuah susu dan santan yang gurih, disajikan dengan emping." },
+            { id: 4, name: "Nasi Padang Rendang", category: "utama", price: 38000, tag: "Terlaris", img: "https://images.unsplash.com/photo-1581452288151-248356973e6f?auto=format&fit=crop&q=80&w=800", desc: "Nasi putih dengan rendang sapi empuk, daun singkong, gulai nangka, dan sambal ijo." },
+            
+            { id: 5, name: "Kopi Susu Gula Aren", category: "minuman", price: 18000, tag: "Fresh", img: "https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&q=80&w=800", desc: "Perpaduan espresso, susu segar, dan gula aren asli. Segar dan membangkitkan semangat." },
+            { id: 6, name: "Es Teh Manis Jumbo", category: "minuman", price: 8000, tag: "", img: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&q=80&w=800", desc: "Teh melati seduh dengan gula asli dan es batu berlimpah dalam porsi jumbo." },
+            { id: 7, name: "Jus Alpukat Coklat", category: "minuman", price: 20000, tag: "", img: "https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&q=80&w=800", desc: "Jus alpukat kental dengan siraman susu kental manis coklat murni." },
+            
+            { id: 8, name: "Tempe Mendoan Panas", category: "snack", price: 15000, tag: "Best Seller", img: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=800", desc: "1 Porsi isi 4 tempe mendoan hangat digoreng setengah matang disajikan dengan sambal kecap." },
+            { id: 9, name: "Pisang Goreng Keju", category: "snack", price: 18000, tag: "", img: "https://images.unsplash.com/photo-1580915411954-282cb1b0d780?auto=format&fit=crop&q=80&w=800", desc: "Pisang kepok goreng renyah ditaburi parutan keju melimpah dan susu kental manis." },
+            { id: 10, name: "Tahu Walik Crispy", category: "snack", price: 16000, tag: "Fresh", img: "https://images.unsplash.com/photo-1596645396593-9c8e87d0e40e?auto=format&fit=crop&q=80&w=800", desc: "Tahu pong dibalik dan diisi adonan aci gurih, digoreng super krispi dengan cocolan petis." },
+            
+            { id: 11, name: "Paket Nasi Ayam Bakar", category: "paket", price: 45000, tag: "Hemat", img: "https://images.unsplash.com/photo-1606755456206-b25206cde27e?auto=format&fit=crop&q=80&w=800", desc: "Nasi putih, Ayam Bakar Bumbu Rujak, Tahu, Tempe, Lalapan, Sambal, + Es Teh Manis." },
+            { id: 12, name: "Paket Nasi Pecel Lele", category: "paket", price: 35000, tag: "Hemat", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=800", desc: "Nasi putih hangat, 2 ekor Lele Goreng, Sambal Terasi ekstra pedas, Lalapan + Es Teh Manis." }
+        ];
+
+        // Format Rupiah
+        const formatRp = (price) => {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(price);
+        };
+
+        // --- 2. Render Menu Grid ---
+        const menuGrid = document.getElementById('menu-grid');
+        const emptyState = document.getElementById('empty-state');
+        let currentFilter = 'all';
+
+        function renderMenu(items) {
+            menuGrid.innerHTML = '';
+            
+            if (items.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            items.forEach((item, index) => {
+                const delay = (index % 12) * 50; // Simple cascading animation
+                
+                let badgeHTML = '';
+                if (item.tag) {
+                    const badgeColor = item.tag === 'Fresh' ? 'bg-accent-green text-white' : (item.tag === 'Hemat' ? 'bg-accent-red text-white' : 'bg-brand text-white');
+                    badgeHTML = `<span class="absolute top-4 left-4 ${badgeColor} text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm z-10">${item.tag}</span>`;
+                }
+
+                const cardHTML = `
+                    <div class="bg-surface-card rounded-2xl overflow-hidden shadow-sm border border-gray-100 group cursor-pointer hover:shadow-floating transition-all duration-300 opacity-0 animate-fade-in flex flex-col h-full" style="animation-delay: ${delay}ms;" onclick="openModal(${item.id})">
+                        <div class="relative w-full h-48 bg-gray-100 img-zoom-container shrink-0">
+                            ${badgeHTML}
+                            <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover object-center" loading="lazy">
+                        </div>
+                        <div class="p-5 flex flex-col flex-1">
+                            <h3 class="font-heading font-bold text-lg mb-1 text-text-dark group-hover:text-brand transition-colors">${item.name}</h3>
+                            <p class="text-xs text-text-muted line-clamp-2 mb-4 flex-1">${item.desc}</p>
+                            <div class="flex items-center justify-between mt-auto">
+                                <span class="font-bold text-brand text-lg">${formatRp(item.price)}</span>
+                                <button class="w-10 h-10 rounded-full bg-brand-light text-brand flex items-center justify-center group-hover:bg-brand group-hover:text-white transition-colors" onclick="event.stopPropagation(); openModal(${item.id})">
+                                    <i class="ph-bold ph-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                menuGrid.innerHTML += cardHTML;
+            });
+        }
+
+        // --- 3. Filter & Search Logic ---
+        const searchInput = document.getElementById('search-input');
+        const catBtns = document.querySelectorAll('.cat-btn');
+
+        function applyFilters() {
+            const term = searchInput.value.toLowerCase();
+            const filtered = menuData.filter(item => {
+                const matchSearch = item.name.toLowerCase().includes(term);
+                const matchCat = currentFilter === 'all' || item.category === currentFilter;
+                return matchSearch && matchCat;
+            });
+            renderMenu(filtered);
+        }
+
+        searchInput.addEventListener('input', applyFilters);
+
+        catBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Update active state visual
+                catBtns.forEach(b => {
+                    b.classList.remove('bg-text-dark', 'text-white', 'border-text-dark');
+                    b.classList.add('bg-surface', 'text-text-muted', 'border-gray-200');
+                });
+                e.target.classList.remove('bg-surface', 'text-text-muted', 'border-gray-200');
+                e.target.classList.add('bg-text-dark', 'text-white', 'border-text-dark');
+                
+                currentFilter = e.target.getAttribute('data-category');
+                applyFilters();
+            });
+        });
+
+        // --- 4. Modal Logic ---
+        const modal = document.getElementById('menu-modal');
+        const modalQtyInput = document.getElementById('modal-qty');
+        let selectedItem = null;
+        let currentQty = 1;
+
+        function openModal(id) {
+            selectedItem = menuData.find(m => m.id === id);
+            if(!selectedItem) return;
+
+            currentQty = 1;
+            modalQtyInput.value = currentQty;
+
+            document.getElementById('modal-img').src = selectedItem.img;
+            document.getElementById('modal-title').textContent = selectedItem.name;
+            document.getElementById('modal-desc').textContent = selectedItem.desc;
+            document.getElementById('modal-price').textContent = formatRp(selectedItem.price);
+            
+            const badgeContainer = document.getElementById('modal-badge-container');
+            if(selectedItem.tag) {
+                 const badgeColor = selectedItem.tag === 'Fresh' ? 'bg-accent-green text-white' : (selectedItem.tag === 'Hemat' ? 'bg-accent-red text-white' : 'bg-brand text-white');
+                 badgeContainer.innerHTML = `<span class="inline-block ${badgeColor} text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">${selectedItem.tag}</span>`;
+            } else {
+                 badgeContainer.innerHTML = '';
+            }
+
+            // Assign event listener directly to prevent multiple bindings
+            document.getElementById('btn-add-to-cart').onclick = () => addToCart(selectedItem, currentQty);
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        function changeQty(delta) {
+            let newQty = currentQty + delta;
+            if (newQty >= 1 && newQty <= 20) {
+                currentQty = newQty;
+                modalQtyInput.value = currentQty;
+            }
+        }
+
+        // --- 5. Cart Logic ---
+        let cart = [];
+        const cartDrawerContainer = document.getElementById('cart-drawer-container');
+        const cartDrawer = document.getElementById('cart-drawer');
+        const cartBackdrop = document.getElementById('cart-backdrop');
+        const cartCounter = document.getElementById('nav-cart-counter');
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cartEmpty = document.getElementById('cart-empty');
+        const cartTotalEl = document.getElementById('cart-total');
+        let cartOpen = false;
+
+        function addToCart(item, qty) {
+            const existingItem = cart.find(c => c.id === item.id);
+            if (existingItem) {
+                existingItem.qty += qty;
+            } else {
+                cart.push({ ...item, qty: qty });
+            }
+            
+            updateCartUI();
+            closeModal();
+            
+            // Notification pop
+            toggleCart(); 
+        }
+
+        function updateCartUI() {
+            // Update Counter
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            cartCounter.textContent = totalItems;
+            if(totalItems > 0) {
+                cartCounter.classList.remove('scale-0');
+                cartCounter.classList.add('scale-100');
+                cartCounter.classList.add('animate-bounce');
+                setTimeout(() => cartCounter.classList.remove('animate-bounce'), 1000);
+            } else {
+                cartCounter.classList.add('scale-0');
+                cartCounter.classList.remove('scale-100');
+            }
+
+            // Render Items in Drawer
+            let totalRp = 0;
+            const itemNodes = cartItemsContainer.querySelectorAll('.cart-item-row');
+            itemNodes.forEach(n => n.remove()); // clear previous items
+
+            if (cart.length === 0) {
+                cartEmpty.classList.remove('hidden');
+            } else {
+                cartEmpty.classList.add('hidden');
+                
+                cart.forEach((item, idx) => {
+                    totalRp += item.price * item.qty;
+                    const el = document.createElement('div');
+                    el.className = 'cart-item-row flex gap-4 items-center bg-surface p-3 rounded-xl border border-gray-100';
+                    el.innerHTML = `
+                        <img src="${item.img}" class="w-16 h-16 rounded-lg object-cover">
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-text-dark line-clamp-1">${item.name}</h4>
+                            <p class="text-brand font-semibold text-sm">${formatRp(item.price)}</p>
+                        </div>
+                        <div class="flex items-center gap-2 bg-surface-card border border-gray-200 rounded-lg px-2 py-1">
+                            <span class="text-xs font-bold text-text-muted">x${item.qty}</span>
+                        </div>
+                        <button onclick="removeFromCart(${idx})" class="text-gray-400 hover:text-accent-red transition-colors p-1">
+                            <i class="ph-fill ph-trash text-lg"></i>
+                        </button>
+                    `;
+                    cartItemsContainer.appendChild(el);
+                });
+            }
+
+            cartTotalEl.textContent = formatRp(totalRp);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function toggleCart() {
+            cartOpen = !cartOpen;
+            if (cartOpen) {
+                cartDrawerContainer.classList.remove('pointer-events-none');
+                cartBackdrop.classList.remove('opacity-0');
+                cartBackdrop.classList.add('opacity-100');
+                cartDrawer.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
+            } else {
+                cartBackdrop.classList.remove('opacity-100');
+                cartBackdrop.classList.add('opacity-0');
+                cartDrawer.classList.add('translate-x-full');
+                
+                setTimeout(() => {
+                    cartDrawerContainer.classList.add('pointer-events-none');
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+        }
+
+        function checkout() {
+            if(cart.length === 0) {
+                alert("Keranjang Anda kosong!");
+                return;
+            }
+            alert(`Pesanan senilai ${cartTotalEl.textContent} berhasil diproses (Mode Statis).`);
+            cart = [];
+            updateCartUI();
+            toggleCart();
+        }
+
+        // --- 6. FAQ Accordion Logic ---
+        const faqBtns = document.querySelectorAll('.faq-btn');
+        faqBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const answer = btn.nextElementSibling;
+                const icon = btn.querySelector('i');
+                const isOpen = answer.classList.contains('open');
+
+                // Close all
+                document.querySelectorAll('.faq-answer').forEach(ans => ans.classList.remove('open'));
+                document.querySelectorAll('.faq-btn i').forEach(i => i.style.transform = 'rotate(0deg)');
+
+                if (!isOpen) {
+                    answer.classList.add('open');
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            });
+        });
+
+        // --- 7. Sticky Navbar Shadow ---
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                navbar.classList.add('shadow-soft');
+            } else {
+                navbar.classList.remove('shadow-soft');
+            }
+        });
+
+        // --- Initialize ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMenu(menuData);
+        });
+
+    </script>
+</body>
+</html>

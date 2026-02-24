@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statis - Theme Gallery</title>
+    <title>S // Design Theme Hub</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta name="application-name" content="S">
+    <meta name="theme-color" content="#000000">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -206,10 +209,33 @@
                 <div class="w-8 h-8 rounded bg-gradient-to-br from-brand-gold to-yellow-600 text-black flex items-center justify-center font-black group-hover:rotate-12 transition-transform">S</div>
                 <span>Statis.<span class="text-brand-gold-light font-normal">themes</span></span>
             </a>
-            <div class="flex gap-4">
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#collection" class="text-xs font-black tracking-[0.2em] uppercase text-gray-400 hover:text-brand-gold transition-colors">Themes</a>
+                <a href="#industry-solutions" class="text-xs font-black tracking-[0.2em] uppercase text-gray-400 hover:text-brand-gold transition-colors">Templates</a>
+                <a href="#features" class="text-xs font-black tracking-[0.2em] uppercase text-gray-400 hover:text-brand-gold transition-colors">Philosophy</a>
+            </div>
+
+            <div class="flex items-center gap-4">
                 <a href="https://github.com" target="_blank" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white hover:text-black transition-colors">
                     <i class="fa-brands fa-github text-lg"></i>
                 </a>
+                <!-- Mobile Menu Toggle -->
+                <button id="mobile-toggle" class="md:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5 focus:outline-none group">
+                    <span class="w-6 h-0.5 bg-white transition-all group-hover:bg-brand-gold"></span>
+                    <span class="w-6 h-0.5 bg-white transition-all group-hover:bg-brand-gold"></span>
+                    <span class="w-4 h-0.5 bg-brand-gold self-end transition-all"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Container -->
+        <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-brand-black/95 backdrop-blur-2xl border-b border-white/10 overflow-hidden transition-all duration-500 max-h-0">
+            <div class="flex flex-col p-12 gap-8 items-center">
+                <a href="#collection" onclick="toggleMobileMenu()" class="text-3xl font-black tracking-tighter text-gray-500 hover:text-brand-gold transition-colors">Themes</a>
+                <a href="#industry-solutions" onclick="toggleMobileMenu()" class="text-3xl font-black tracking-tighter text-gray-500 hover:text-brand-gold transition-colors">Templates</a>
+                <a href="#features" onclick="toggleMobileMenu()" class="text-3xl font-black tracking-tighter text-gray-500 hover:text-brand-gold transition-colors">Philosophy</a>
             </div>
         </div>
     </nav>
@@ -466,9 +492,40 @@
         </div>
     </section>
 
+    <!-- Industry Templates Gallery -->
+    <section id="industry-solutions" class="py-32 px-6 relative z-10 bg-brand-dark overflow-hidden border-t border-white/5">
+        <div class="absolute top-0 left-0 w-[600px] h-[600px] bg-brand-gold/5 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="flex flex-col md:flex-row items-start md:items-end justify-between mb-20 gap-8">
+                <div>
+                    <span class="inline-block px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-brand-gold text-xs font-black uppercase tracking-[0.2em] mb-4">Professional Collection</span>
+                    <h2 class="text-4xl md:text-6xl font-black tracking-tight leading-none mb-4">
+                        Industry <span class="text-brand-gold italic">Solutions.</span>
+                    </h2>
+                    <p class="text-gray-500 text-lg max-w-md font-light">Specialized functional templates built for real-world business requirements.</p>
+                </div>
+                
+                <div class="flex flex-wrap gap-3 p-1.5 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md" id="industry-filter-buttons">
+                    <button onclick="filterIndustry('all')" class="industry-filter-btn active px-6 py-2.5 text-sm font-bold bg-white text-black rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all">All</button>
+                    <button onclick="filterIndustry('corporate')" class="industry-filter-btn px-6 py-2.5 text-sm font-semibold text-gray-400 hover:text-white rounded-full transition-all">Corporate</button>
+                    <button onclick="filterIndustry('creative')" class="industry-filter-btn px-6 py-2.5 text-sm font-semibold text-gray-400 hover:text-white rounded-full transition-all">Creative</button>
+                    <button onclick="filterIndustry('e-commerce')" class="industry-filter-btn px-6 py-2.5 text-sm font-semibold text-gray-400 hover:text-white rounded-full transition-all">E-Commerce</button>
+                    <button onclick="filterIndustry('event')" class="industry-filter-btn px-6 py-2.5 text-sm font-semibold text-gray-400 hover:text-white rounded-full transition-all">Event</button>
+                    <button onclick="filterIndustry('education')" class="industry-filter-btn px-6 py-2.5 text-sm font-semibold text-gray-400 hover:text-white rounded-full transition-all">Education</button>
+                </div>
+            </div>
+
+            <!-- Industry Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10" id="industry-grid">
+                <!-- Industry Cards will be injected by JS -->
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="py-8 border-t border-white/5 text-center text-sm text-gray-500 bg-brand-black">
-        <p>&copy; 2024 Statis. All rights reserved. Crafted with precision.</p>
+        <p>&copy; 2026 Jakkob Panj. All rights reserved. Crafted with precision.</p>
     </footer>
 
     <script>
@@ -486,22 +543,46 @@
             { id: 'coming-soon', name: 'Coming Soon', desc: 'More unique themes and high-performance blocks are currently in development.', icon: 'fa-hourglass-half', category: 'all', status: 'upcoming', previewHTML: `<div class="absolute inset-0 bg-neutral-900 flex items-center justify-center overflow-hidden"><div class="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px]"></div><div class="relative"><div class="w-16 h-16 rounded-full border-2 border-dashed border-neutral-700 animate-[spin_10s_linear_infinite]"></div><i class="fa-solid fa-plus absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral-500 text-xl"></i></div></div>` },
         ];
 
-        const grid = document.getElementById('theme-grid');
+        const industryThemes = [
+            // Corporate
+            { id: 'aetherix', name: 'Aetherix', desc: 'Sleek corporate presence with a focus on trust and performance.', icon: 'fa-building', category: 'corporate', path: 'template-web/Corporate/aetherix/index.html', previewHTML: `<div class="absolute inset-0 bg-slate-900 p-4 flex flex-col gap-3"><div class="w-full h-4 bg-white/10 rounded-full"></div><div class="flex gap-3"><div class="w-1/2 h-20 bg-blue-500/10 rounded-xl border border-blue-500/20"></div><div class="w-1/2 h-20 bg-white/5 rounded-xl border border-white/10"></div></div><div class="w-2/3 h-2 bg-white/5 rounded-full"></div></div>` },
+            { id: 'flow-pilot', name: 'Flow-Pilot', desc: 'Dynamic dashboard and workflow solution for modern startups.', icon: 'fa-rocket', category: 'corporate', path: 'template-web/Corporate/flow-pilot/index.html', previewHTML: `<div class="absolute inset-0 bg-brand-black p-4"><div class="flex items-center gap-3 mb-4"><div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center"><i class="fa-solid fa-wind text-xs"></i></div><div class="w-24 h-2 bg-white/10 rounded-full"></div></div><div class="grid grid-cols-2 gap-3"><div class="h-16 bg-white/5 rounded-lg border border-white/10"></div><div class="h-16 bg-indigo-500/5 rounded-lg border border-indigo-500/20"></div></div></div>` },
+            { id: 'noctra', name: 'Noctra', desc: 'Sophisticated dark theme for high-end tech and AI ventures.', icon: 'fa-moon', category: 'corporate', path: 'template-web/Corporate/noctra/index.html', previewHTML: `<div class="absolute inset-0 bg-[#050505] flex flex-col justify-center items-center p-6"><div class="w-12 h-12 rounded-full bg-brand-gold/10 border border-brand-gold/30 flex items-center justify-center mb-4"><div class="w-6 h-6 rounded-full bg-brand-gold/40 animate-pulse"></div></div><div class="w-32 h-1 bg-white/10 rounded-full mb-2"></div><div class="w-24 h-1 bg-white/5 rounded-full"></div></div>` },
+            
+            // Creative
+            { id: 'game', name: 'Game Portal', desc: 'Immersive landing page for gaming communities and studios.', icon: 'fa-gamepad', category: 'creative', path: 'template-web/Creative/game/index.html', previewHTML: `<div class="absolute inset-0 bg-red-950/20 overflow-hidden"><div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div><div class="absolute bottom-4 left-4 right-4 h-1/2 bg-gradient-to-t from-red-600/20 to-transparent rounded-t-3xl border-t border-red-500/30"></div><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-red-500 text-6xl opacity-10"><i class="fa-solid fa-skull"></i></div></div>` },
+            { id: 'studio-anime', name: 'Studio Anime', desc: 'Vibrant, high-energy portfolio for creative agencies and artists.', icon: 'fa-burst', category: 'creative', path: 'template-web/Creative/studio-anime/index.html', previewHTML: `<div class="absolute inset-0 bg-pink-500/10 border-4 border-white overflow-hidden p-3" style="background-image: repeating-linear-gradient(45deg, #FF69B410 0, #FF69B410 2px, transparent 2px, transparent 10px);"><div class="w-16 h-16 bg-white rotate-12 shadow-xl flex items-center justify-center font-black text-pink-500 text-xl border-2 border-black">A!</div></div>` },
 
-        function renderThemes(filter = 'all') {
+            // E-Commerce
+            { id: 'rasa-nusa', name: 'Rasa-Nusa', desc: 'Cultural and traditional e-commerce for authentic heritage products.', icon: 'fa-shop', category: 'e-commerce', path: 'template-web/E-commerace/rasa-nusa/index.html', previewHTML: `<div class="absolute inset-0 bg-[#faf7f2] p-4 flex flex-col gap-4"><div class="w-full h-8 bg-[#8b4513]/10 rounded flex items-center px-3"><div class="w-1/3 h-2 bg-[#8b4513]/30 rounded-full"></div></div><div class="grid grid-cols-2 gap-4 h-full"><div class="bg-white rounded-xl shadow-sm border border-[#8b4513]/10 p-2"><div class="w-full h-12 bg-[#8b4513]/5 rounded-lg mb-2"></div><div class="w-full h-1 bg-[#8b4513]/20 rounded-full"></div></div><div class="bg-white rounded-xl shadow-sm border border-[#8b4513]/10 p-2"><div class="w-full h-12 bg-[#8b4513]/5 rounded-lg mb-2"></div><div class="w-full h-1 bg-[#8b4513]/20 rounded-full"></div></div></div></div>` },
+            { id: 'velora', name: 'Velora Fashion', desc: 'Minimalist high-end marketplace for lifestyle and fashion brands.', icon: 'fa-bag-shopping', category: 'e-commerce', path: 'template-web/E-commerace/velora/index.html', previewHTML: `<div class="absolute inset-0 bg-white flex flex-col items-center justify-center p-8"><div class="w-full h-32 bg-gray-50 flex items-center justify-center relative overflow-hidden group-hover:bg-gray-100 transition-colors"><div class="w-20 h-24 bg-white shadow-xl transition-transform duration-700 group-hover:rotate-6"></div></div><div class="mt-4 text-center"><div class="w-24 h-2 bg-gray-200 rounded-full mb-1 mx-auto"></div><div class="w-16 h-1 bg-gray-100 rounded-full mx-auto"></div></div></div>` },
+
+            // Event
+            { id: 'campaign', name: 'Influence PR', desc: 'Strategic landing page for social and political movement awareness.', icon: 'fa-bullhorn', category: 'event', path: 'template-web/Event/campaign/index.html', previewHTML: `<div class="absolute inset-0 bg-indigo-900 border-l-[20px] border-orange-500 p-6 flex flex-col justify-center"><div class="text-white font-black text-xl italic uppercase tracking-tighter mb-2">Voice Of<br>Change.</div><div class="w-16 h-1 bg-orange-500"></div></div>` },
+            { id: 'dashboard-ev', name: 'EventX Hub', desc: 'Complete management system for conferences and large events.', icon: 'fa-calendar-check', category: 'event', path: 'template-web/Event/dashboard/index.html', previewHTML: `<div class="absolute inset-0 bg-slate-50 p-4 flex gap-3"><div class="w-1/4 h-full bg-white border border-slate-200 rounded-lg flex flex-col p-2 gap-2"><div class="w-full h-2 bg-slate-100 rounded-full"></div><div class="w-full h-2 bg-slate-100 rounded-full"></div></div><div class="flex-grow flex flex-col gap-3"><div class="h-10 bg-indigo-600 rounded-lg shadow-lg"></div><div class="flex-grow bg-white border border-slate-200 rounded-lg"></div></div></div>` },
+            { id: 'happy-birthday', name: 'Gala BDay', desc: 'Cheerful and high-energy interactive birthday portal.', icon: 'fa-cake-candles', category: 'event', path: 'template-web/Event/happy-birthday/index.html', previewHTML: `<div class="absolute inset-0 bg-yellow-400 p-4 flex flex-col items-center justify-center overflow-hidden" style="background-image: radial-gradient(rgba(255,255,255,0.3) 15%, transparent 16%), radial-gradient(rgba(255,255,255,0.3) 15%, transparent 16%); background-size: 16px 16px; background-position: 0 0, 8px 8px;"><div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl animate-bounce"><i class="fa-solid fa-gift text-2xl text-yellow-600"></i></div></div>` },
+            { id: 'valentine', name: 'Amore Portal', desc: 'Elegant and romantic space for seasonal special occasions.', icon: 'fa-heart', category: 'event', path: 'template-web/Event/valentine/index.html', previewHTML: `<div class="absolute inset-0 bg-red-50 flex items-center justify-center overflow-hidden"><div class="absolute w-64 h-64 bg-red-500/10 rounded-full blur-3xl"></div><i class="fa-solid fa-heart text-6xl text-red-500/20 animate-pulse"></i><div class="absolute inset-4 border border-red-200/50 rounded-2xl"></div></div>` },
+            { id: 'wedding', name: 'Eternity Invite', desc: 'Modern digital invitation suite with RSVP and story modules.', icon: 'fa-rings-wedding', category: 'event', path: 'template-web/Event/wedding/index.html', previewHTML: `<div class="absolute inset-0 bg-[#f8f5f2] p-6 flex flex-col items-center justify-center text-center"><div class="border border-brand-gold/20 p-4 relative"><div class="absolute -top-1 -left-1 w-2 h-2 bg-brand-gold"></div><div class="absolute -bottom-1 -right-1 w-2 h-2 bg-brand-gold"></div><div class="font-serif text-brand-gold text-[8px] uppercase tracking-[.3em] mb-1">Eternity</div><div class="w-16 h-[1px] bg-brand-gold/30 mx-auto"></div></div></div>` },
+
+            // Education
+            { id: 'school', name: 'Academic Elite', desc: 'Comprehensive school portal with academic and admission focus.', icon: 'fa-school', category: 'education', path: 'template-web/School/index.html', previewHTML: `<div class="absolute inset-0 bg-blue-900 flex flex-col p-4 gap-4"><div class="w-full h-8 bg-white/10 rounded-lg flex items-center px-3 justify-between"><div class="w-1/4 h-2 bg-white/30 rounded-full"></div><div class="flex gap-2"><div class="w-4 h-4 rounded-full bg-white/20"></div><div class="w-4 h-4 rounded-full bg-white/20"></div></div></div><div class="flex-grow flex gap-4"><div class="w-1/3 h-full bg-white/5 rounded-xl border border-white/10 shadow-lg"></div><div class="flex-grow flex flex-col gap-3"><div class="w-full h-1/2 bg-brand-gold/10 rounded-xl border border-brand-gold/20"></div><div class="w-full flex-grow bg-white/5 rounded-xl border border-white/10"></div></div></div></div>` },
+        ];
+
+        function renderCollection(themesArray, gridId, filter = 'all') {
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+            
             grid.innerHTML = ''; // Clear current
             
-            const filteredThemes = filter === 'all' ? themes : themes.filter(t => t.category === filter);
+            const filteredThemes = filter === 'all' ? themesArray : themesArray.filter(t => t.category === filter);
 
             filteredThemes.forEach((theme, index) => {
                 const isUpcoming = theme.status === 'upcoming';
                 const card = document.createElement(isUpcoming ? 'div' : 'a');
-                if (!isUpcoming) card.href = `theme/${theme.id}/index.html`;
+                if (!isUpcoming) card.href = theme.path || `theme/${theme.id}/index.html`;
                 
-                // Add premium styling classes
                 card.className = `theme-card-premium block rounded-[2rem] bg-[#0d0d0d] border border-white/5 overflow-hidden group relative ${isUpcoming ? 'cursor-default opacity-60' : ''}`;
                 
-                // Entrance animation with ScrollTrigger
                 gsap.fromTo(card, 
                     { opacity: 0, y: 40, scale: 0.95 }, 
                     { 
@@ -519,32 +600,24 @@
                 );
 
                 card.innerHTML = `
-                    <!-- Ambient Glow Effect -->
                     <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-                    
                     <div class="h-56 w-full relative overflow-hidden bg-brand-black border-b border-white/5">
-                        <!-- Precise Theme Preview Structure -->
                         <div class="absolute inset-0 z-0 transition-transform duration-1000 ease-out group-hover:scale-110">
                             ${theme.previewHTML}
                             <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
                         </div>
-                        
-                        <!-- Premium Hover Overlay -->
                         <div class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 bg-brand-black/80 backdrop-blur-md transition-all duration-500 z-10">
                             <div class="w-16 h-16 rounded-full bg-brand-gold flex items-center justify-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100 shadow-[0_0_30px_rgba(212,175,55,0.4)]">
                                 <i class="fa-solid ${theme.icon} text-2xl text-black"></i>
                             </div>
                             <span class="mt-4 text-white font-bold tracking-widest uppercase text-xs transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-150">${isUpcoming ? 'In Development' : 'Launch Demo'}</span>
                         </div>
-                        
-                        <!-- Category Badge -->
                         ${!isUpcoming ? `
                         <div class="absolute top-4 left-4 z-20 px-3 py-1.5 rounded-full bg-brand-black/80 backdrop-blur-md border border-white/10 text-[10px] font-bold text-white uppercase tracking-widest opacity-100 group-hover:opacity-0 transition-opacity duration-300">
                             ${theme.category}
                         </div>
                         ` : ''}
                     </div>
-                    
                     <div class="p-8 relative z-20">
                         <div class="flex justify-between items-start mb-4">
                             <h3 class="text-2xl font-bold tracking-tighter text-white group-hover:text-brand-gold transition-colors duration-300">${theme.name}</h3>
@@ -559,22 +632,26 @@
 
         // Filter Logic
         function filterThemes(category) {
-            // Update Buttons
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                if (btn.innerText.toLowerCase() === category || (category === 'all' && btn.innerText === 'All')) {
-                    btn.className = "filter-btn active px-6 py-2.5 text-sm font-bold bg-white text-black rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all";
-                } else {
-                    btn.className = "filter-btn px-6 py-2.5 text-sm font-semibold text-gray-400 hover:text-white rounded-full transition-all";
-                }
+            document.querySelectorAll('#filter-buttons .filter-btn').forEach(btn => {
+                const isActive = (btn.innerText.toLowerCase() === category || (category === 'all' && btn.innerText === 'All'));
+                btn.className = isActive ? "filter-btn active px-6 py-2.5 text-sm font-bold bg-white text-black rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all" : "filter-btn px-6 py-2.5 text-sm font-semibold text-gray-400 hover:text-white rounded-full transition-all";
             });
-
-            // Re-render
-            renderThemes(category);
+            renderCollection(themes, 'theme-grid', category);
             ScrollTrigger.refresh();
         }
 
-        // Initial render
-        renderThemes('all');
+        function filterIndustry(category) {
+            document.querySelectorAll('#industry-filter-buttons .industry-filter-btn').forEach(btn => {
+                const isActive = (btn.innerText.toLowerCase() === category || (category === 'all' && btn.innerText === 'All'));
+                btn.className = isActive ? "industry-filter-btn active px-6 py-2.5 text-sm font-bold bg-white text-black rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all" : "industry-filter-btn px-6 py-2.5 text-sm font-semibold text-gray-400 hover:text-white rounded-full transition-all";
+            });
+            renderCollection(industryThemes, 'industry-grid', category);
+            ScrollTrigger.refresh();
+        }
+
+        // Initial renders
+        renderCollection(themes, 'theme-grid', 'all');
+        renderCollection(industryThemes, 'industry-grid', 'all');
 
         // GSAP Animations
         gsap.registerPlugin(ScrollTrigger);
@@ -671,9 +748,43 @@
             duration: 1.2,
             ease: "power4.out"
         });
+        // Mobile Menu Toggle
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        function toggleMobileMenu() {
+            const isOpen = !mobileMenu.classList.contains('hidden');
+            if (isOpen) {
+                // Close
+                gsap.to(mobileMenu, { 
+                    maxHeight: 0, 
+                    duration: 0.5, 
+                    ease: "power4.inOut",
+                    onComplete: () => mobileMenu.classList.add('hidden')
+                });
+            } else {
+                // Open
+                mobileMenu.classList.remove('hidden');
+                gsap.to(mobileMenu, { 
+                    maxHeight: 500, 
+                    duration: 0.8, 
+                    ease: "power4.out" 
+                });
+                
+                // Stagger menu items
+                gsap.from("#mobile-menu a", {
+                    y: 20,
+                    opacity: 0,
+                    stagger: 0.1,
+                    duration: 0.5,
+                    ease: "power2.out"
+                });
+            }
+        }
 
-
-
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', toggleMobileMenu);
+        }
     </script>
 
     <!-- Light Rays WebGL Background -->
