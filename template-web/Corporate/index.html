@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aetherix Consulting Group | Enterprise Digital Transformation</title>
+    
+    <!-- Meta Descriptions for SEO -->
+    <meta name="description" content="Aetherix partners with global enterprises to design resilient systems, unlock operational efficiency, and convert technology complexity into strategic leverage.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- External Libraries CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.20/dist/lenis.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    
+    <!-- Tailwind CSS Script -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- External Libraries JS -->
+    <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/split-type"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ax: {
+                            black: '#050505',
+                            deep: '#0a0a0c',
+                            surface: '#121215',
+                            panel: '#15161A',
+                            line: '#1F1F23',
+                            soft: '#8A8D93',
+                            text: '#FAFAFA',
+                            gold: '#D4AF37', // Classic premium gold
+                            gold_dim: '#B08D22',
+                            ice: '#A3C2F3', // Cool elegant ice tone
+                            ambient: '#0b0d12'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    },
+                    animation: {
+                        'marquee': 'marquee 35s linear infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'glass-gradient': 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.4)',
+                        'gold-glow': '0 0 40px -10px rgba(212, 175, 55, 0.3)',
+                    },
+                }
+            }
+        };
+    </script>
+
+    <style>
+        :root {
+            --curve-bezier: cubic-bezier(0.85, 0, 0.15, 1);
+        }
+
+        /* Lenis Required CSS */
+        html.lenis, html.lenis body {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        body {
+            background-color: #050505;
+            color: #FAFAFA;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Abstract Noise Texture Overlay */
+        .noise-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Custom Premium Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.6); }
+
+        /* Typography Utilities */
+        .eyebrow-text {
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: theme('colors.ax.gold');
+        }
+
+        /* Premium Glassmorphism Panel */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(21, 22, 26, 0.6) 0%, rgba(10, 10, 12, 0.8) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Hover Reveal Cards */
+        .reveal-card {
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.4s ease, transform 0.4s var(--curve-bezier);
+            isolation: isolate;
+        }
+        .reveal-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(212, 175, 55, 0.06), transparent 40%);
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .reveal-card:hover::before { opacity: 1; }
+        .reveal-card:hover { border-color: rgba(212, 175, 55, 0.3); transform: translateY(-4px); }
+        .reveal-card > * { position: relative; z-index: 1; }
+
+        /* Buttons */
+        .btn-luxe {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            border-radius: 100px;
+            overflow: hidden;
+            transition: all 0.4s var(--curve-bezier);
+            z-index: 1;
+        }
+        .btn-primary {
+            background: theme('colors.ax.text');
+            color: theme('colors.ax.black');
+        }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: theme('colors.ax.gold');
+            border-radius: inherit;
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.4s var(--curve-bezier);
+            z-index: -1;
+        }
+        .btn-primary:hover::after {
+            transform: scaleY(1);
+            transform-origin: top;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: theme('colors.ax.text');
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-outline:hover {
+            border-color: theme('colors.ax.gold');
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        /* Swiper Customizations */
+        .swiper-slide { height: auto; }
+        .swiper-pagination-bullet {
+            background: rgba(255,255,255,0.2);
+            opacity: 1;
+            transition: all 0.3s ease;
+        }
+        .swiper-pagination-bullet-active {
+            background: theme('colors.ax.gold');
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        /* Magnet Button Utilities */
+        .magnet-wrap { display: inline-block; padding: 10px; cursor: pointer; }
+
+        /* Ambient Glow Blobs */
+        .glow-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        /* Back to Hub specific */
+        .hub-float {
+            animation: hubFloat 3s ease-in-out infinite alternate;
+        }
+        @keyframes hubFloat {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-6px); }
+        }
+
+        /* Orbit Animations */
+        @keyframes orbitSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes orbitSpinReverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+        .orbit-spin-1 { animation: orbitSpin 24s linear infinite; }
+        .orbit-spin-1-reverse { animation: orbitSpinReverse 24s linear infinite; }
+        .orbit-spin-2 { animation: orbitSpinReverse 32s linear infinite; }
+        .orbit-spin-2-reverse { animation: orbitSpin 32s linear infinite; }
+        .orbit-spin-3 { animation: orbitSpin 40s linear infinite; }
+        .orbit-spin-3-reverse { animation: orbitSpinReverse 40s linear infinite; }
+
+    </style>
+</head>
+<body class="selection:bg-ax-gold selection:text-ax-black">
+
+    <div class="noise-bg"></div>
+
+    <!-- Back to Hub Button -->
+    <div class="fixed bottom-8 right-8 z-[100] hub-float">
+        <a href="../../../index.html" class="magnet-wrap group">
+            <div class="glass-panel flex items-center gap-3 px-5 py-3 rounded-full border border-white/20 transition-all duration-300 group-hover:border-ax-gold/50 group-hover:shadow-gold-glow">
+                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white scale-100 group-hover:scale-110 group-hover:bg-ax-gold group-hover:text-black transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                </div>
+                <span class="text-xs font-bold tracking-widest uppercase text-white group-hover:text-ax-gold transition-colors">Return Hub</span>
+            </div>
+        </a>
+    </div>
+
+    <!-- Navbar -->
+    <header class="fixed top-0 left-0 w-full z-50 transition-transform duration-500" id="header">
+        <div class="absolute inset-0 bg-ax-deep/80 backdrop-blur-xl border-b border-white/5 opacity-0 transition-opacity duration-300 header-bg"></div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 h-24 flex items-center justify-between relative z-10">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-2 group magnet-wrap relative -left-2.5">
+                <div class="w-10 h-10 border border-white/20 rounded-xl flex items-center justify-center relative overflow-hidden transition-all duration-500 group-hover:border-ax-gold">
+                    <div class="absolute inset-0 bg-ax-gold opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
+                    <svg class="w-5 h-5 text-ax-text group-hover:text-ax-gold transition-colors duration-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12h16M12 4l8 8-8 8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <span class="font-display font-medium text-2xl tracking-tight">Aetherix<span class="text-ax-gold">.</span></span>
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden lg:flex items-center gap-10">
+                <a href="#services" class="text-sm font-medium text-ax-soft hover:text-white transition-colors relative group nav-link">
+                    Capabilities
+                    <span class="absolute -bottom-2 left-0 w-0 h-px bg-ax-gold transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#methodology" class="text-sm font-medium text-ax-soft hover:text-white transition-colors relative group nav-link">
+                    Methodology
+                    <span class="absolute -bottom-2 left-0 w-0 h-px bg-ax-gold transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#work" class="text-sm font-medium text-ax-soft hover:text-white transition-colors relative group nav-link">
+                    Case Studies
+                    <span class="absolute -bottom-2 left-0 w-0 h-px bg-ax-gold transition-all duration-300 group-hover:w-full"></span>
+                </a>
+            </nav>
+
+            <!-- CTA -->
+            <div class="hidden lg:block magnet-wrap relative -right-2.5">
+                <a href="#contact" class="inline-flex items-center justify-center px-6 py-3 bg-white text-black rounded-full font-bold uppercase tracking-widest text-xs hover:bg-ax-gold hover:text-black transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(212,175,55,0.4)]">Initiate Dialogue</a>
+            </div>
+
+            <!-- Mobile Toggle -->
+            <button class="lg:hidden w-12 h-12 flex items-center justify-center border border-white/10 rounded-full bg-white/5 text-white z-50 relative" id="mobile-menu-btn">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative min-h-screen flex items-center pt-24 pb-12 overflow-hidden">
+            <!-- Ambient Backgrounds -->
+            <div class="glow-blob w-[40vw] h-[40vw] bg-ax-gold/10 top-0 left-[-10vw] absolute rounded-full"></div>
+            <div class="glow-blob w-[30vw] h-[30vw] bg-ax-ice/15 bottom-0 right-[-5vw] absolute rounded-full"></div>
+            
+            <div class="max-w-7xl mx-auto px-6 lg:px-12 w-full z-10 grid lg:grid-cols-[1.1fr,0.9fr] gap-16 items-center">
+                <!-- Text Content -->
+                <div class="flex flex-col hero-content pt-10">
+                    <p class="eyebrow-text mb-6">Enterprise Strategy Group</p>
+                    <h1 class="text-[3.5rem] sm:text-[4.5rem] lg:text-[5.5rem] leading-[1.05] font-display font-medium tracking-tight">
+                        <span class="hero-title-text block relative" style="display: inherit;">Architecting</span>
+                        <div class="overflow-hidden inline-block pb-2 mt-[-0.2em]"><span class="font-serif italic text-transparent bg-clip-text bg-gradient-to-r from-ax-text via-ax-gold to-ax-ice hero-title-gradient inline-block">Digital Command.</span></div>
+                    </h1>
+                    <p class="max-w-xl text-lg text-ax-soft mt-8 leading-relaxed hero-desc">
+                        Aetherix partners with global enterprises to design resilient systems, unlock operational efficiency, and convert technology complexity into strategic leverage.
+                    </p>
+                    
+                    <div class="flex flex-wrap items-center gap-4 mt-12 hero-cta">
+                        <div class="magnet-wrap">
+                            <a href="#contact" class="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-sm tracking-widest uppercase bg-ax-text text-ax-black rounded-full overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_-10px_rgba(212,175,55,0.4)]">
+                                <span class="absolute inset-0 bg-ax-gold translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.85,0,0.15,1)]"></span>
+                                <span class="relative z-10 flex items-center gap-3">
+                                    Start Engagement
+                                    <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </span>
+                            </a>
+                        </div>
+                        
+                        <div class="magnet-wrap">
+                            <a href="#services" class="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-sm tracking-widest uppercase text-ax-text rounded-full overflow-hidden border border-white/10 glass-panel transition-all duration-500 hover:border-ax-gold/50 hover:text-ax-gold">
+                                <span class="absolute inset-0 bg-ax-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+                                <span class="relative z-10 flex items-center gap-3">
+                                    <span class="w-2 h-2 rounded-full bg-ax-ice group-hover:bg-ax-gold group-hover:scale-150 transition-all duration-500 shadow-[0_0_10px_rgba(163,194,243,0.5)] group-hover:shadow-[0_0_10px_rgba(212,175,55,0.5)]"></span>
+                                    Explore Capabilities
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive 3D Strategy Map Illusion -->
+                <div class="relative w-full max-w-[500px] aspect-square hero-map hidden lg:flex items-center justify-center !overflow-visible">
+                    
+                    <!-- Parallax Wrapper -->
+                    <div class="relative w-full h-full flex items-center justify-center parallax-map-wrapper !overflow-visible">
+                        <!-- Grid overlay fading at edges for premium look -->
+                        <div class="absolute inset-[-20%] opacity-10 [mask-image:radial-gradient(circle_at_center,black_40%,transparent_70%)]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 30px 30px;"></div>
+                        
+                        <!-- Center Core -->
+                        <div class="absolute w-[25%] h-[25%] min-w-[100px] min-h-[100px] rounded-full bg-gradient-to-tr from-ax-gold to-yellow-200 flex items-center justify-center shadow-[0_0_60px_-15px_rgba(212,175,55,0.6)] z-20">
+                            <span class="text-ax-black font-bold text-[10px] md:text-xs uppercase tracking-widest">Core</span>
+                        </div>
+
+                        <!-- Orbit Ring 1 (Zero-Trust) -->
+                        <div class="absolute w-[50%] h-[50%] rounded-full border border-white/10 orbit-spin-1 z-10 flex">
+                            <div class="absolute top-1/2 -right-6 -translate-y-1/2 w-12 h-12 rounded-full glass-panel border border-ax-gold/40 flex items-center justify-center orbit-spin-1-reverse drop-shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                                <span class="w-2.5 h-2.5 rounded-full bg-ax-gold shadow-gold-glow"></span>
+                                <span class="absolute left-14 whitespace-nowrap text-[10px] sm:text-xs font-bold uppercase tracking-widest text-ax-text drop-shadow-md">Zero-Trust</span>
+                            </div>
+                        </div>
+
+                        <!-- Orbit Ring 2 (Cloud) -->
+                        <div class="absolute w-[75%] h-[75%] rounded-full border border-white/10 orbit-spin-2 z-10 flex">
+                            <div class="absolute left-1/2 -top-6 -translate-x-1/2 w-12 h-12 rounded-full glass-panel border border-ax-ice/40 flex items-center justify-center orbit-spin-2-reverse drop-shadow-[0_0_15px_rgba(163,194,243,0.3)]">
+                                <span class="w-2.5 h-2.5 rounded-full bg-ax-ice animate-pulse shadow-[0_0_15px_rgba(163,194,243,0.5)]"></span>
+                                <span class="absolute left-14 whitespace-nowrap text-[10px] sm:text-xs font-bold uppercase tracking-widest text-ax-text drop-shadow-md">Cloud</span>
+                            </div>
+                        </div>
+
+                        <!-- Orbit Ring 3 (Data) -->
+                        <div class="absolute w-[100%] h-[100%] rounded-full border border-white/10 orbit-spin-3 z-10 flex">
+                            <div class="absolute left-1/2 -bottom-6 -translate-x-1/2 w-12 h-12 rounded-full glass-panel border border-white/20 flex items-center justify-center orbit-spin-3-reverse drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                                <span class="w-2.5 h-2.5 rounded-full bg-white/70 shadow-[0_0_15px_rgba(255,255,255,0.4)]"></span>
+                                <span class="absolute left-14 whitespace-nowrap text-[10px] sm:text-xs font-bold uppercase tracking-widest text-ax-text drop-shadow-md">Data</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="border-y border-white/5 pt-20 pb-12 lg:pt-32 lg:pb-20 bg-ax-deep/50 relative z-20">
+            <div class="max-w-7xl mx-auto px-6 lg:px-12">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 divide-x divide-white/5">
+                    <div class="text-center stat-item">
+                        <div class="text-[2.5rem] lg:text-[3.5rem] font-display font-medium text-ax-text leading-none stat-number" data-target="99.9">0</div>
+                        <div class="text-ax-gold mt-2 font-bold">%</div>
+                        <div class="text-xs text-ax-soft uppercase tracking-widest mt-4">Uptime SLA</div>
+                    </div>
+                    <div class="text-center stat-item">
+                        <div class="text-[2.5rem] lg:text-[3.5rem] font-display font-medium text-ax-text leading-none stat-number" data-target="35">0</div>
+                        <div class="text-ax-gold mt-2 font-bold">%</div>
+                        <div class="text-xs text-ax-soft uppercase tracking-widest mt-4">Cost Optimized</div>
+                    </div>
+                    <div class="text-center stat-item">
+                        <div class="text-ax-text flex justify-center items-start leading-none font-display font-medium">
+                            <span class="text-2xl mt-2 mr-1">$</span>
+                            <span class="text-[2.5rem] lg:text-[3.5rem] stat-number" data-target="2">0</span>
+                            <span class="text-2xl mt-2 ml-1 text-ax-gold">B+</span>
+                        </div>
+                        <div class="text-xs text-ax-soft uppercase tracking-widest mt-4">Revenue Protected</div>
+                    </div>
+                    <div class="text-center stat-item">
+                        <div class="text-ax-text flex justify-center items-start leading-none font-display font-medium">
+                            <span class="text-[2.5rem] lg:text-[3.5rem] stat-number" data-target="150">0</span>
+                            <span class="text-2xl mt-2 ml-1 text-ax-gold">+</span>
+                        </div>
+                        <div class="text-xs text-ax-soft uppercase tracking-widest mt-4">Global Deployments</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technology Partners Marquee -->
+        <section class="py-10 border-b border-white/5 overflow-hidden relative bg-ax-deep flex">
+            <div class="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-ax-deep to-transparent z-10 pointer-events-none"></div>
+            <div class="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-ax-deep to-transparent z-10 pointer-events-none"></div>
+            
+            <div class="flex w-full overflow-hidden">
+                <div class="flex items-center gap-16 lg:gap-32 whitespace-nowrap shrink-0 animate-marquee opacity-40 hover:opacity-100 transition-opacity pl-16 lg:pl-32">
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">AWS</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Azure</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Google Cloud</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Databricks</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Snowflake</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Confluent</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">AWS</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Azure</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Google Cloud</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Databricks</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Snowflake</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Confluent</h4>
+                </div>
+                <!-- Duplicate for seamless loop -->
+                <div class="flex items-center gap-16 lg:gap-32 whitespace-nowrap shrink-0 animate-marquee opacity-40 hover:opacity-100 transition-opacity pl-16 lg:pl-32" aria-hidden="true">
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">AWS</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Azure</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Google Cloud</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Databricks</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Snowflake</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Confluent</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">AWS</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Azure</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Google Cloud</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Databricks</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Snowflake</h4>
+                    <h4 class="text-white font-display text-xl lg:text-3xl font-bold uppercase tracking-widest shrink-0">Confluent</h4>
+                </div>
+            </div>
+        </section>
+
+        <!-- Capabilities Section -->
+        <section id="services" class="py-24 lg:py-32 relative">
+            <div class="glow-blob w-[50vw] h-[50vw] bg-ax-ice/5 top-[20%] right-[-20vw] absolute rounded-full"></div>
+            
+            <div class="max-w-7xl mx-auto px-6 lg:px-12">
+                <div class="grid lg:grid-cols-[1fr,1.5fr] gap-12 lg:gap-24 mb-20 section-header">
+                    <div>
+                        <p class="eyebrow-text mb-4">Core Competencies</p>
+                        <h2 class="text-[2.5rem] lg:text-[3.5rem] font-display font-medium leading-tight">Transformative Solutions.</h2>
+                    </div>
+                    <div class="lg:pt-14">
+                        <p class="text-lg text-ax-soft leading-relaxed">
+                            We bridge the gap between board-level vision and engineering reality. Our specialized practice areas are designed to eliminate technical debt, fortify security postures, and build scalable engines for enterprise growth.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Elegant Bento Layout for Core Competencies -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                    
+                    <!-- Service Card 1 (Large - 7 cols) -->
+                    <div class="md:col-span-12 lg:col-span-7 reveal-card glass-panel rounded-[2.5rem] p-8 lg:p-12 flex flex-col justify-between group h-full hover-card relative overflow-hidden">
+                        <!-- Abstract Ambient Glow on Hover -->
+                        <div class="absolute -right-20 -top-20 w-80 h-80 bg-ax-gold/10 rounded-full blur-[80px] group-hover:bg-ax-gold/20 transition-all duration-700 pointer-events-none"></div>
+                        <div class="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-white/5 to-transparent pointer-events-none transition-opacity duration-500 opacity-0 group-hover:opacity-100"></div>
+                        
+                        <div class="relative z-10 mb-16 lg:mb-24">
+                            <div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-ax-gold mb-8 group-hover:scale-110 group-hover:bg-ax-gold/10 group-hover:border-ax-gold/30 transition-all duration-500 shadow-lg shadow-black/20">
+                                <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16v12H4z"/><path d="M8 10h8M8 14h5"/></svg>
+                            </div>
+                            <h3 class="text-3xl lg:text-4xl font-display mb-4">Architecture Strategy</h3>
+                            <p class="text-ax-soft leading-relaxed max-w-lg text-lg">Translating business imperatives into executable technical blueprints. We design target state architectures that minimize friction and maximize long-term agility.</p>
+                        </div>
+                        
+                        <div class="relative z-10 mt-auto">
+                            <a href="#contact" class="inline-flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-ax-text group-hover:text-ax-gold transition-colors">
+                                <span class="w-8 h-px bg-white/20 group-hover:bg-ax-gold transition-colors"></span> Explore Service 
+                                <svg class="w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Service Card 2 (Small - 5 cols) -->
+                    <div class="md:col-span-6 lg:col-span-5 reveal-card glass-panel rounded-[2.5rem] p-8 lg:p-12 flex flex-col justify-between group h-full hover-card relative overflow-hidden">
+                        <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-ax-ice/10 rounded-full blur-[60px] group-hover:bg-ax-ice/20 transition-all duration-700 pointer-events-none"></div>
+                        
+                        <div class="relative z-10 mb-12 lg:mb-16">
+                            <div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-ax-ice mb-8 group-hover:scale-110 group-hover:bg-ax-ice/10 group-hover:border-ax-ice/30 transition-all duration-500 shadow-lg shadow-black/20">
+                                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                            </div>
+                            <h3 class="text-2xl lg:text-3xl font-display mb-4">Cloud Native Platform</h3>
+                            <p class="text-ax-soft leading-relaxed">Automating infrastructure delivery and establishing FinOps guardrails for zero-downtime environments.</p>
+                        </div>
+                        
+                        <div class="relative z-10 mt-auto">
+                            <a href="#contact" class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-ax-text group-hover:text-ax-ice transition-colors">
+                                Explore Service 
+                                <svg class="w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Service Card 3 (Small - 5 cols) -->
+                    <div class="md:col-span-6 lg:col-span-5 reveal-card glass-panel rounded-[2.5rem] p-8 lg:p-12 flex flex-col justify-between group h-full hover-card relative overflow-hidden">
+                        <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-ax-gold/10 rounded-full blur-[60px] group-hover:bg-ax-gold/20 transition-all duration-700 pointer-events-none"></div>
+                        
+                        <div class="relative z-10 mb-12 lg:mb-16">
+                            <div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-ax-text mb-8 group-hover:scale-110 group-hover:bg-white/10 group-hover:border-white/30 transition-all duration-500 shadow-lg shadow-black/20">
+                                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                            </div>
+                            <h3 class="text-2xl lg:text-3xl font-display mb-4">Zero-Trust Security</h3>
+                            <p class="text-ax-soft leading-relaxed">Designing compliance-ready security postures. From identity orchestration to data encryption at rest.</p>
+                        </div>
+                        
+                        <div class="relative z-10 mt-auto">
+                            <a href="#contact" class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-ax-text group-hover:text-white transition-colors">
+                                Explore Service 
+                                <svg class="w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Service Card 4 (Large - 7 cols) -->
+                    <div class="md:col-span-12 lg:col-span-7 reveal-card glass-panel rounded-[2.5rem] p-8 lg:p-12 flex flex-col justify-between group h-full hover-card relative overflow-hidden">
+                        <div class="absolute left-0 bottom-0 w-1/2 h-full bg-gradient-to-r from-white/5 to-transparent pointer-events-none transition-opacity duration-500 opacity-0 group-hover:opacity-100"></div>
+                        <div class="absolute -top-20 -right-20 w-80 h-80 bg-ax-ice/10 rounded-full blur-[80px] group-hover:bg-ax-ice/20 transition-all duration-700 pointer-events-none"></div>
+                        
+                        <div class="relative z-10 flex flex-col md:flex-row md:items-start gap-8 mb-12 lg:mb-24">
+                            <div class="w-16 h-16 shrink-0 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-ax-ice group-hover:scale-110 group-hover:bg-ax-ice/10 group-hover:border-ax-ice/30 transition-all duration-500 shadow-lg shadow-black/20">
+                                <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-3xl lg:text-4xl font-display mb-4">Data Lakehouse Design</h3>
+                                <p class="text-ax-soft leading-relaxed text-lg">Architecting unified intelligence layers. We tear down fragmented data silos to build scalable, governed pipelines that fuel advanced AI and prescriptive analytics.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="relative z-10 mt-auto md:pl-24">
+                            <a href="#contact" class="inline-flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-ax-text group-hover:text-ax-ice transition-colors">
+                                <span class="w-8 h-px bg-white/20 group-hover:bg-ax-ice transition-colors"></span> Explore Service 
+                                <svg class="w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Featured Work Slider -->
+        <section id="work" class="py-24 lg:py-32 bg-ax-deep relative overflow-hidden">
+            <div class="absolute inset-0 opacity-[0.15]" style="background-image: repeating-linear-gradient(45deg, #1F1F23 0, #1F1F23 1px, transparent 0, transparent 50%); background-size: 20px 20px;"></div>
+            
+            <div class="max-w-7xl mx-auto px-6 lg:px-12 relative z-10 mb-12 flex justify-between items-end section-header">
+                <div>
+                    <p class="eyebrow-text mb-4">Signature Case Studies</p>
+                    <h2 class="text-[2.5rem] lg:text-[3.5rem] font-display font-medium leading-tight">Proven Execution.</h2>
+                </div>
+                
+                <!-- Custom Swiper Navigation -->
+                <div class="hidden md:flex gap-4">
+                    <button class="swiper-btn-prev w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors focus:outline-none">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <button class="swiper-btn-next w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors focus:outline-none">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Swiper Container -->
+            <div class="w-full relative z-10 pl-6 lg:pl-12 opacity-0 select-none carousel-container">
+                <div class="swiper case-swiper overflow-visible">
+                    <div class="swiper-wrapper">
+                        <!-- Slide 1 -->
+                        <div class="swiper-slide w-[85vw] md:w-[60vw] lg:w-[45vw] cursor-grab active:cursor-grabbing">
+                            <a href="#work" class="glass-panel rounded-3xl overflow-hidden group block hover:-translate-y-2 transition-transform duration-500">
+                                <div class="h-64 sm:h-80 w-full relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-ax-black/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" class="w-full h-full object-cover transform scale-100 group-hover:scale-110 transition-transform duration-700" alt="Global Fintech">
+                                </div>
+                                <div class="p-8">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <span class="text-xs font-bold uppercase tracking-widest text-ax-gold">Finance Sector</span>
+                                        <span class="h-px bg-white/20 flex-grow"></span>
+                                        <span class="text-xs text-ax-soft">2025</span>
+                                    </div>
+                                    <h3 class="text-2xl font-display mb-3 group-hover:text-ax-gold transition-colors">Global Banking Cloud Core</h3>
+                                    <p class="text-ax-soft text-sm leading-relaxed mb-6">Deconstructed a 15-year monolithic architecture into resilient, event-driven microservices across 3 cloud regions with zero downtime.</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="px-3 py-1 text-xs rounded-full border border-white/10 bg-white/5 group-hover:bg-ax-gold/10 group-hover:border-ax-gold/30 group-hover:text-ax-gold transition-colors">AWS</span>
+                                        <span class="px-3 py-1 text-xs rounded-full border border-white/10 bg-white/5 group-hover:bg-ax-gold/10 group-hover:border-ax-gold/30 group-hover:text-ax-gold transition-colors">Kafka</span>
+                                        <span class="px-3 py-1 text-xs rounded-full border border-white/10 bg-white/5 group-hover:bg-ax-gold/10 group-hover:border-ax-gold/30 group-hover:text-ax-gold transition-colors">Zero-Trust</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Slide 2 -->
+                        <div class="swiper-slide w-[85vw] md:w-[60vw] lg:w-[45vw] cursor-grab active:cursor-grabbing">
+                            <a href="#work" class="glass-panel rounded-3xl overflow-hidden group block hover:-translate-y-2 transition-transform duration-500">
+                                <div class="h-64 sm:h-80 w-full relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-ax-black/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                                    <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2068&auto=format&fit=crop" class="w-full h-full object-cover transform scale-100 group-hover:scale-110 transition-transform duration-700" alt="Logistics Data">
+                                </div>
+                                <div class="p-8">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <span class="text-xs font-bold uppercase tracking-widest text-ax-ice">Supply Chain</span>
+                                        <span class="h-px bg-white/20 flex-grow"></span>
+                                        <span class="text-xs text-ax-soft">2025</span>
+                                    </div>
+                                    <h3 class="text-2xl font-display mb-3 group-hover:text-ax-ice transition-colors">Unified Logistical Intelligence</h3>
+                                    <p class="text-ax-soft text-sm leading-relaxed mb-6">Built a comprehensive data lakehouse processing 50TB+ daily, enabling real-time routing optimization for the largest EU cargo fleet.</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="px-3 py-1 text-xs rounded-full border border-white/10 bg-white/5 group-hover:bg-ax-ice/10 group-hover:border-ax-ice/30 group-hover:text-ax-ice transition-colors">Databricks</span>
+                                        <span class="px-3 py-1 text-xs rounded-full border border-white/10 bg-white/5 group-hover:bg-ax-ice/10 group-hover:border-ax-ice/30 group-hover:text-ax-ice transition-colors">Azure</span>
+                                        <span class="px-3 py-1 text-xs rounded-full border border-white/10 bg-white/5 group-hover:bg-ax-ice/10 group-hover:border-ax-ice/30 group-hover:text-ax-ice transition-colors">AI Models</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Slide 3 -->
+                        <div class="swiper-slide w-[85vw] md:w-[60vw] lg:w-[45vw] cursor-grab active:cursor-grabbing">
+                            <a href="#work" class="glass-panel rounded-3xl overflow-hidden group block hover:-translate-y-2 transition-transform duration-500">
+                                <div class="h-64 sm:h-80 w-full relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-ax-black/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                                    <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=2069&auto=format&fit=crop" class="w-full h-full object-cover transform scale-100 group-hover:scale-110 transition-transform duration-700" alt="Healthcare Infra">
+                                </div>
+                                <div class="p-8">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <span class="text-xs font-bold uppercase tracking-widest text-white">Healthcare</span>
+                                        <span class="h-px bg-white/20 flex-grow"></span>
+                                        <span class="text-xs text-ax-soft">2024</span>
+                                    </div>
+                                    <h3 class="text-2xl font-display mb-3 group-hover:text-white transition-colors">HIPAA-Compliant Mesh</h3>
+                                    <p class="text-ax-soft text-sm leading-relaxed mb-6">Designed an incredibly secure, federated clinical data mesh that accelerated diagnostic machine learning development by 300%.</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="px-3 py-1 text-xs rounded-full border border-white/10 bg-white/5 group-hover:bg-white/10 group-hover:border-white/30 group-hover:text-white transition-colors">GCP</span>
+                                        <span class="px-3 py-1 text-xs rounded-full border border-white/10 bg-white/5 group-hover:bg-white/10 group-hover:border-white/30 group-hover:text-white transition-colors">Kubernetes</span>
+                                        <span class="px-3 py-1 text-xs rounded-full border border-white/10 bg-white/5 group-hover:bg-white/10 group-hover:border-white/30 group-hover:text-white transition-colors">Compliance Automation</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="swiper-pagination !-bottom-12 !relative md:hidden mt-8"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Industries Expertise Grid -->
+        <section id="sectors" class="py-24 lg:py-32 relative border-t border-white/5 bg-ax-deep">
+            <div class="max-w-7xl mx-auto px-6 lg:px-12">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-8 mb-16 section-header">
+                    <div>
+                        <p class="eyebrow-text mb-4">Industries We Transform</p>
+                        <h2 class="text-[2.5rem] lg:text-[3.5rem] font-display font-medium leading-tight">Sector Expertise.</h2>
+                    </div>
+                    <p class="text-ax-soft max-w-md text-lg">Applied architectures crafted specifically for highly regulated, high-velocity target markets.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="reveal-card glass-panel p-10 rounded-3xl group cursor-pointer hover:-translate-y-2 transition-transform duration-500 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-ax-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <h3 class="text-2xl font-display mb-4 relative z-10 text-white group-hover:text-ax-gold transition-colors">Financial Services</h3>
+                        <p class="text-ax-soft text-sm leading-relaxed mb-8 relative z-10">Algorithmic trading platforms, open banking APIs, and immutable ledger integrations.</p>
+                        <div class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white relative z-10 group-hover:bg-ax-gold group-hover:border-ax-gold group-hover:text-black transition-all">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </div>
+                    </div>
+                    <div class="reveal-card glass-panel p-10 rounded-3xl group cursor-pointer hover:-translate-y-2 transition-transform duration-500 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-ax-ice/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <h3 class="text-2xl font-display mb-4 relative z-10 text-white group-hover:text-ax-ice transition-colors">Healthcare & Life Sc.</h3>
+                        <p class="text-ax-soft text-sm leading-relaxed mb-8 relative z-10">HIPAA-compliant data lakes, telemedicine scaling, and predictive diagnostic models.</p>
+                        <div class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white relative z-10 group-hover:bg-ax-ice group-hover:border-ax-ice group-hover:text-black transition-all">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </div>
+                    </div>
+                    <div class="reveal-card glass-panel p-10 rounded-3xl group cursor-pointer hover:-translate-y-2 transition-transform duration-500 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <h3 class="text-2xl font-display mb-4 relative z-10 text-white transition-colors">Global Logistics</h3>
+                        <p class="text-ax-soft text-sm leading-relaxed mb-8 relative z-10">Supply chain virtualization, IoT fleet tracking, and dynamic cloud routing engines.</p>
+                        <div class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white relative z-10 group-hover:bg-white group-hover:border-white group-hover:text-black transition-all">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Methodology List -->
+        <section id="methodology" class="py-24 lg:py-32 relative text-center">
+            <div class="max-w-4xl mx-auto px-6 lg:px-12 section-header">
+                <p class="eyebrow-text mb-4">Methodology</p>
+                <h2 class="text-[2.5rem] lg:text-[4rem] font-display font-medium leading-tight mb-16">Precision in execution.</h2>
+                
+                <div class="space-y-6 text-left">
+                    <div class="glass-panel p-6 lg:p-10 rounded-3xl border-l-4 border-l-ax-gold list-item">
+                        <div class="flex flex-col md:flex-row md:items-end gap-4 justify-between">
+                            <div>
+                                <h3 class="text-2xl font-display mb-2"><span class="text-ax-gold/50 mr-2 text-lg">01.</span> Diagnose & Align</h3>
+                                <p class="text-ax-soft text-sm max-w-lg">Deep structural analysis of current architecture, identifying technical debt, security gaps, and misalignments with scale objectives.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-panel p-6 lg:p-10 rounded-3xl border-l-4 border-l-white/20 hover:border-l-ax-ice transition-colors duration-500 list-item">
+                        <div class="flex flex-col md:flex-row md:items-end gap-4 justify-between">
+                            <div>
+                                <h3 class="text-2xl font-display mb-2"><span class="text-ax-ice/50 mr-2 text-lg">02.</span> Strategic Blueprint</h3>
+                                <p class="text-ax-soft text-sm max-w-lg">Crafting uncompromising target-state architectures with defined transitional states to ensure continuous operation.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 lg:p-10 rounded-3xl border-l-4 border-l-white/20 hover:border-l-ax-gold transition-colors duration-500 list-item">
+                        <div class="flex flex-col md:flex-row md:items-end gap-4 justify-between">
+                            <div>
+                                <h3 class="text-2xl font-display mb-2"><span class="text-ax-gold/50 mr-2 text-lg">03.</span> Orchestrate & Release</h3>
+                                <p class="text-ax-soft text-sm max-w-lg">Disciplined engineering execution utilizing elite pods to build, validate, and securely roll out core foundation changes.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Insights & Perspectives -->
+        <section id="insights" class="py-24 lg:py-32 bg-ax-deep relative border-t border-white/5">
+            <div class="max-w-7xl mx-auto px-6 lg:px-12">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-8 mb-16 section-header">
+                    <div>
+                        <p class="eyebrow-text mb-4">Perspectives</p>
+                        <h2 class="text-[2.5rem] lg:text-[3.5rem] font-display font-medium leading-tight">Latest Thinking.</h2>
+                    </div>
+                    <a href="#" class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-ax-soft hover:text-white transition-colors pb-2 border-b border-ax-soft/30 hover:border-white">View All Publication</a>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Article 1 -->
+                    <a href="#" class="group cursor-pointer block reveal-card p-4 -m-4 rounded-3xl hover:bg-white/[0.02] transition-colors">
+                        <div class="overflow-hidden rounded-2xl mb-6 aspect-video relative">
+                            <div class="absolute inset-0 bg-ax-black/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                            <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover transform scale-100 group-hover:scale-105 transition-transform duration-700" alt="AI Article">
+                        </div>
+                        <div class="flex items-center gap-4 mb-3">
+                            <span class="text-xs font-bold uppercase tracking-widest text-ax-gold">AI Strategy</span>
+                            <span class="text-xs text-ax-soft">Oct 24, 2025</span>
+                        </div>
+                        <h3 class="text-xl font-display mb-3 group-hover:text-ax-gold transition-colors">The LLM Illusion: Why Custom RAG Pipelines Beat Foundational Models Under Production Load</h3>
+                    </a>
+                    <!-- Article 2 -->
+                    <a href="#" class="group cursor-pointer block reveal-card p-4 -m-4 rounded-3xl hover:bg-white/[0.02] transition-colors">
+                        <div class="overflow-hidden rounded-2xl mb-6 aspect-video relative">
+                            <div class="absolute inset-0 bg-ax-black/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover transform scale-100 group-hover:scale-105 transition-transform duration-700" alt="Cybersecurity">
+                        </div>
+                        <div class="flex items-center gap-4 mb-3">
+                            <span class="text-xs font-bold uppercase tracking-widest text-ax-ice">Cybersecurity</span>
+                            <span class="text-xs text-ax-soft">Oct 18, 2025</span>
+                        </div>
+                        <h3 class="text-xl font-display mb-3 group-hover:text-ax-ice transition-colors">Quantum-Resistant Encryption: Migrating Legacy Mainframes Before the Q-Day Deadline</h3>
+                    </a>
+                    <!-- Article 3 -->
+                    <a href="#" class="group cursor-pointer block reveal-card p-4 -m-4 rounded-3xl hover:bg-white/[0.02] transition-colors hidden md:block">
+                        <div class="overflow-hidden rounded-2xl mb-6 aspect-[4/3] lg:aspect-video relative">
+                            <div class="absolute inset-0 bg-ax-black/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                            <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover transform scale-100 group-hover:scale-105 transition-transform duration-700" alt="Cloud">
+                        </div>
+                        <div class="flex items-center gap-4 mb-3">
+                            <span class="text-xs font-bold uppercase tracking-widest text-white">Cloud Architecture</span>
+                            <span class="text-xs text-ax-soft">Oct 12, 2025</span>
+                        </div>
+                        <h3 class="text-xl font-display mb-3 group-hover:text-white transition-colors">FinOps 2.0: Automating Cost Arbitration Across Multi-Cloud Kubernetes Clusters</h3>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA / Footer Combo -->
+        <footer id="contact" class="border-t border-white/5 bg-ax-deep pt-24 pb-12 relative overflow-hidden">
+            <div class="absolute inset-0 bg-glass-gradient pointer-events-none"></div>
+            
+            <div class="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
+                <div class="grid lg:grid-cols-2 gap-16 mb-24">
+                    <div class="section-header">
+                        <h2 class="text-[3rem] lg:text-[4.5rem] font-display font-medium leading-[1.1] mb-6">Ready to scale<br/><span class="text-ax-gold italic font-serif">intelligently?</span></h2>
+                        <p class="text-lg text-ax-soft max-w-md mb-10">Engage our architecture principals to discuss how Aetherix can eliminate your technical bottlenecks.</p>
+                        <a href="mailto:contact@aetherix.com" class="text-2xl hover:text-ax-gold transition-colors font-semibold border-b border-ax-gold pb-1 inline-block">partners@aetherix.com</a>
+                    </div>
+                    
+                    <div class="glass-panel p-8 lg:p-10 rounded-[2rem] h-full flex flex-col justify-center">
+                        <h3 class="text-xl font-display mb-6">Submit Inquiry</h3>
+                        <form class="space-y-6">
+                            <div class="grid grid-cols-2 gap-6">
+                                <input type="text" placeholder="First Name" class="bg-black/40 border border-white/10 rounded-xl px-5 py-4 w-full text-sm text-white focus:outline-none focus:border-ax-gold transition-colors">
+                                <input type="text" placeholder="Last Name" class="bg-black/40 border border-white/10 rounded-xl px-5 py-4 w-full text-sm text-white focus:outline-none focus:border-ax-gold transition-colors">
+                            </div>
+                            <input type="email" placeholder="Corporate Email" class="bg-black/40 border border-white/10 rounded-xl px-5 py-4 w-full text-sm text-white focus:outline-none focus:border-ax-gold transition-colors">
+                            <textarea placeholder="How can we assist?" rows="3" class="bg-black/40 border border-white/10 rounded-xl px-5 py-4 w-full text-sm text-white focus:outline-none focus:border-ax-gold transition-colors resize-none"></textarea>
+                            <button type="button" class="w-full py-4 bg-white text-black font-bold uppercase tracking-widest text-sm rounded-xl hover:bg-ax-gold transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(212,175,55,0.4)]">Send Secure Message</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <a href="#" class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded bg-ax-gold/10 text-ax-gold flex items-center justify-center">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16M12 4l8 8-8 8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <span class="font-display font-bold text-lg">Aetherix.</span>
+                    </a>
+                    
+                    <div class="flex gap-8 text-sm text-ax-soft">
+                        <a href="#" class="hover:text-white transition-colors">LinkedIn</a>
+                        <a href="#" class="hover:text-white transition-colors">Twitter (X)</a>
+                        <a href="#" class="hover:text-white transition-colors">Privacy</a>
+                    </div>
+                    
+                    <p class="text-xs text-ax-soft/50">&copy; 2026 Aetherix Consulting Global. All rights protected.</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Interactions & Animations Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Initialize Lenis (Smooth Scrolling)
+            const lenis = new Lenis({
+                duration: 1.5,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+                mouseMultiplier: 1,
+                smoothTouch: false,
+                touchMultiplier: 2,
+            });
+
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+            requestAnimationFrame(raf);
+
+            // Connect GSAP ScrollTrigger to Lenis
+            gsap.registerPlugin(ScrollTrigger);
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add((time)=>{
+              lenis.raf(time * 1000);
+            });
+            gsap.ticker.lagSmoothing(0);
+
+            // 2. Setup Reveal Logic on Mouse Position for Glass Cards
+            const cards = document.querySelectorAll('.reveal-card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+            });
+
+            // 3. Magnetic Button Hover Effect
+            const magnetics = document.querySelectorAll('.magnet-wrap');
+            magnetics.forEach((magnet) => {
+                const target = magnet.children[0];
+                
+                magnet.addEventListener('mousemove', (e) => {
+                    const rect = magnet.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) - rect.width / 2;
+                    const y = (e.clientY - rect.top) - rect.height / 2;
+                    
+                    gsap.to(target, {
+                        x: x * 0.4,
+                        y: y * 0.4,
+                        duration: 0.4,
+                        ease: "power2.out"
+                    });
+                });
+                
+                magnet.addEventListener('mouseleave', () => {
+                    gsap.to(target, {
+                        x: 0,
+                        y: 0,
+                        duration: 0.7,
+                        ease: "elastic.out(1, 0.3)"
+                    });
+                });
+            });
+
+            // 4. SplitType & Text Reveals
+            // Hero Title Reveal
+            const heroTitle = new SplitType('.hero-title-text', { types: 'lines, words, chars', tagName: 'span' });
+            gsap.from(heroTitle.chars, {
+                y: 80,
+                opacity: 0,
+                rotationZ: 5,
+                stagger: 0.015,
+                duration: 1,
+                ease: "back.out(1.2)",
+                delay: 0.2
+            });
+
+            gsap.from('.hero-title-gradient', {
+                y: 80,
+                opacity: 0,
+                rotationZ: 5,
+                duration: 1,
+                ease: "back.out(1.2)",
+                delay: 0.5
+            });
+
+            gsap.from('.hero-content p, .hero-content .eyebrow-text, .hero-cta', {
+                y: 30,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.15,
+                ease: "power3.out",
+                delay: 0.8
+            });
+
+            // Map Parallax on Mouse Move
+            const heroMapContainer = document.querySelector('.hero-map');
+            if(heroMapContainer) {
+                document.addEventListener('mousemove', (e) => {
+                    const x = (window.innerWidth / 2 - e.pageX) / 40;
+                    const y = (window.innerHeight / 2 - e.pageY) / 40;
+                    gsap.to('.parallax-map-wrapper', {
+                        x: -x,
+                        y: -y,
+                        rotateY: x / 2,
+                        rotateX: -y / 2,
+                        duration: 1,
+                        ease: "power2.out",
+                        transformPerspective: 1000
+                    });
+                });
+            }
+
+            // 5. Scroll Animations for Sections
+            // Header hide/show bg
+            const headerBg = document.querySelector('.header-bg');
+            ScrollTrigger.create({
+                start: "top -50",
+                end: 99999,
+                toggleClass: {className: 'opacity-100', targets: headerBg}
+            });
+
+            // Map Animation
+            gsap.to('.hero-map', {
+                y: 50,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: '.hero-map',
+                    start: "top center",
+                    end: "bottom top",
+                    scrub: 1
+                }
+            });
+
+            // Section Headers Reveal
+            const sectionHeaders = document.querySelectorAll('.section-header');
+            sectionHeaders.forEach(header => {
+                gsap.from(header, {
+                    y: 50,
+                    opacity: 0,
+                    duration: 1,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: header,
+                        start: "top 80%",
+                    }
+                });
+            });
+
+            // Service Cards Stagger
+            gsap.from('.hover-card', {
+                y: 60,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: '#services',
+                    start: "top 60%"
+                }
+            });
+
+            // List Item Stagger (Methodology)
+            gsap.from('.list-item', {
+                x: -30,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.15,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: '#methodology',
+                    start: "top 60%"
+                }
+            });
+
+            // Mobile Menu Toggle
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            mobileBtn.addEventListener('click', () => {
+                // simple alert for demo purposes based on UI requirement constraint
+                alert('Mobile menu toggled.');
+            });
+
+            // 6. Number Counter Animation
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const target = parseFloat(counter.getAttribute('data-target'));
+                const isDecimal = target % 1 !== 0;
+                
+                ScrollTrigger.create({
+                    trigger: counter,
+                    start: "top 85%",
+                    once: true,
+                    onEnter: () => {
+                        gsap.to(counter, {
+                            innerText: target,
+                            duration: 2,
+                            ease: "power2.out",
+                            snap: { innerText: isDecimal ? 0.1 : 1 },
+                            onUpdate: function() {
+                                counter.innerText = parseFloat(this.targets()[0].innerText).toFixed(isDecimal ? 1 : 0);
+                            }
+                        });
+                    }
+                });
+            });
+
+            // 7. Swiper Carousel Init
+            const swiper = new Swiper('.case-swiper', {
+                slidesPerView: 'auto',
+                spaceBetween: 32,
+                grabCursor: true,
+                speed: 800,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: document.querySelector('.swiper-btn-next'),
+                    prevEl: document.querySelector('.swiper-btn-prev'),
+                },
+                breakpoints: {
+                    320: { spaceBetween: 24 },
+                    1024: { spaceBetween: 40 }
+                }
+            });
+
+            // Trigger animation for swiper entrance
+            gsap.to('.carousel-container', {
+                opacity: 1,
+                x: 0,
+                duration: 1.2,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: '#work',
+                    start: "top 60%"
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECLYPSE: Neon Survival</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Orbitron', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: '#0B0F1A',
+                        neon: {
+                            cyan: '#00F0FF',
+                            purple: '#B026FF',
+                            red: '#FF1053',
+                            yellow: '#FFD300'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- GSAP for UI Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; 
+            background-color: #0B0F1A; cursor: crosshair; 
+            user-select: none; -webkit-user-select: none;
+        }
+        canvas { display: block; }
+        
+        /* Glow Utilities */
+        .text-glow-cyan { text-shadow: 0 0 10px rgba(0, 240, 255, 0.7), 0 0 20px rgba(0, 240, 255, 0.4); }
+        .text-glow-purple { text-shadow: 0 0 10px rgba(176, 38, 255, 0.7), 0 0 20px rgba(176, 38, 255, 0.4); }
+        .text-glow-red { text-shadow: 0 0 10px rgba(255, 16, 83, 0.8), 0 0 25px rgba(255, 16, 83, 0.6); }
+        
+        .box-glow-cyan { box-shadow: 0 0 15px rgba(0, 240, 255, 0.3), inset 0 0 10px rgba(0,240,255,0.1); }
+        .box-glow-red { box-shadow: 0 0 20px rgba(255, 16, 83, 0.4), inset 0 0 15px rgba(255,16,83,0.1); }
+
+        /* CRT Scanline Overlay */
+        .scanlines {
+            position: fixed; inset: 0; z-index: 40; pointer-events: none;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px; opacity: 0.3;
+        }
+
+        /* Hit Flash Overlay */
+        #damageFlash {
+            position: fixed; inset: 0; z-index: 45; pointer-events: none;
+            background-color: rgba(255, 16, 83, 0.3); opacity: 0; transition: opacity 0.1s ease;
+        }
+        
+        /* Custom Scrollbar for hidden overflows if any */
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="text-white font-sans antialiased">
+    
+    <div class="scanlines"></div>
+    <div id="damageFlash"></div>
+
+    <!-- Game Canvas -->
+    <canvas id="gameCanvas" class="absolute inset-0 z-0"></canvas>
+
+    <!-- Main HUD (Visible during gameplay) -->
+    <div id="hud" class="absolute top-0 left-0 w-full p-6 md:p-8 flex justify-between items-start pointer-events-none z-30 opacity-0">
+        <!-- Score & Level -->
+        <div class="gsap-hud">
+            <h2 class="font-heading text-sm md:text-lg text-neon-cyan tracking-widest uppercase mb-1 drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]">Sync Level: <span id="levelEl" class="text-white">1</span></h2>
+            <p id="scoreEl" class="font-heading text-5xl md:text-6xl font-black text-white text-glow-cyan">0</p>
+            <p class="font-heading text-xs text-neon-yellow mt-1 hidden" id="multiplierBonus">MULTI KILL +100!</p>
+        </div>
+
+        <!-- Health/Integrity -->
+        <div class="gsap-hud text-right flex flex-col items-end">
+             <h2 class="font-heading text-sm md:text-lg text-neon-purple tracking-widest uppercase mb-2 drop-shadow-[0_0_8px_rgba(176,38,255,0.5)]">Hull Integrity</h2>
+             <div class="w-40 md:w-64 h-4 md:h-6 border border-neon-purple/50 bg-dark/80 relative overflow-hidden box-glow-purple skew-x-[-15deg]">
+                 <div id="healthBar" class="h-full bg-neon-purple w-full transition-all duration-200 shadow-[0_0_15px_rgba(176,38,255,0.8)]"></div>
+             </div>
+             <p id="healthText" class="font-heading text-xs text-gray-400 mt-2 tracking-widest">100% OPTIMAL</p>
+        </div>
+    </div>
+
+    <!-- Start Menu Overlay -->
+    <div id="startMenu" class="absolute inset-0 z-50 flex items-center justify-center bg-dark/90 backdrop-blur-sm">
+        <div class="text-center p-8 md:p-12 border border-neon-cyan/40 box-glow-cyan bg-dark/95 max-w-2xl w-[90%] relative overflow-hidden">
+            <!-- Decorative Corners -->
+            <div class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-neon-cyan"></div>
+            <div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-neon-cyan"></div>
+
+            <div class="mb-8">
+                <span class="font-heading text-xs text-neon-purple tracking-[0.4em] uppercase block mb-2">Systems Online</span>
+                <h1 class="font-heading text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-neon-cyan to-neon-purple mb-0 uppercase tracking-tighter drop-shadow-[0_0_15px_rgba(0,240,255,0.3)]">ECLYPSE</h1>
+                <h2 class="font-heading text-2xl md:text-3xl text-white tracking-[0.3em] uppercase text-glow-cyan mt-[-5px]">Neon Survival</h2>
+            </div>
+            
+            <div class="bg-surface/50 border border-white/10 p-6 mb-10 text-left relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-neon-cyan"></div>
+                <h3 class="font-heading text-sm text-neon-cyan uppercase tracking-widest mb-4">Tactical Briefing:</h3>
+                <ul class="text-gray-300 font-sans text-sm space-y-3">
+                    <li class="flex items-center gap-3"><i class="ph-fill ph-arrows-out-cardinal text-neon-purple text-xl"></i> <b>Move:</b> <kbd class="bg-gray-800 border border-gray-600 px-2 py-0.5 rounded text-xs">W</kbd> <kbd class="bg-gray-800 border border-gray-600 px-2 py-0.5 rounded text-xs">A</kbd> <kbd class="bg-gray-800 border border-gray-600 px-2 py-0.5 rounded text-xs">S</kbd> <kbd class="bg-gray-800 border border-gray-600 px-2 py-0.5 rounded text-xs">D</kbd> or Arrows</li>
+                    <li class="flex items-center gap-3"><i class="ph-fill ph-crosshair text-neon-red text-xl"></i> <b>Aim:</b> Follows Mouse Cursor</li>
+                    <li class="flex items-center gap-3"><i class="ph-fill ph-mouse-left-click text-neon-yellow text-xl"></i> <b>Fire:</b> Left Click (Hold for auto-fire)</li>
+                    <li class="flex items-center gap-3"><i class="ph-fill ph-warning-circle text-gray-400 text-xl"></i> <b>Objective:</b> Survive the infinite swarm.</li>
+                </ul>
+            </div>
+
+            <button id="startBtn" class="group relative px-10 py-5 bg-transparent border-2 border-neon-cyan text-neon-cyan font-heading font-bold text-2xl uppercase tracking-[0.2em] w-full overflow-hidden hover:text-dark transition-colors box-glow-cyan">
+                <span class="relative z-10 transition-colors duration-300">Initiate Link</span>
+                <div class="absolute inset-0 bg-neon-cyan transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left ease-out duration-300"></div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div id="gameOverMenu" class="absolute inset-0 z-50 flex items-center justify-center bg-dark/95 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="text-center p-8 md:p-12 border border-neon-red box-glow-red bg-[#1a0508] max-w-lg w-[90%] relative">
+             <!-- Glitchy background dots -->
+             <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#FF1053 1px, transparent 1px); background-size: 10px 10px;"></div>
+             
+            <h1 class="relative z-10 font-heading text-5xl md:text-6xl font-black text-white mb-2 uppercase tracking-widest text-glow-red">FATAL ERROR</h1>
+            <h2 class="relative z-10 font-heading text-xl text-neon-red tracking-[0.3em] uppercase mb-10">Signal Terminated</h2>
+            
+            <div class="relative z-10 mb-10 bg-dark/50 p-6 border border-neon-red/30">
+                <div class="mb-6">
+                    <p class="text-gray-400 text-sm uppercase tracking-[0.2em] mb-1">Final Sync Score</p>
+                    <p id="finalScoreEl" class="font-heading text-6xl md:text-7xl text-white font-bold text-glow-cyan">0</p>
+                </div>
+                
+                <div class="flex justify-center items-center gap-4 border-t border-gray-800 pt-4">
+                    <i class="ph-fill ph-trophy text-neon-yellow text-2xl"></i>
+                    <div>
+                        <p class="text-gray-500 text-xs uppercase tracking-widest text-left">Local High Score</p>
+                        <p id="highScoreEl" class="font-heading text-2xl text-neon-yellow font-bold text-left">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <button id="restartBtn" class="relative z-10 px-8 py-4 bg-neon-red text-white font-heading font-black text-xl md:text-2xl uppercase tracking-[0.2em] w-full hover:bg-white hover:text-neon-red hover:border-neon-red border-2 border-transparent transition-colors shadow-[0_0_20px_rgba(255,16,83,0.5)]">
+                Reboot System
+            </button>
+        </div>
+    </div>
+
+    <!-- Return to main hub -->
+    <a href="../../../index.html" class="fixed bottom-6 right-6 z-[100] w-12 h-12 bg-surface border border-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-neon-cyan hover:border-neon-cyan hover:shadow-glow-cyan transition-all group opacity-50 hover:opacity-100">
+        <i class="ph-bold ph-house text-xl group-hover:scale-110 transition-transform"></i>
+    </a>
+
+    <!-- GAME ENGINE SCRIPT -->
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // UI Elements
+        const startMenu = document.getElementById('startMenu');
+        const gameOverMenu = document.getElementById('gameOverMenu');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const scoreEl = document.getElementById('scoreEl');
+        const levelEl = document.getElementById('levelEl');
+        const finalScoreEl = document.getElementById('finalScoreEl');
+        const highScoreEl = document.getElementById('highScoreEl');
+        const hud = document.getElementById('hud');
+        const healthBar = document.getElementById('healthBar');
+        const healthText = document.getElementById('healthText');
+        const damageFlash = document.getElementById('damageFlash');
+        
+        // Dynamic Level Announcer UI (Created via JS)
+        const levelAnnouncer = document.createElement('div');
+        levelAnnouncer.className = 'fixed inset-0 z-40 pointer-events-none flex items-center justify-center opacity-0';
+        levelAnnouncer.innerHTML = `<h1 class="font-heading font-black text-6xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-white uppercase tracking-widest drop-shadow-[0_0_20px_rgba(0,240,255,0.8)] skew-x-[-10deg]">LEVEL UP</h1>`;
+        document.body.appendChild(levelAnnouncer);
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            if(!gameActive) drawStartBackground();
+        });
+
+        // Game State Variables
+        let gameActive = false;
+        let animationId;
+        let score = 0;
+        let frameCount = 0;
+        let spawnRate = 120; // Lower is faster
+        let difficultyMultiplier = 1;
+        let currentLevel = 1;
+        let bossActive = false;
+        let levelTransitioning = false;
+        
+        // Level Thresholds
+        const levelThresholds = [0, 500, 1500, 3000, 5000]; // Score needed for levels 1, 2, 3, 4, 5 (Boss)
+
+        // Player Data
+        const player = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 15,
+            color: '#00F0FF',
+            speed: 5,
+            health: 100,
+            angle: 0
+        };
+
+        // Entities Arrays
+        let projectiles = [];
+        let enemies = [];
+        let particles = [];
+        let trails = []; // Background star/cyber grid lines
+
+        // Input Tracking
+        const keys = {
+            w: false, a: false, s: false, d: false,
+            ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false
+        };
+        const mouse = { x: canvas.width / 2, y: canvas.height / 2, isDown: false };
+
+        // Event Listeners for Input
+        window.addEventListener('keydown', (e) => { 
+            if(keys.hasOwnProperty(e.key) || keys.hasOwnProperty(e.code)) keys[e.key] = true; 
+        });
+        window.addEventListener('keyup', (e) => { 
+            if(keys.hasOwnProperty(e.key) || keys.hasOwnProperty(e.code)) keys[e.key] = false; 
+        });
+        
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+        window.addEventListener('mousedown', () => mouse.isDown = true);
+        window.addEventListener('mouseup', () => mouse.isDown = false);
+        window.addEventListener('touchstart', (e) => {
+            mouse.x = e.touches[0].clientX;
+            mouse.y = e.touches[0].clientY;
+            mouse.isDown = true;
+        }, {passive: false});
+        window.addEventListener('touchmove', (e) => {
+            mouse.x = e.touches[0].clientX;
+            mouse.y = e.touches[0].clientY;
+            e.preventDefault(); // Prevent scrolling
+        }, {passive: false});
+        window.addEventListener('touchend', () => mouse.isDown = false);
+
+
+        // --- CLASSES ---
+
+        class Projectile {
+            constructor(x, y, radius, color, velocity) {
+                this.x = x; this.y = y;
+                this.radius = radius;
+                this.color = color;
+                this.velocity = velocity;
+                this.alpha = 1;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                ctx.restore();
+            }
+            update() {
+                this.draw();
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+            }
+        }
+
+        class Enemy {
+            constructor(x, y, radius, color, velocity, type) {
+                this.x = x; this.y = y;
+                this.radius = radius;
+                this.color = color;
+                this.velocity = velocity;
+                this.type = type; // 'basic' or 'fast' or 'heavy'
+                this.health = type === 'heavy' ? 3 : 1;
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                
+                // Rotation towards player
+                const angle = Math.atan2(player.y - this.y, player.x - this.x);
+                ctx.rotate(angle);
+
+                ctx.beginPath();
+                if(this.type === 'heavy') {
+                    // Square
+                    ctx.rect(-this.radius, -this.radius, this.radius*2, this.radius*2);
+                } else if(this.type === 'fast') {
+                    // Diamond/Kite
+                    ctx.moveTo(this.radius, 0);
+                    ctx.lineTo(0, this.radius/2);
+                    ctx.lineTo(-this.radius, 0);
+                    ctx.lineTo(0, -this.radius/2);
+                } else {
+                    // Triangle pointing forward
+                    ctx.moveTo(this.radius, 0);
+                    ctx.lineTo(-this.radius, this.radius);
+                    ctx.lineTo(-this.radius, -this.radius);
+                }
+                ctx.closePath();
+                
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 3;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 15;
+                ctx.stroke();
+                
+                // Inner glow
+                ctx.fillStyle = 'rgba(255, 16, 83, 0.2)';
+                ctx.fill();
+
+                ctx.restore();
+            }
+            update() {
+                this.draw();
+                
+                // Boss logic
+                if (this.type === 'boss') {
+                    // Boss moves side to side at the top
+                    if (this.y < 100) this.y += 2; // Enter screen
+                    else {
+                        this.x += this.velocity.x;
+                        if (this.x < this.radius || this.x > canvas.width - this.radius) {
+                            this.velocity.x *= -1; // Bounce
+                        }
+                        
+                        // Spawn minions occasionally
+                        if (frameCount % 60 === 0 && Math.random() > 0.5) {
+                           enemies.push(new Enemy(this.x, this.y + this.radius, 15, '#FF1053', {x: (Math.random()-0.5)*5, y: 3}, 'fast'));
+                        }
+                    }
+                    return; // Skip basic AI
+                }
+
+                // Basic tracking AI
+                const angle = Math.atan2(player.y - this.y, player.x - this.x);
+                let currentSpeed = (this.type === 'fast' ? 3 : this.type === 'heavy' ? 1 : 1.5) * difficultyMultiplier;
+
+                this.velocity.x = Math.cos(angle) * currentSpeed;
+                this.velocity.y = Math.sin(angle) * currentSpeed;
+
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+            }
+        }
+
+        const friction = 0.98;
+        class Particle {
+            constructor(x, y, radius, color, velocity) {
+                this.x = x; this.y = y;
+                this.radius = radius;
+                this.color = color;
+                this.velocity = velocity;
+                this.alpha = 1;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                ctx.restore();
+            }
+            update() {
+                this.draw();
+                this.velocity.x *= friction;
+                this.velocity.y *= friction;
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.alpha -= 0.01;
+            }
+        }
+
+        class GridTrail {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.length = Math.random() * 100 + 50;
+                this.speed = Math.random() * 2 + 0.5;
+                this.alpha = Math.random() * 0.3;
+                this.vertical = Math.random() > 0.5;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.strokeStyle = '#B026FF';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                if(this.vertical) ctx.lineTo(this.x, this.y + this.length);
+                else ctx.lineTo(this.x + this.length, this.y);
+                ctx.stroke();
+                ctx.restore();
+            }
+            update() {
+                this.draw();
+                if(this.vertical) this.y += this.speed;
+                else this.x += this.speed;
+
+                if(this.y > canvas.height) this.y = -this.length;
+                if(this.x > canvas.width) this.x = -this.length;
+            }
+        }
+
+        // --- GAME LOGIC ---
+
+        function init() {
+            player.x = canvas.width / 2;
+            player.y = canvas.height / 2;
+            player.health = 100;
+            projectiles = [];
+            enemies = [];
+            particles = [];
+            score = 0;
+            frameCount = 0;
+            spawnRate = 120;
+            difficultyMultiplier = 1;
+            currentLevel = 1;
+            bossActive = false;
+            levelTransitioning = false;
+            
+            scoreEl.innerHTML = score;
+            levelEl.innerHTML = currentLevel;
+            updateHealthBar();
+
+            // Setup background trails
+            trails = [];
+            for(let i=0; i<30; i++) trails.push(new GridTrail());
+        }
+
+        function createParticles(x, y, color, amount) {
+            for (let i = 0; i < amount; i++) {
+                particles.push(new Particle(
+                    x, y, 
+                    Math.random() * 3 + 1, 
+                    color, 
+                    {
+                        x: (Math.random() - 0.5) * (Math.random() * 8),
+                        y: (Math.random() - 0.5) * (Math.random() * 8)
+                    }
+                ));
+            }
+        }
+
+        function spawnEnemy() {
+            if (levelTransitioning || bossActive) return; // Don't spawn regular enemies during transitions or boss fights (mostly)
+
+            if (frameCount % spawnRate === 0) {
+                let x, y;
+                let radius = Math.random() * 10 + 15;
+                
+                // Spawn off screen
+                if (Math.random() < 0.5) {
+                    x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
+                    y = Math.random() * canvas.height;
+                } else {
+                    x = Math.random() * canvas.width;
+                    y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
+                }
+
+                const color = '#FF1053';
+                const angle = Math.atan2(player.y - y, player.x - x);
+                const velocity = { x: Math.cos(angle), y: Math.sin(angle) };
+
+                let type = 'basic';
+                
+                // Level-based Enemy Spawning Logic
+                if (currentLevel >= 2 && Math.random() > 0.7) type = 'fast';
+                if (currentLevel >= 3 && Math.random() > 0.6) type = Math.random() > 0.5 ? 'fast' : 'heavy';
+                if (currentLevel >= 4) {
+                    type = Math.random() > 0.4 ? 'heavy' : (Math.random() > 0.5 ? 'fast' : 'basic'); // More heavies
+                }
+                
+                if(type==='heavy') radius += 10;
+
+                enemies.push(new Enemy(x, y, type==='heavy'?25:15, color, velocity, type));
+            }
+        }
+        
+        function spawnBoss() {
+            bossActive = true;
+            
+            // Boss Spawns Top Center offscreen
+            const x = canvas.width / 2;
+            const y = -100;
+            const radius = 80;
+            const color = '#FFD300'; // Unique Yellow/Gold
+            const velocity = { x: 2, y: 0 }; // Moving horizontally
+            
+            const boss = new Enemy(x, y, radius, color, velocity, 'boss');
+            boss.health = 150; // Massive health pool
+            enemies.push(boss);
+        }
+
+        function updatePlayer() {
+            // Movement
+            let dx = 0, dy = 0;
+            if (keys.w || keys.ArrowUp) dy -= player.speed;
+            if (keys.s || keys.ArrowDown) dy += player.speed;
+            if (keys.a || keys.ArrowLeft) dx -= player.speed;
+            if (keys.d || keys.ArrowRight) dx += player.speed;
+
+            // Diagonal normalization
+            if(dx !== 0 && dy !== 0) {
+                dx *= 0.7071; dy *= 0.7071;
+            }
+
+            player.x += dx;
+            player.y += dy;
+
+            // Constrain to screen
+            player.x = Math.max(player.radius, Math.min(canvas.width - player.radius, player.x));
+            player.y = Math.max(player.radius, Math.min(canvas.height - player.radius, player.y));
+
+            // Rotation
+            player.angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
+
+            // Shooting logic
+            if (mouse.isDown && frameCount % 6 === 0) {
+                shoot();
+            }
+
+            // Draw Player Ship (Stylized Triangle)
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            ctx.rotate(player.angle);
+
+            ctx.beginPath();
+            ctx.moveTo(player.radius, 0); // Nose
+            ctx.lineTo(-player.radius, player.radius * 0.8); // Bottom wing
+            // Thruster indentation
+            ctx.lineTo(-player.radius * 0.5, 0);
+            ctx.lineTo(-player.radius, -player.radius * 0.8); // Top wing
+            ctx.closePath();
+
+            // Glow effect
+            ctx.strokeStyle = player.color;
+            ctx.lineWidth = 3;
+            ctx.shadowColor = player.color;
+            ctx.shadowBlur = 20;
+            ctx.stroke();
+            
+            ctx.fillStyle = 'rgba(0, 240, 255, 0.2)';
+            ctx.fill();
+
+            // Thruster flame if moving
+            if (dx !== 0 || dy !== 0) {
+                ctx.beginPath();
+                ctx.moveTo(-player.radius * 0.5, 0);
+                ctx.lineTo(-player.radius * 1.5, Math.sin(frameCount * 0.5) * 5); // Flickering
+                ctx.strokeStyle = '#FFD300';
+                ctx.lineWidth = 2;
+                ctx.shadowColor = '#FFD300';
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+
+        function shoot() {
+            const velocity = {
+                x: Math.cos(player.angle) * 15,
+                y: Math.sin(player.angle) * 15
+            };
+            // Spawn bullet from nose
+            const bulletX = player.x + Math.cos(player.angle) * player.radius;
+            const bulletY = player.y + Math.sin(player.angle) * player.radius;
+            projectiles.push(new Projectile(bulletX, bulletY, 3, '#00F0FF', velocity));
+            
+            // Recoil subtle shake on canvas could be added here
+        }
+
+        function updateHealthBar() {
+            healthBar.style.width = `${player.health}%`;
+            
+            if(player.health > 60) {
+                healthBar.className = "h-full bg-neon-cyan w-full transition-all duration-200 shadow-[0_0_15px_rgba(0,240,255,0.8)]";
+                healthText.textContent = "SYSTEMS OPTIMAL";
+                healthText.className = "font-heading text-xs text-neon-cyan mt-2 tracking-widest";
+            } else if (player.health > 25) {
+                healthBar.className = "h-full bg-neon-purple w-full transition-all duration-200 shadow-[0_0_15px_rgba(176,38,255,0.8)]";
+                healthText.textContent = "HULL DAMAGE DETECTED";
+                healthText.className = "font-heading text-xs text-neon-purple mt-2 tracking-widest";
+            } else {
+                healthBar.className = "h-full bg-neon-red w-full transition-all duration-100 shadow-[0_0_15px_rgba(255,16,83,0.8)]";
+                healthText.textContent = "CRITICAL FAILURE IMMINENT";
+                healthText.className = "font-heading text-xs text-neon-red mt-2 tracking-widest animate-pulse";
+            }
+        }
+
+        function triggerDamage() {
+            player.health -= 15;
+            updateHealthBar();
+            
+            // Screen flash
+            damageFlash.style.opacity = '1';
+            setTimeout(() => { damageFlash.style.opacity = '0'; }, 100);
+
+            // Screen shake
+            gsap.fromTo(canvas, 
+                { x:-10, y:10 }, 
+                { x:0, y:0, duration:0.3, ease:"rough({ template: power1.out, strength: 8, points: 20, taper: 'none', randomize: true, clamp: false })" }
+            );
+
+            if (player.health <= 0) {
+                endGame();
+            }
+        }
+
+        function checkLevelProgression() {
+            if (currentLevel < 5 && score >= levelThresholds[currentLevel]) {
+                currentLevel++;
+                levelEl.innerHTML = currentLevel;
+                levelTransitioning = true;
+                
+                let announcement = currentLevel === 5 ? "WARNING: BOSS APPROACHING" : `LEVEL ${currentLevel}`;
+                let textColor = currentLevel === 5 ? "text-neon-red" : "text-white";
+                
+                // Announce Level Up
+                levelAnnouncer.innerHTML = `<h1 class="font-heading font-black text-4xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-${textColor==='text-neon-red'?'neon-red':'neon-cyan'} uppercase tracking-widest drop-shadow-[0_0_20px_rgba(176,38,255,0.8)] skew-x-[-10deg]">${announcement}</h1>`;
+                
+                gsap.to(levelAnnouncer, { opacity: 1, duration: 0.5, yoyo: true, repeat: 3, onComplete: () => {
+                    levelTransitioning = false;
+                    
+                    // Increase overall difficulty
+                    spawnRate = Math.max(30, spawnRate - 20);
+                    difficultyMultiplier += 0.2;
+                    
+                    // Spawn Boss if Level 5
+                    if (currentLevel === 5) {
+                        spawnBoss();
+                    }
+                }});
+            }
+        }
+
+        function animate() {
+            if (!gameActive) return;
+            animationId = requestAnimationFrame(animate);
+
+            // Dark semi-transparent background for motion trails
+            ctx.fillStyle = 'rgba(11, 15, 26, 0.4)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            frameCount++;
+            checkLevelProgression();
+
+            // Draw background grid trails
+            trails.forEach(trail => trail.update());
+
+            updatePlayer();
+            spawnEnemy();
+
+            // Handle Particles
+            particles.forEach((particle, index) => {
+                if (particle.alpha <= 0) {
+                    particles.splice(index, 1);
+                } else {
+                    particle.update();
+                }
+            });
+
+            // Handle Projectiles
+            projectiles.forEach((projectile, index) => {
+                projectile.update();
+
+                // Remove bounds
+                if (projectile.x - projectile.radius < 0 || 
+                    projectile.x + projectile.radius > canvas.width || 
+                    projectile.y - projectile.radius < 0 || 
+                    projectile.y + projectile.radius > canvas.height) {
+                    setTimeout(() => { projectiles.splice(index, 1); }, 0);
+                }
+            });
+
+            // Handle Enemies
+            enemies.forEach((enemy, index) => {
+                enemy.update();
+
+                // Collision with Player
+                const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+                if (dist - enemy.radius - player.radius < 1) {
+                    createParticles(player.x, player.y, enemy.color, 15);
+                    setTimeout(() => { enemies.splice(index, 1); }, 0);
+                    triggerDamage();
+                }
+
+                // Collision with Projectiles
+                projectiles.forEach((projectile, pIndex) => {
+                    const distToProj = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
+                    if (distToProj - enemy.radius - projectile.radius < 1) {
+                        
+                        enemy.health -= 1;
+                        
+                        // Hit indicator
+                        createParticles(projectile.x, projectile.y, '#FFF', 3);
+                        setTimeout(() => { projectiles.splice(pIndex, 1); }, 0);
+
+                        if(enemy.health <= 0) {
+                            // Enemy Destroyed
+                            createParticles(enemy.x, enemy.y, enemy.color, enemy.type==='boss'?100:(enemy.type==='heavy'?25:10));
+                            setTimeout(() => { enemies.splice(index, 1); }, 0);
+                            
+                            score += enemy.type === 'boss' ? 5000 : (enemy.type === 'heavy' ? 50 : enemy.type === 'fast' ? 25 : 10);
+                            scoreEl.innerHTML = score;
+                            
+                            // Pop animation on score
+                            gsap.fromTo(scoreEl, { scale: 1.5, color: '#FFF' }, { scale: 1, color: '#00F0FF', duration: 0.3 });
+                            
+                            // Win condition if Boss
+                            if (enemy.type === 'boss') {
+                                bossActive = false;
+                                setTimeout(endGame, 2000); // End game in victory state after 2 secs
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // --- CORE FLOW ---
+
+        function drawStartBackground() {
+            ctx.fillStyle = '#0B0F1A';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw some static neon lines for the menu bg
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for(let i=0; i<canvas.width; i+=50) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+            }
+            for(let i=0; i<canvas.height; i+=50) {
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+            }
+        }
+        
+        drawStartBackground();
+
+        function startGame() {
+            init();
+            gameActive = true;
+            
+            // GSAP hide start menu, show HUD
+            gsap.to(startMenu, { opacity: 0, duration: 0.5, onComplete: () => {
+                startMenu.classList.add('hidden');
+                hud.style.opacity = 1;
+                
+                // Animate HUD in
+                gsap.from(".gsap-hud", { y: -50, opacity: 0, duration: 0.8, stagger: 0.2, ease: "back.out(1.7)" });
+                
+                animate();
+            }});
+        }
+
+        function endGame() {
+            gameActive = false;
+            cancelAnimationFrame(animationId);
+
+            // Explosions where player died
+            createParticles(player.x, player.y, player.color, 50);
+            createParticles(player.x, player.y, '#FFD300', 30);
+            
+            // Draw one last frame to show the explosion effect freezing
+            ctx.fillStyle = 'rgba(11, 15, 26, 0.4)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => p.draw());
+
+            finalScoreEl.innerText = score;
+
+            // Handle High Score
+            let highScore = localStorage.getItem('eclypseHighScore') || 0;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('eclypseHighScore', highScore);
+            }
+            highScoreEl.innerText = highScore;
+
+            // Show Game Over UI
+            gameOverMenu.classList.remove('hidden');
+            hud.style.opacity = 0; // Hide HUD
+            
+            gsap.to(gameOverMenu, { opacity: 1, pointerEvents: 'auto', duration: 0.5, delay: 0.5 });
+            gsap.fromTo(gameOverMenu.querySelector('div'), 
+                { scale: 0.8, y: 50 }, 
+                { scale: 1, y: 0, duration: 0.8, ease: "elastic.out(1, 0.5)", delay: 0.5 }
+            );
+        }
+
+        startBtn.addEventListener('click', startGame);
+
+        restartBtn.addEventListener('click', () => {
+            gsap.to(gameOverMenu, { opacity: 0, pointerEvents: 'none', duration: 0.3, onComplete: () => {
+                gameOverMenu.classList.add('hidden');
+                // Re-trigger start game flow instantly
+                init();
+                gameActive = true;
+                hud.style.opacity = 1;
+                animate();
+            }});
+        });
+
+        // Initialize high score display if exists
+        const initialHighScore = localStorage.getItem('eclypseHighScore') || 0;
+        highScoreEl.innerText = initialHighScore;
+
+    </script>
+</body>
+</html>

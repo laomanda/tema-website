@@ -214,6 +214,7 @@
             <div class="hidden md:flex items-center gap-8">
                 <a href="#collection" class="text-xs font-black tracking-[0.2em] uppercase text-gray-400 hover:text-brand-gold transition-colors">Themes</a>
                 <a href="#industry-solutions" class="text-xs font-black tracking-[0.2em] uppercase text-gray-400 hover:text-brand-gold transition-colors">Templates</a>
+                <a href="#browse-components" class="text-xs font-black tracking-[0.2em] uppercase text-gray-400 hover:text-brand-gold transition-colors text-brand-gold/50">Components</a>
                 <a href="#features" class="text-xs font-black tracking-[0.2em] uppercase text-gray-400 hover:text-brand-gold transition-colors">Philosophy</a>
             </div>
 
@@ -235,6 +236,7 @@
             <div class="flex flex-col p-12 gap-8 items-center">
                 <a href="#collection" onclick="toggleMobileMenu()" class="text-3xl font-black tracking-tighter text-gray-500 hover:text-brand-gold transition-colors">Themes</a>
                 <a href="#industry-solutions" onclick="toggleMobileMenu()" class="text-3xl font-black tracking-tighter text-gray-500 hover:text-brand-gold transition-colors">Templates</a>
+                <a href="#browse-components" onclick="toggleMobileMenu()" class="text-3xl font-black tracking-tighter text-brand-gold/40 hover:text-brand-gold transition-colors">Components</a>
                 <a href="#features" onclick="toggleMobileMenu()" class="text-3xl font-black tracking-tighter text-gray-500 hover:text-brand-gold transition-colors">Philosophy</a>
             </div>
         </div>
@@ -463,8 +465,6 @@
 
     <!-- Theme Gallery -->
     <section id="collection" class="py-32 px-6 relative z-10 bg-brand-black overflow-hidden">
-        <!-- Subtle Background Glow -->
-        <div class="absolute bottom-0 right-0 w-[800px] h-[800px] bg-brand-gold/5 rounded-full blur-[200px] translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto relative z-10">
             
@@ -493,9 +493,7 @@
     </section>
 
     <!-- Industry Templates Gallery -->
-    <section id="industry-solutions" class="py-32 px-6 relative z-10 bg-brand-dark overflow-hidden border-t border-white/5">
-        <div class="absolute top-0 left-0 w-[600px] h-[600px] bg-brand-gold/5 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-
+    <section id="industry-solutions" class="py-32 px-6 relative z-10 bg-brand-black overflow-hidden">
         <div class="max-w-7xl mx-auto relative z-10">
             <div class="flex flex-col md:flex-row items-start md:items-end justify-between mb-20 gap-8">
                 <div>
@@ -523,6 +521,34 @@
         </div>
     </section>
 
+    <!-- Browse Components (Coming Soon) -->
+    <section id="browse-components" class="py-40 px-6 relative z-10 bg-brand-black overflow-hidden">
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-brand-gold/5 rounded-full blur-[120px] pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto flex flex-col items-center text-center">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/30 text-brand-gold text-xs font-black uppercase tracking-[0.2em] mb-8 animate-pulse">Coming Soon</span>
+            
+            <h2 class="text-5xl md:text-8xl font-black tracking-tighter mb-8 leading-none opacity-20 select-none">
+                Browse <br> Components.
+            </h2>
+            
+            <p class="text-gray-600 text-lg max-w-xl font-light mb-16 px-4">
+                We're building a massive library of pre-built, high-conversion blocks. Hero sections, pricing tables, and interactive modules — ready to drop into any project.
+            </p>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full opacity-10 grayscale select-none pointer-events-none">
+                <div class="h-40 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-shapes text-3xl"></i></div>
+                <div class="h-40 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-layer-group text-3xl"></i></div>
+                <div class="h-40 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-window-restore text-3xl"></i></div>
+                <div class="h-40 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-table-columns text-3xl"></i></div>
+            </div>
+            
+            <div class="mt-20 px-8 py-3 rounded-full bg-white/5 border border-white/10 text-gray-500 text-xs font-bold tracking-widest uppercase">
+                Currently in Active Development
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="py-8 border-t border-white/5 text-center text-sm text-gray-500 bg-brand-black">
         <p>&copy; 2026 Jakkob Panj. All rights reserved. Crafted with precision.</p>
@@ -544,28 +570,32 @@
         ];
 
         const industryThemes = [
-            // Corporate
-            { id: 'aetherix', name: 'Aetherix', desc: 'Sleek corporate presence with a focus on trust and performance.', icon: 'fa-building', category: 'corporate', path: 'template-web/Corporate/aetherix/index.html', previewHTML: `<div class="absolute inset-0 bg-slate-900 p-4 flex flex-col gap-3"><div class="w-full h-4 bg-white/10 rounded-full"></div><div class="flex gap-3"><div class="w-1/2 h-20 bg-blue-500/10 rounded-xl border border-blue-500/20"></div><div class="w-1/2 h-20 bg-white/5 rounded-xl border border-white/10"></div></div><div class="w-2/3 h-2 bg-white/5 rounded-full"></div></div>` },
-            { id: 'flow-pilot', name: 'Flow-Pilot', desc: 'Dynamic dashboard and workflow solution for modern startups.', icon: 'fa-rocket', category: 'corporate', path: 'template-web/Corporate/flow-pilot/index.html', previewHTML: `<div class="absolute inset-0 bg-brand-black p-4"><div class="flex items-center gap-3 mb-4"><div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center"><i class="fa-solid fa-wind text-xs"></i></div><div class="w-24 h-2 bg-white/10 rounded-full"></div></div><div class="grid grid-cols-2 gap-3"><div class="h-16 bg-white/5 rounded-lg border border-white/10"></div><div class="h-16 bg-indigo-500/5 rounded-lg border border-indigo-500/20"></div></div></div>` },
-            { id: 'noctra', name: 'Noctra', desc: 'Sophisticated dark theme for high-end tech and AI ventures.', icon: 'fa-moon', category: 'corporate', path: 'template-web/Corporate/noctra/index.html', previewHTML: `<div class="absolute inset-0 bg-[#050505] flex flex-col justify-center items-center p-6"><div class="w-12 h-12 rounded-full bg-brand-gold/10 border border-brand-gold/30 flex items-center justify-center mb-4"><div class="w-6 h-6 rounded-full bg-brand-gold/40 animate-pulse"></div></div><div class="w-32 h-1 bg-white/10 rounded-full mb-2"></div><div class="w-24 h-1 bg-white/5 rounded-full"></div></div>` },
+            // Event — Wedding
+            { id: 'wedding', name: 'Eternity Wedding', desc: 'Undangan pernikahan digital elegan dengan RSVP, galeri foto, dan countdown hari bahagia.', icon: 'fa-rings-wedding', category: 'event', path: 'template-web/Event/wedding.html', previewHTML: `<div class="absolute inset-0 bg-[#FFF7F0] p-5 flex flex-col items-center justify-center text-center overflow-hidden"><div class="absolute top-0 left-0 w-20 h-20 opacity-10"><svg viewBox="0 0 100 100" fill="#C9A24D"><path d="M50 0C50 27.6 27.6 50 0 50C27.6 50 50 72.4 50 100C50 72.4 72.4 50 100 50C72.4 50 50 27.6 50 0Z"/></svg></div><div class="border border-[#C9A24D]/30 p-4 rounded-sm relative"><div class="absolute -top-1 -left-1 w-2 h-2 bg-[#C9A24D]"></div><div class="absolute -bottom-1 -right-1 w-2 h-2 bg-[#C9A24D]"></div><div class="font-serif italic text-[#C9A24D] text-lg mb-1">A & R</div><div class="w-12 h-[1px] bg-[#C9A24D]/40 mx-auto mb-1"></div><div class="text-[7px] uppercase tracking-[.25em] text-[#6B7280]">Save The Date</div></div></div>` },
+
+            // Event — Valentine
+            { id: 'valentine', name: 'Amore Valentine', desc: 'Halaman romantis untuk mengungkapkan cinta dengan surat, galeri kenangan, dan kejutan spesial.', icon: 'fa-heart', category: 'event', path: 'template-web/Event/vallentine.html', previewHTML: `<div class="absolute inset-0 bg-gradient-to-br from-[#FFF1F2] via-[#FFE4E6] to-[#FFF1F2] flex items-center justify-center overflow-hidden"><div class="absolute w-40 h-40 bg-[#E11D48]/10 rounded-full blur-3xl"></div><i class="fa-solid fa-heart text-5xl text-[#E11D48]/20 animate-pulse"></i><div class="absolute bottom-4 left-0 right-0 text-center"><div class="font-serif italic text-[#E11D48]/40 text-[10px]">For My Dearest</div></div><div class="absolute inset-3 border border-[#E11D48]/10 rounded-2xl"></div></div>` },
+
+            // E-Commerce — Kantin
+            { id: 'kantin', name: 'Kantin RasaNusa', desc: 'Sistem kantin digital dengan menu interaktif, keranjang belanja, dan fitur order online.', icon: 'fa-utensils', category: 'e-commerce', path: 'template-web/E-commerace/kantin.html', previewHTML: `<div class="absolute inset-0 bg-[#FFFBF5] p-4 flex flex-col gap-3 overflow-hidden"><div class="absolute top-0 right-0 w-32 h-32 bg-[#FF8A00]/10 rounded-full blur-3xl -translate-y-1/4 translate-x-1/4"></div><div class="w-full h-8 bg-white rounded-full border border-gray-200 flex items-center px-3 gap-2 relative z-10"><div class="w-6 h-6 bg-[#FF8A00] rounded-full flex items-center justify-center"><i class="fa-solid fa-utensils text-white text-[6px]"></i></div><div class="text-[8px] font-bold text-[#1E1E1E]">Rasa<span class="text-[#FF8A00]">Nusa</span></div></div><div class="grid grid-cols-2 gap-2 flex-grow relative z-10"><div class="bg-white rounded-xl border border-gray-100 shadow-sm p-2 flex flex-col justify-end"><div class="w-full h-2 bg-[#FF8A00]/20 rounded-full mb-1"></div><div class="w-2/3 h-1.5 bg-gray-100 rounded-full"></div></div><div class="bg-white rounded-xl border border-gray-100 shadow-sm p-2 flex flex-col justify-end"><div class="w-full h-2 bg-[#FF8A00]/20 rounded-full mb-1"></div><div class="w-2/3 h-1.5 bg-gray-100 rounded-full"></div></div></div></div>` },
+
+            // E-Commerce — Velora Fashion
+            { id: 'e-commerce', name: 'Velora Fashion', desc: 'E-commerce fashion premium minimalis dengan katalog produk dan sistem keranjang belanja.', icon: 'fa-bag-shopping', category: 'e-commerce', path: 'template-web/E-commerace/e-commerace.html', previewHTML: `<div class="absolute inset-0 bg-[#FAFAFA] flex flex-col overflow-hidden"><div class="h-2/3 bg-[#F5F5F0] relative flex items-center justify-center"><div class="absolute top-3 left-0 right-0 text-center"><div class="font-serif font-bold text-[10px] tracking-[.15em] text-[#111]">VELORA</div></div><div class="w-14 h-18 bg-white shadow-xl relative overflow-hidden"><div class="absolute inset-0 bg-gradient-to-b from-transparent to-[#C5A059]/10"></div></div></div><div class="p-3 flex-grow flex flex-col justify-center items-center"><div class="w-20 h-1.5 bg-[#111]/10 rounded-full mb-1"></div><div class="w-14 h-1 bg-[#C5A059]/30 rounded-full"></div></div></div>` },
+
+            // Creative — Studio
+            { id: 'studio', name: 'Axiom Creative', desc: 'Portfolio agensi digital high-end dengan animasi GSAP, horizontal scroll, dan desain bold.', icon: 'fa-burst', category: 'creative', path: 'template-web/Creative/studio.html', previewHTML: `<div class="absolute inset-0 bg-[#050505] p-4 flex flex-col justify-between overflow-hidden"><div class="absolute top-0 right-0 w-24 h-24 bg-[#D6F32F]/10 rounded-full blur-2xl"></div><div class="flex flex-col gap-1 relative z-10"><div class="text-white font-black text-xl tracking-tighter leading-none">WE</div><div class="text-white font-black text-xl tracking-tighter leading-none">BUILD</div><div class="text-[#D6F32F] font-black text-xl tracking-tighter leading-none">DIGITAL</div></div><div class="flex items-center gap-2 relative z-10"><div class="w-10 h-[2px] bg-[#D6F32F]"></div><div class="text-[7px] text-white/40 uppercase tracking-widest">Axiom Studio</div></div></div>` },
+
+            // Creative — Game
+            { id: 'game', name: 'Eclypse Game', desc: 'Landing page game immersive dengan mekanisme boss fight, efek neon, dan UI futuristik.', icon: 'fa-gamepad', category: 'creative', path: 'template-web/Creative/game.html', previewHTML: `<div class="absolute inset-0 bg-[#0B0F1A] overflow-hidden flex items-center justify-center"><div class="absolute inset-0" style="background: linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px); background-size: 100% 4px;"></div><div class="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-[#00F0FF]/5 to-transparent"></div><div class="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-[#FF1053]/10 to-transparent"></div><div class="relative z-10 text-center"><div class="font-bold text-[14px] tracking-[.3em] uppercase" style="color: #00F0FF; text-shadow: 0 0 10px rgba(0,240,255,0.5);">ECLYPSE</div><div class="w-12 h-[1px] bg-[#00F0FF]/30 mx-auto mt-1 mb-1"></div><div class="text-[6px] uppercase tracking-[.2em] text-[#B026FF]/60">Neon Survival</div></div></div>` },
+
+            // Corporate — Company Profile
+            { id: 'corporate', name: 'Aetherix Corporate', desc: 'Company profile profesional dengan animasi premium, orbit interaktif, dan case studies slider.', icon: 'fa-building', category: 'corporate', path: 'template-web/Corporate/index.html', previewHTML: `<div class="absolute inset-0 bg-[#050505] overflow-hidden flex items-center justify-center"><div class="absolute w-32 h-32 bg-[#D4AF37]/10 rounded-full blur-3xl top-0 left-0"></div><div class="absolute w-24 h-24 bg-[#A3C2F3]/10 rounded-full blur-2xl bottom-0 right-0"></div><div class="relative z-10 flex flex-col items-center"><div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#D4AF37] to-[#F5E6A3] flex items-center justify-center mb-3 shadow-[0_0_20px_-5px_rgba(212,175,55,0.4)]"><div class="text-[#050505] text-[6px] font-bold uppercase tracking-widest">Core</div></div><div class="text-[10px] font-bold tracking-[.2em] text-white/80 uppercase">Aetherix<span class="text-[#D4AF37]">.</span></div><div class="text-[6px] text-white/30 uppercase tracking-widest mt-1">Enterprise Strategy</div></div><div class="absolute w-20 h-20 rounded-full border border-white/10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div><div class="absolute w-32 h-32 rounded-full border border-white/5 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div></div>` },
+
+            // Education — Academic Elite
+            { id: 'school', name: 'Academic Elite', desc: 'Sistem informasi sekolah modern dengan dashboard akademik, pendaftaran online, dan portal guru.', icon: 'fa-school', category: 'education', path: 'template-web/School/index.html', previewHTML: `<div class="absolute inset-0 bg-[#003366] flex flex-col p-4 gap-4 overflow-hidden"><div class="w-full h-8 bg-white/10 rounded-lg flex items-center px-3 justify-between"><div class="w-1/4 h-2 bg-white/30 rounded-full"></div><div class="flex gap-2"><div class="w-4 h-4 rounded-full bg-white/20"></div><div class="w-4 h-4 rounded-full bg-white/20"></div></div></div><div class="flex-grow flex gap-4"><div class="w-1/3 h-full bg-white/5 rounded-xl border border-white/10 shadow-lg"></div><div class="flex-grow flex flex-col gap-3"><div class="w-full h-1/2 bg-[#D4AF37]/10 rounded-xl border border-[#D4AF37]/20"></div><div class="w-full flex-grow bg-white/5 rounded-xl border border-white/10"></div></div></div></div>` },
             
-            // Creative
-            { id: 'game', name: 'Game Portal', desc: 'Immersive landing page for gaming communities and studios.', icon: 'fa-gamepad', category: 'creative', path: 'template-web/Creative/game/index.html', previewHTML: `<div class="absolute inset-0 bg-red-950/20 overflow-hidden"><div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div><div class="absolute bottom-4 left-4 right-4 h-1/2 bg-gradient-to-t from-red-600/20 to-transparent rounded-t-3xl border-t border-red-500/30"></div><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-red-500 text-6xl opacity-10"><i class="fa-solid fa-skull"></i></div></div>` },
-            { id: 'studio-anime', name: 'Studio Anime', desc: 'Vibrant, high-energy portfolio for creative agencies and artists.', icon: 'fa-burst', category: 'creative', path: 'template-web/Creative/studio-anime/index.html', previewHTML: `<div class="absolute inset-0 bg-pink-500/10 border-4 border-white overflow-hidden p-3" style="background-image: repeating-linear-gradient(45deg, #FF69B410 0, #FF69B410 2px, transparent 2px, transparent 10px);"><div class="w-16 h-16 bg-white rotate-12 shadow-xl flex items-center justify-center font-black text-pink-500 text-xl border-2 border-black">A!</div></div>` },
-
-            // E-Commerce
-            { id: 'rasa-nusa', name: 'Rasa-Nusa', desc: 'Cultural and traditional e-commerce for authentic heritage products.', icon: 'fa-shop', category: 'e-commerce', path: 'template-web/E-commerace/rasa-nusa/index.html', previewHTML: `<div class="absolute inset-0 bg-[#faf7f2] p-4 flex flex-col gap-4"><div class="w-full h-8 bg-[#8b4513]/10 rounded flex items-center px-3"><div class="w-1/3 h-2 bg-[#8b4513]/30 rounded-full"></div></div><div class="grid grid-cols-2 gap-4 h-full"><div class="bg-white rounded-xl shadow-sm border border-[#8b4513]/10 p-2"><div class="w-full h-12 bg-[#8b4513]/5 rounded-lg mb-2"></div><div class="w-full h-1 bg-[#8b4513]/20 rounded-full"></div></div><div class="bg-white rounded-xl shadow-sm border border-[#8b4513]/10 p-2"><div class="w-full h-12 bg-[#8b4513]/5 rounded-lg mb-2"></div><div class="w-full h-1 bg-[#8b4513]/20 rounded-full"></div></div></div></div>` },
-            { id: 'velora', name: 'Velora Fashion', desc: 'Minimalist high-end marketplace for lifestyle and fashion brands.', icon: 'fa-bag-shopping', category: 'e-commerce', path: 'template-web/E-commerace/velora/index.html', previewHTML: `<div class="absolute inset-0 bg-white flex flex-col items-center justify-center p-8"><div class="w-full h-32 bg-gray-50 flex items-center justify-center relative overflow-hidden group-hover:bg-gray-100 transition-colors"><div class="w-20 h-24 bg-white shadow-xl transition-transform duration-700 group-hover:rotate-6"></div></div><div class="mt-4 text-center"><div class="w-24 h-2 bg-gray-200 rounded-full mb-1 mx-auto"></div><div class="w-16 h-1 bg-gray-100 rounded-full mx-auto"></div></div></div>` },
-
-            // Event
-            { id: 'campaign', name: 'Influence PR', desc: 'Strategic landing page for social and political movement awareness.', icon: 'fa-bullhorn', category: 'event', path: 'template-web/Event/campaign/index.html', previewHTML: `<div class="absolute inset-0 bg-indigo-900 border-l-[20px] border-orange-500 p-6 flex flex-col justify-center"><div class="text-white font-black text-xl italic uppercase tracking-tighter mb-2">Voice Of<br>Change.</div><div class="w-16 h-1 bg-orange-500"></div></div>` },
-            { id: 'dashboard-ev', name: 'EventX Hub', desc: 'Complete management system for conferences and large events.', icon: 'fa-calendar-check', category: 'event', path: 'template-web/Event/dashboard/index.html', previewHTML: `<div class="absolute inset-0 bg-slate-50 p-4 flex gap-3"><div class="w-1/4 h-full bg-white border border-slate-200 rounded-lg flex flex-col p-2 gap-2"><div class="w-full h-2 bg-slate-100 rounded-full"></div><div class="w-full h-2 bg-slate-100 rounded-full"></div></div><div class="flex-grow flex flex-col gap-3"><div class="h-10 bg-indigo-600 rounded-lg shadow-lg"></div><div class="flex-grow bg-white border border-slate-200 rounded-lg"></div></div></div>` },
-            { id: 'happy-birthday', name: 'Gala BDay', desc: 'Cheerful and high-energy interactive birthday portal.', icon: 'fa-cake-candles', category: 'event', path: 'template-web/Event/happy-birthday/index.html', previewHTML: `<div class="absolute inset-0 bg-yellow-400 p-4 flex flex-col items-center justify-center overflow-hidden" style="background-image: radial-gradient(rgba(255,255,255,0.3) 15%, transparent 16%), radial-gradient(rgba(255,255,255,0.3) 15%, transparent 16%); background-size: 16px 16px; background-position: 0 0, 8px 8px;"><div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl animate-bounce"><i class="fa-solid fa-gift text-2xl text-yellow-600"></i></div></div>` },
-            { id: 'valentine', name: 'Amore Portal', desc: 'Elegant and romantic space for seasonal special occasions.', icon: 'fa-heart', category: 'event', path: 'template-web/Event/valentine/index.html', previewHTML: `<div class="absolute inset-0 bg-red-50 flex items-center justify-center overflow-hidden"><div class="absolute w-64 h-64 bg-red-500/10 rounded-full blur-3xl"></div><i class="fa-solid fa-heart text-6xl text-red-500/20 animate-pulse"></i><div class="absolute inset-4 border border-red-200/50 rounded-2xl"></div></div>` },
-            { id: 'wedding', name: 'Eternity Invite', desc: 'Modern digital invitation suite with RSVP and story modules.', icon: 'fa-rings-wedding', category: 'event', path: 'template-web/Event/wedding/index.html', previewHTML: `<div class="absolute inset-0 bg-[#f8f5f2] p-6 flex flex-col items-center justify-center text-center"><div class="border border-brand-gold/20 p-4 relative"><div class="absolute -top-1 -left-1 w-2 h-2 bg-brand-gold"></div><div class="absolute -bottom-1 -right-1 w-2 h-2 bg-brand-gold"></div><div class="font-serif text-brand-gold text-[8px] uppercase tracking-[.3em] mb-1">Eternity</div><div class="w-16 h-[1px] bg-brand-gold/30 mx-auto"></div></div></div>` },
-
-            // Education
-            { id: 'school', name: 'Academic Elite', desc: 'Comprehensive school portal with academic and admission focus.', icon: 'fa-school', category: 'education', path: 'template-web/School/index.html', previewHTML: `<div class="absolute inset-0 bg-blue-900 flex flex-col p-4 gap-4"><div class="w-full h-8 bg-white/10 rounded-lg flex items-center px-3 justify-between"><div class="w-1/4 h-2 bg-white/30 rounded-full"></div><div class="flex gap-2"><div class="w-4 h-4 rounded-full bg-white/20"></div><div class="w-4 h-4 rounded-full bg-white/20"></div></div></div><div class="flex-grow flex gap-4"><div class="w-1/3 h-full bg-white/5 rounded-xl border border-white/10 shadow-lg"></div><div class="flex-grow flex flex-col gap-3"><div class="w-full h-1/2 bg-brand-gold/10 rounded-xl border border-brand-gold/20"></div><div class="w-full flex-grow bg-white/5 rounded-xl border border-white/10"></div></div></div></div>` },
+            // Coming Soon
+            { id: 'coming-soon-ind', name: 'Coming Soon', desc: 'Sektor industri lainnya seperti Healthcare, Properti, dan Travel akan segera hadir.', icon: 'fa-hourglass-half', category: 'all', status: 'upcoming', previewHTML: `<div class="absolute inset-0 bg-neutral-900 flex items-center justify-center overflow-hidden"><div class="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px]"></div><div class="relative"><div class="w-16 h-16 rounded-full border-2 border-dashed border-neutral-700 animate-[spin_10s_linear_infinite]"></div><i class="fa-solid fa-plus absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral-500 text-xl"></i></div></div>` },
         ];
 
         function renderCollection(themesArray, gridId, filter = 'all') {
